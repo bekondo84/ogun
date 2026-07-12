@@ -111,7 +111,7 @@ export default function PluginFormPage() {
     <div className="min-h-screen w-full bg-slate-50 flex flex-col antialiased">
       <PluginHeader pluginName="CRM & Ventes" menus={CONFIG_MENUS} activeMenu={activeMenu} setActiveMenu={(menuId, obj) => handleMenuChange(menuId, obj)} />
       
-      <main className="min-h-screen w-full bg-slate-50 dark:bg-slate-950 flex flex-col antialiased overflow-y-auto">
+      <main className="h-screen w-full  bg-slate-50 dark:bg-slate-950 flex flex-col antialiased overflow-y-auto">
         {viewType === 'list' ? (
              <ListFormPage 
                  onCreate ={ handleOnCreate }

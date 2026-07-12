@@ -102,7 +102,7 @@ export default function ListDataModule({
         onPageChange={(page) => setCurrentPage(page)}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto">
+      <main className="flex-1 max-w-7xl w-full mx-auto overflow-y-auto">
         {viewMode === "table" ? (
           <TableView
             columns={CLIENT_COLUMNS}
