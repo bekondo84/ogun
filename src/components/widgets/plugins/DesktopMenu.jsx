@@ -7,13 +7,13 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export default function DesktopMenu({ item, setActiveMenu, activeMenu }) {
-  const hasChildren = item.children && item.children.length > 0
+  const hasChildren = item.navigations  && item.navigations.length > 0
 
   if (!hasChildren) {
     return (
       <DropdownMenuItem 
-        onClick={() => setActiveMenu(item.id)} 
-        className={`cursor-pointer ${activeMenu === item.id ? "bg-purple-50 text-purple-700 font-semibold" : ""}`}
+        onClick={() => setActiveMenu(item)} 
+        className={`cursor-pointer ${activeMenu === item.seqnumber ? "bg-purple-50 text-purple-700 font-semibold" : ""}`}
       >
         {item.label}
       </DropdownMenuItem>
@@ -26,9 +26,9 @@ export default function DesktopMenu({ item, setActiveMenu, activeMenu }) {
         {item.label}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="w-52">
-        {item.children.map((child) => (
+        {item.navigations.map((child) => (
           <DesktopMenu 
-            key={child.id} 
+            key={child.seqnumber} 
             item={child} 
             setActiveMenu={setActiveMenu} 
             activeMenu={activeMenu} 

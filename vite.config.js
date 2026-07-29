@@ -10,4 +10,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // 🚀 AJOUTEZ CE BLOC SERVER POUR LE PROXY
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080", // L'adresse de votre backend original
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })

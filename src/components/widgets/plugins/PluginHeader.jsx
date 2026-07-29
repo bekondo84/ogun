@@ -15,14 +15,15 @@ import MobileMenu from "./MobileMenu"
 
 export default function PluginHeader({ pluginName, menus, activeMenu, setActiveMenu }) {
   const navigate = useNavigate()
-
+  
+  //console.log (menus)
   return (
     <div className="w-full border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-6 py-2 flex items-center justify-between shadow-sm">
       
       {/* ZONE GAUCHE : Navigation, Retour Dashboard & Menu Burger */}
       <div className="flex items-center gap-4 overflow-hidden">
         
-        {/* 1. ✨ NOUVEAU : Bouton de retour vers la page des applications (Style Odoo Home) */}
+        {/* 1. NOUVEAU : Bouton de retour vers la page des applications (Style Odoo Home) */}
         <button 
           onClick={() => navigate("/apps")}
           title="Retour aux applications"
@@ -46,7 +47,7 @@ export default function PluginHeader({ pluginName, menus, activeMenu, setActiveM
               <nav className="flex flex-col gap-0.5">
                 {menus.map((menu) => (
                   <MobileMenu 
-                    key={menu.id} 
+                    key={menu.seqnumber} 
                     item={menu} 
                     setActiveMenu={setActiveMenu} 
                     activeMenu={activeMenu} 
@@ -65,15 +66,15 @@ export default function PluginHeader({ pluginName, menus, activeMenu, setActiveM
         {/* Navigation Desktop */}
         <nav className="hidden sm:flex items-center gap-1 text-sm font-medium">
           {menus.map((menu) => {
-            const hasChildren = menu.children && menu.children.length > 0
+            const hasChildren = menu.navigations && menu.navigations.length > 0
 
             if (!hasChildren) {
               return (
                 <button
-                  key={menu.id}
+                  key={menu.seqnumber}
                   onClick={() => setActiveMenu(menu)}
                   className={`px-3 py-1.5 rounded-md transition-all whitespace-nowrap cursor-pointer ${
-                    activeMenu === menu.id
+                    activeMenu === menu.seqnumber
                       ? "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300"
                       : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                   }`}
@@ -84,15 +85,15 @@ export default function PluginHeader({ pluginName, menus, activeMenu, setActiveM
             }
 
             return (
-              <DropdownMenu key={menu.id}>
+              <DropdownMenu key={menu.seqnumber}>
                 <DropdownMenuTrigger className="px-3 py-1.5 rounded-md text-slate-600 hover:bg-slate-100 font-medium inline-flex items-center gap-1 transition-all focus:outline-none dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer">
                   <span>{menu.label}</span>
                   <ChevronDown className="h-3.5 w-3.5 opacity-70" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="w-56 p-1">
-                  {menu.children.map((child) => (
+                  {menu.navigations.map((child) => (
                     <DesktopMenu 
-                      key={child.id} 
+                      key={child.seqnumber} 
                       item={child} 
                       setActiveMenu={setActiveMenu} 
                       activeMenu={activeMenu} 

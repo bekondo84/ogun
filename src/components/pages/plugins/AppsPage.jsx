@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { useGetSessionPlugins, useGetPluginCategories } from "@/hooks/usePlugin"
 import AppHeader from "@/components/widgets/plugins/AppHeader"
 import AppCard from "@/components/widgets/plugins/AppCard"
 import { useNavigate } from "react-router-dom"
@@ -8,33 +9,23 @@ import {
   BarChart3, Settings, Package, Truck 
 } from "lucide-react"
 
-const AVAILABLE_PLUGINS = [
-  { id: "crm", name: "CRM", description: "Suivi des pistes, opportunités et prévisions de ventes.", icon: Briefcase, color: "#10b981", category: "sales", isInstalled: true },
-  { id: "sales", name: "Ventes", description: "Création de devis, factures proforma et contrats clients.", icon: ShoppingCart, color: "#2563eb", category: "sales", isInstalled: true },
-  { id: "inventory", name: "Inventaire", description: "Gestion des stocks en double entrée et traçabilité.", icon: Package, color: "#f59e0b", category: "operations", isInstalled: true },
-  { id: "accounting", name: "Comptabilité", description: "Suivi bancaire, bilans et rapports financiers automatisés.", icon: BarChart3, color: "#dc2626", category: "finance", isInstalled: false },
-  { id: "hr", name: "Employés / RH", description: "Gestion des contrats, présences et fiches de paie.", icon: Users, color: "#7c3aed", category: "human_resources", isInstalled: true },
-  { id: "invoicing", name: "Facturation", description: "Édition de factures clients et suivi des paiements.", icon: FileText, color: "#06b6d4", category: "finance", isInstalled: true },
-  { id: "purchase", name: "Achats", description: "Gestion des appels d'offres et commandes fournisseurs.", icon: Truck, color: "#ea580c", category: "operations", isInstalled: false },
-]
-
-const CATEGORIES = [
-  { id: "all", name: "Tous les modules" },
-  { id: "sales", name: "Ventes & CRM" },
-  { id: "operations", name: "Opérations & Logistique" },
-  { id: "finance", name: "Finances & Factures" },
+const ALLCATEGORIE = [
+     { id: "all", name: "Tous les modules" },
 ]
 
 export default function AppsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
+  const { data: plugins = [], isLoading, isError, error, refetch } = useGetSessionPlugins()
+  const {data: categories = [], isCategoriesLoading, isCategoriesError, categorieserror, categoriesrefetch} = useGetPluginCategories()
+  const CATEGORIES = [...ALLCATEGORIE, ...categories]  
   const navigate = useNavigate()
 
   const handleLaunchApp = (appId) => {
     navigate(`/apps/${appId}`)
   }
-
-  const filteredApps = AVAILABLE_PLUGINS.filter((app) => {
+  // console.log(categories)
+  const filteredApps =  plugins.filter((app) => {
     const matchesSearch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           app.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = selectedCategory === "all" || app.category === selectedCategory

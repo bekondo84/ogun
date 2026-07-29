@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Download, ArrowUpRight } from "lucide-react"
 
 export default function AppCard({ app, onLaunch }) {
-  const { id, name, description, icon: Icon, color, isInstalled } = app
+  const { id, name, description, icon: Icon, color, install } = app
 
   return (
     <Card className="border border-slate-200 bg-white shadow-sm hover:shadow-md transition-all rounded-lg overflow-hidden group">
@@ -31,12 +31,12 @@ export default function AppCard({ app, onLaunch }) {
         {/* Pied de la carte : Actions de chargement / installation style Odoo */}
         <div className="pt-2 flex items-center justify-between border-t border-slate-50 text-xs">
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-            isInstalled ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+            install ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
           }`}>
-            {isInstalled ? "Installé" : "Disponible"}
+            {install ? "Installé" : "Disponible"}
           </span>
 
-          {isInstalled ? (
+          {install ? (
             <Button 
               onClick={() => onLaunch(id)}
               size="sm" 
