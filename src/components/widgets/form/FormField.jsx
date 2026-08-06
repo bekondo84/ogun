@@ -4,17 +4,27 @@ import TextArea from "@/components/widgets/form/fields/TextArea"
 import Selection from "@/components/widgets/form/fields/Selection"
 import Toggle from "@/components/widgets/form/fields/Toggle"
 import FileUpload from "@/components/widgets/form/fields/FileUpload"
-import ManyToManyList from "./fields/ManyToManyList"
+import ManyToMany from "@/components/widgets/form/fields/ManyToMany"
+import ManyToOne from "@/components/widgets/form/fields/ManyToOne"
+import OneToMany from "@/components/widgets/form/fields/OneToMany"
 
 export default function FormField({ field, value, onChange, disabled }) {
-  switch (field.type) {
+  switch (field.widget) {
     case "text":
-    case "password":
-    case "number":
-    case "date":
-    case "time":
-    case "datetime-local":
+    case "number":    
       return <BaseInput field={field} value={value} onChange={onChange} disabled={disabled} />
+    
+    case "password":
+       return <BaseInput field={field} type='password' value='...' onChange={onChange} disabled={disabled} />
+    
+    case "date":
+       return <BaseInput field={field} type='date' value={value && typeof value === 'string' ? value.substring(0, 16) : (value || "")} onChange={onChange} disabled={disabled} />
+    
+    case "datetime-local":
+       return <BaseInput field={field} type='datetime-local' value={value && typeof value === 'string' ? value.substring(0, 16) : (value || "")} onChange={onChange} disabled={disabled} />
+
+    case "time":
+       return <BaseInput field={field} type='time' value={value && typeof value === 'string' ? value.substring(0, 16) : (value || "")} onChange={onChange} disabled={disabled} />
 
     case "textarea":
     case "editor":
@@ -23,7 +33,7 @@ export default function FormField({ field, value, onChange, disabled }) {
 
     case "select":
     case "manytoone":
-      return <Selection field={field} value={value} onChange={onChange} disabled={disabled} />
+      return <ManyToOne field={field} value={value} onChange={onChange} disabled={disabled} />
 
     case "switch":
     case "checkbox":
@@ -34,9 +44,12 @@ export default function FormField({ field, value, onChange, disabled }) {
     case "media":
       return <FileUpload field={field} value={value} onChange={onChange} disabled={disabled} />
 
-    case "onetomany":
+    case "manytomany":
     case "manytomanylist":
-      return <ManyToManyList field={field} value={value} onChange={onChange} disabled={disabled}/>
+      return <ManyToMany field={field} value={value} onChange={onChange} disabled={disabled}/>
+
+    case "onetomany":
+      return <OneToMany field={field} value={value} onChange={onChange} disabled={disabled}/>
 
     default:
       return null

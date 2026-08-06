@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import FormSection from "./FormSection"
 import { Calendar, CreditCard, Layers3, MessageSquare } from "lucide-react"
@@ -10,6 +10,11 @@ const STAT_BUTTONS = [
 ]
 
 export default function DynamicForm({ schema, values, onChange, disabled }) {
+
+  useEffect (() => {
+       //console.log('----------------------- /////////// : '+JSON.stringify(schema))
+    }, [schema, values])
+
   return (
     // "shadow-sm border rounded-xl" imite la balise <sheet> d'Odoo
     <div className="w-full space-y-8 bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-6 md:p-8 shadow-sm relative">
@@ -36,7 +41,7 @@ export default function DynamicForm({ schema, values, onChange, disabled }) {
       </div>
 
       {/* Sections Globales */}
-      {schema.sections && schema.sections.map((section, idx) => (
+      {schema.form && schema.form.sections && schema.form.sections.map((section, idx) => (
         <FormSection key={idx} section={section} values={values} onChange={onChange} disabled={disabled} />
       ))}
 

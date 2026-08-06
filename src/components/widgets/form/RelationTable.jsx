@@ -11,11 +11,11 @@ export default function RelationTable({ field, value = [], onChange, disabled })
   }
 
   const handleRemoveRow = (rowId) => {
-    onChange(id, value.filter(row => row.id !== rowId))
+    onChange(id, value.filter(row => row.seqnumber !== rowId))
   }
 
   const handleCellChange = (rowId, colKey, cellVal) => {
-    onChange(id, value.map(row => row.id === rowId ? { ...row, [colKey]: cellVal } : row))
+    onChange(id, value.map(row => row.seqnumber === rowId ? { ...row, [colKey]: cellVal } : row))
   }
 
   return (

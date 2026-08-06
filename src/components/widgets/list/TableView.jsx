@@ -1,6 +1,7 @@
 import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react"
+import { fieldValue } from "@/utils/FieldUtils"
 
 export default function TableView({ 
   columns, 
@@ -10,7 +11,8 @@ export default function TableView({
   onToggleSelectRow, 
   onRowClick,
   sortConfig,
-  onSort    
+  onSort,    
+  isSelectable=true
 }) {
 
   
@@ -18,7 +20,7 @@ export default function TableView({
 
   return (
     // CONTENEUR GLOBAL : Gère le défilement horizontal fluide sur petit écran
-    <div className="w-full overflow-x-auto bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+    <div className="w-full overflow-x-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
       
       {/* CORRECTION 'table-auto' : Laisse le navigateur calculer l'espace nécessaire et évite la superposition */}
       <table className="w-full min-w-[800px] text-left border-collapse text-xs select-none table-auto">
@@ -27,9 +29,11 @@ export default function TableView({
         <thead className="bg-slate-50/70 dark:bg-slate-950/40 backdrop-blur-sm text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 font-semibold tracking-wide">
           <tr>
             {/* Colonne Checkbox avec taille fixe stricte en px */}
-            <th className="p-3.5 w-[48px] min-w-[48px] max-w-[48px] text-center align-middle">
-              <Checkbox checked={isAllSelected} onCheckedChange={onToggleSelectAll} />
-            </th>
+            {isSelectable && (
+                 <th className="p-3.5 w-[48px] min-w-[48px] max-w-[48px] text-center align-middle">
+                  <Checkbox checked={isAllSelected} onCheckedChange={onToggleSelectAll} />
+                </th>            
+            )}
             {columns.map((col) => {
               const isSorted = sortConfig?.key === col.fieldName
               const isAsc = sortConfig?.direction === "asc"
@@ -70,22 +74,24 @@ export default function TableView({
             return (
               <tr 
                 key={row.seqnumber} 
-                onDoubleClick={() => onRowClick(row.seqnumber)}
+                onDoubleClick={() => onRowClick(row)}
                 className={`transition-colors cursor-pointer group/row ${
                   isSelected 
                     ? "bg-purple-50/40 dark:bg-purple-950/10 hover:bg-purple-50/60 dark:hover:bg-purple-950/20" 
                     : "hover:bg-slate-50/60 dark:hover:bg-slate-800/30"
                 }`}
               >
-                <td className="p-3.5 text-center align-middle" onClick={(e) => e.stopPropagation()}>
-                  <Checkbox checked={isSelected} onCheckedChange={() => onToggleSelectRow(row.seqnumber)} />
-                </td>
+                {isSelectable && (
+                   <td className="p-3.5 text-center align-middle" onClick={(e) => e.stopPropagation()}>
+                    <Checkbox checked={isSelected} onCheckedChange={() => onToggleSelectRow(row.seqnumber)} />
+                  </td>                
+                )}
                 {columns.map((col) => {
-                  const cellValue =  row[col.fieldName]===null ? row[col.fieldName] : (typeof row[col.fieldName] === 'object' ? row[col.fieldName]['stringValue'] : row[col.fieldName])
+                  const cellValue =  fieldValue(col, row)//row[col.fieldName]===null ? row[col.fieldName] : (typeof row[col.fieldName] === 'object' ? row[col.fieldName]['stringValue'] : row[col.fieldName])
                   return (
                     <td 
                       key={col.seqnumber} 
-                      className={`p-3.5 align-middle ${col.align === "right" ? "text-right" : "text-left"} ${col.className || ""}`}
+                      className={`p-3.5 align-middle ${col.widget === 'number' ? "text-rigth" : "text-left"} ${col.className || ""}`}
                       // Sécurité : Applique la largeur max définie dans les métadonnées si elle existe
                       style={{ maxWidth: col.width || "300px" }}
                     >

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import DynamicForm from "@/components/widgets/form/DynamicForm"
 import { Button } from "@/components/ui/button"
 import { 
@@ -9,71 +9,24 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ChevronRight, Settings2, Copy, Trash2, Archive } from "lucide-react"
 
-const CRM_FORM_SCHEMA = {
-  sections: [
-    {
-      title: "Informations Générales",
-      fields: [
-        { id: "name", label: "Intitulé de l'Opportunité", type: "text", placeholder: "Ex: Contrat Licences de maintenance", required: true },
-        { id: "customer_id", label: "Client lié (Many2One)", type: "manytoone", placeholder: "Choisir un client...", options: [{ value: "1", label: "Alstom France" }, { value: "2", label: "TotalEnergies" }] },
-        { id: "expected_revenue", label: "Chiffre d'Affaires Estimé", type: "number", placeholder: "0.00" },
-        { id: "closing_date", label: "Date de clôture prévue", type: "date" }
-      ]
-    }
-  ],
-  tabs: [
-    {
-      id: "details",
-      label: "Fiche Descriptif & Média",
-      sections: [
-        {
-          title: "Pièces jointes & Authentification",
-          fields: [
-            { id: "contract_file", label: "Cahier des charges (File)", type: "file" },
-            { id: "secure_pass", label: "Code d'accès sécurisé", type: "password", placeholder: "••••••••" },
-            { id: "is_approved", label: "Approuvé par la direction", type: "switch" }
-          ]
-        },
-        {
-          title: "Description enrichie",
-          fields: [
-            { id: "internal_notes", label: "Notes de négociation (Editor)", type: "editor", placeholder: "Saisir les retours du client..." }
-          ]
-        }
-      ]
-    },
-    {
-      id: "lines",
-      label: "Lignes de Devis (ManyToManyList)",
-      sections: [
-        {
-          fields: [
-            { 
-              id: "order_lines", 
-              label: "Articles du Devis", 
-              type: "manytomanylist",
-              relationColumns: [
-                { key: "product", label: "Article / Produit", type: "text" },
-                { key: "qty", label: "Quantité", type: "number" },
-                { key: "price", label: "Prix Unitaire (€)", type: "number" }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-
 export default function FormDataModule({
+         metadata,
+         item,
+         setFormValues,
          onSave,
          onCancel
 }) {
-  const [formValues, setFormValues] = useState({ name: "Déploiement Nexus Cloud", customer_id: "1", expected_revenue: "45000", is_approved: true })
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
 
-  const handleFieldChange = (fieldId, value) => {
-    setFormValues(prev => ({ ...prev, [fieldId]: value }))
+  useEffect (() => {
+     
+  }, [metadata, item])
+  const handleFieldChange = (field, value) => {
+    //console.log('Handle change of field ---- : '+field+' --------------- value : '+value)
+    if (field) {
+       setFormValues(prev => ({ ...prev, [field?.fieldName]: value }))
+    }
+     
   }
 
   return (
@@ -95,7 +48,7 @@ export default function FormDataModule({
             {/* ✨ NOUVEAU : Menu Déroulant Actions Contextuelles */}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 border border-slate-200 text-slate-700 dark:text-slate-300 gap-1.5 cursor-pointer text-xs rounded-md">
+                <Button  variant="ghost" size="sm" className="h-8 border border-slate-200 text-slate-700 dark:text-slate-300 gap-1.5 cursor-pointer text-xs rounded-md">
                     <Settings2 className="h-3.5 w-3.5 text-slate-400" />
                     <span>Actions</span>
                 </Button>
@@ -135,7 +88,7 @@ export default function FormDataModule({
         </div>
 
         {/* Rendu automatique du formulaire */}
-        <DynamicForm schema={CRM_FORM_SCHEMA} values={formValues} onChange={handleFieldChange} disabled={false} />
+        <DynamicForm schema={metadata?.editorarea} values={item} onChange={handleFieldChange} disabled={false} />
         </div>
     </div>
   )

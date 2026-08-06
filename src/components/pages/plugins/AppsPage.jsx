@@ -42,7 +42,7 @@ export default function AppsPage() {
         categories={CATEGORIES}
       />
 
-      <main className="flex-1 p-6 md:p-10 max-w-7xl w-full mx-auto space-y-6  overflow-y-auto">
+      <main className="flex-1 p-6 md:p-10 max-w-none w-full mx-auto space-y-6  overflow-y-auto">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Applications disponibles</h2>
           <p className="text-xs text-slate-500">Cliquez sur un module pour charger l'environnement de travail.</p>

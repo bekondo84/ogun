@@ -67,7 +67,7 @@ export default function ListDataModule({
         onRefresh={onRefresh}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto overflow-y-auto">
+      <main className="flex-1 max-w-none w-full mx-auto overflow-y-auto">
         {isLoading ? (
           <TableSkeleton 
              rowsCount={items?.length}

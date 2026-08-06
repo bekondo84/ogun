@@ -63,19 +63,10 @@ export default function PluginFormPage() {
     if (page !== null) {
        pageNumer = page;
     }
-    console.log('-----------------------------! '+currentPage)
+    //console.log('-----------------------------! '+currentPage)
     try {
       if (metadata !== null) {
-          const response = await executedPostMethod(metadata.action, "fetchitems", {
-          startIndex: (pageNumer-1) * metadata.pageSize,
-          pageSize: metadata.pageSize,
-          class: metadata.type,
-          predicates: predicat,
-          sort:sortrules
-        });
-        setData(response)
-        setTotalPages(Math.ceil(response.nbreofitems / metadata.pageSize))
-        setCurrentPage(pageNumer)    
+         await fetchData (pageNumer, metadata)    
       }
     } catch (error) {
       console.error("Erreur de récupération :", error);
@@ -83,26 +74,52 @@ export default function PluginFormPage() {
       setIsLoading(false);
     }
   }
-  const handleCancel = () => {
-    setViewType("list")
+  const handleCancel = async() => {
+     setIsLoading(true)
+
+     try {
+         await fetchData(currentPage, metadata)
+         setViewMode("list")
+     } catch (error) {
+        console.error("Erreur de récupération :", error);
+     } finally {
+       setIsLoading(false)
+     }
   }
 
-  const handleSelected = (recordId) => {
+  const handleSelected = async(record) => {
 
-    if (selectedIds.includes(recordId)) {
-            selectedIds.splice(selectedIds.indexOf(recordId), 1)
-    } else {
-       selectedIds.push(recordId)
-    }
-    
+    if (metadata !== null && activeMenu.viewMode.includes('view')) {
+      //var item = data.data.filter(d => d.seqnumber == record.seqnumber)[0]
+      const response = await executedPostMethod(metadata.action, "fetchitem", {
+          data: record,
+          plugin: null,
+          class: metadata.type
+      })
+      setData(response.data)
+      setViewMode('view')
+      //console.log('----------Vous avez selectionner : '+JSON.stringify(response.data))
+    }  
   }
 
   const handleSave = () => {
     alert(`Données sauvegardées !`)
   }
 
-  const handleOnCreate = () => {
-    setViewType("form")
+  const handleOnCreate = async() => {
+    setIsLoading(true)
+    try {
+      setViewMode("view")
+      const response = await executedPostMethod(metadata.action, "create", {
+          class: metadata.type
+      })
+      setData(response.data)
+    } catch (error) {
+      console.error("Erreur de récupération :", error);
+    } finally {
+      setIsLoading(false)
+    }
+    
   }
 
   const handleOnDelete = (indexs) => {
@@ -110,6 +127,17 @@ export default function PluginFormPage() {
     alert("delete ids : " + indexs)
   }
 
+  const fetchData = async(page, meta) => {
+       setCurrentPage(page)
+      const response = await executedPostMethod(meta.action, "fetchitems", {
+        startIndex:(page - 1) * meta.pageSize,
+        pageSize : meta.pageSize,
+        predicates : [],
+        class : meta.type
+      })
+      setData(response)
+      setTotalPages(Math.ceil(response.nbreofitems / meta.pageSize))
+  }
   // Déclencheur lors d'un clic sur le menu ou sous-menu récursif
   const handleMenuChange = async (menuObject) => {
     //console.log(menuObject)
@@ -124,21 +152,13 @@ export default function PluginFormPage() {
     
     if (meta !== null) {
       setMetadata (meta)
-      setCurrentPage(1)
-      const response = await executedPostMethod(meta.action, "fetchitems", {
-        startIndex:0,
-        pageSize : meta.pageSize,
-        predicates : [],
-        class : meta.type
-      })
-      setData(response)
-      setTotalPages(Math.ceil(response.nbreofitems / meta.pageSize))
+      await fetchData(1, meta)
     }
     //console.log (data)
     
     setActiveMenu(menuObject)
     const targetView = menuObject.viewMode.split(',')[0]
-    console.log("Changement de vue ERP : " +menuObject.viewMode)
+    //console.log("Changement de vue ERP : " +menuObject.viewMode)
     setViewMode(targetView)
     setAllowedViews(menuObject.viewMode)
     
@@ -175,10 +195,10 @@ export default function PluginFormPage() {
       {/* Zone principale figée (Désactivation du scroll principal de la page) */}
       <main className="flex-1 bg-slate-50 dark:bg-slate-950 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-0 md:p-0 scrollbar-thin">
-          <div className="max-w-7xl w-full mx-auto animate-in fade-in duration-150">
+          <div className="max-w-none w-full mx-auto animate-in fade-in duration-150">
             
               {metadata && (
-                viewType !== "form"  ? (
+                viewMode !== "view"  ? (
                 <ListFormPage
                   predicates={predicates}
                   setPredicates={setPredicates} 
@@ -201,6 +221,9 @@ export default function PluginFormPage() {
                 />
               ) : (
                 <FormPage 
+                  metadata={metadata}
+                  item={data}
+                  setFormValues={setData}
                   onSave={handleSave}
                   onCancel={handleCancel} 
                 />
