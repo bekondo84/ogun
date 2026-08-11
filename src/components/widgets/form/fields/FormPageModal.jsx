@@ -30,6 +30,7 @@ export default function FormPagesModal({ isOpen, onClose, metadata, initialData,
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent  className="w-full sm:max-w-4xl text-xs max-h-[90vh] flex flex-col"
+         onPointerDownOutside={(e) => e.preventDefault()} // Bloque le clic souris basique
          onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="text-sm font-semibold text-slate-800 dark:text-slate-200">

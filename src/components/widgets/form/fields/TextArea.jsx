@@ -1,7 +1,7 @@
 import React from "react"
 import FieldLabel from "./FieldLabel"
 
-export default function TextArea({ field, value, onChange, disabled }) {
+export default function TextArea({ field, value, error, onChange, disabled }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 w-full col-span-2 min-h-[70px]">
       <FieldLabel id={field.id} label={field.label} required={field.required} />

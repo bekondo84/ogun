@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Toaster } from 'sonner'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
@@ -12,18 +13,21 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-     <BrowserRouter>
-      <Routes>
-        {/* Route par défaut : Page de connexion */}
-        <Route path="/" element={<LoginPage />} />
-        
-        {/* Route après connexion : Tableau de bord des applications */}
-        <Route path="/apps" element={<AppsPage />} />
+    <>
+      <Toaster position="top-right" richColors closeButton duration={4000} />
+      <BrowserRouter>
+        <Routes>
+          {/* Route par défaut : Page de connexion */}
+          <Route path="/" element={<LoginPage />} />
+          
+          {/* Route après connexion : Tableau de bord des applications */}
+          <Route path="/apps" element={<AppsPage />} />
 
-        <Route path="/apps/:id" element={<PluginFormPage />} />
+          <Route path="/apps/:id" element={<PluginFormPage />} />
 
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </>
   )
 }
 

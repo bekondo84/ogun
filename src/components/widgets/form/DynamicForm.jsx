@@ -9,7 +9,7 @@ const STAT_BUTTONS = [
   { id: "tasks", label: "Tâches", value: "12", icon: Layers3 },
 ]
 
-export default function DynamicForm({ schema, values, onChange, disabled }) {
+export default function DynamicForm({ schema, values, errors, onChange, disabled, editMode }) {
 
   useEffect (() => {
        //console.log('----------------------- /////////// : '+JSON.stringify(schema))
@@ -42,7 +42,14 @@ export default function DynamicForm({ schema, values, onChange, disabled }) {
 
       {/* Sections Globales */}
       {schema.form && schema.form.sections && schema.form.sections.map((section, idx) => (
-        <FormSection key={idx} section={section} values={values} onChange={onChange} disabled={disabled} />
+        <FormSection 
+            key={idx} 
+            section={section} 
+            values={values} 
+            errors={errors}
+            onChange={onChange} 
+            disabled={disabled}
+            editMode={editMode} />
       ))}
 
       {/* 🚀 CORRECTION : Rendu des Onglets Style Notebook Odoo */}
@@ -66,7 +73,7 @@ export default function DynamicForm({ schema, values, onChange, disabled }) {
           {schema.tabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="space-y-6 outline-none focus:ring-0 pt-2 animate-in fade-in-50 duration-200">
               {tab.sections.map((section, idx) => (
-                <FormSection key={idx} section={section} values={values} onChange={onChange} disabled={disabled} />
+                <FormSection key={idx} section={section} values={values} errors={errors} onChange={onChange} disabled={disabled} />
               ))}
             </TabsContent>
           ))}

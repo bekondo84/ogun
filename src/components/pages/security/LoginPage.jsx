@@ -38,6 +38,7 @@ export default function LoginPage() {
         onError: (error) => {
           // Formatage du message d'erreur provenant de votre API REST
           const apiError = error.response?.data?.message || "Identifiants ou Mot de passe incorrects."
+          console.log('----------------- : '+JSON.stringify(error))
           setErrorMessage(apiError)
         }
       }

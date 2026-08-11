@@ -15,8 +15,10 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
   const [columns, setColumns] = useState([])
 
   useEffect(() => {
-       setMetadata(field?.meta || null)
-       setColumns(metadata?.listView?.columns?.filter(col => col.show) || [])
+       const meta = field?.meta || null
+       setMetadata(meta)
+       setColumns(meta?.listView?.columns?.filter(col => col.show) || [])
+      // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! '+JSON.stringify(meta?.listView?.columns?.filter(col => col.show)))
   }, [field, value])
   //const metadata = field?.meta || null
   //const columns = metadata?.listView?.columns?.filter(col => col.show) || []

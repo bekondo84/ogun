@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Settings2, MoreHorizontal, Download, FileText } from "lucide-react"
 
-export default function ActionsDropdown() {
+export default function ActionsDropdown({
+     metadata,
+     onAction}) {
   const [isOpen, setIsOpen] = useState(false)
   const actionsRef = useRef(null)
 

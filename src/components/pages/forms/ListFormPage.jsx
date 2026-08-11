@@ -20,7 +20,8 @@ export default function ListDataModule({
   onCreate,
   onDelete,
   onSelected,
-  onRefresh
+  onRefresh,
+  onAction
 }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedIds, setSelectedIds] = useState([])
@@ -65,6 +66,7 @@ export default function ListDataModule({
         totalPages={totalPages}
         onPageChange={(page) => handlePageChange(page)}
         onRefresh={onRefresh}
+        onAction={onAction}
       />
 
       <main className="flex-1 max-w-none w-full mx-auto overflow-y-auto">

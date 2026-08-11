@@ -5,7 +5,7 @@ import SearchMoreModal from "./SearchMoreModal"
 import { Search, ChevronDown, Loader2, X } from "lucide-react"
 import { executedPostMethod } from "@/axios/DataService"
 
-export default function ManyToOneInput({ field, value, onChange, disabled /*, onSearch, onFindById */}) {
+export default function ManyToOneInput({ field, value, error, onChange, disabled /*, onSearch, onFindById */}) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [suggestions, setSuggestions] = useState([])

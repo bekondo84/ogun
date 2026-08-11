@@ -2,10 +2,10 @@ import React, { useEffect } from "react"
 import FormField from "./FormField"
 import RelationTable from "./RelationTable"
 
-export default function FormSection({ section, values, onChange, disabled }) {
+export default function FormSection({ section, values, errors, onChange, disabled, editMode }) {
 
   useEffect (() => {
-           //console.log('----------------------- /++++++ : '+JSON.stringify(section)+' ------- : '+values)
+           //console.log('----------------------- /++++++ : '+JSON.stringify(errors)+' ------- : '+values)
         }, [section, values])
 
     const gridColumnsMap = {
@@ -28,8 +28,25 @@ export default function FormSection({ section, values, onChange, disabled }) {
       {/* Espacement horizontal large pour séparer proprement la colonne de gauche de celle de droite */}
       <div className={`grid grid-cols-1 ${gridClass} gap-x-12 gap-y-3`}>
         {section.fields.map((field) => {
-          return <FormField key={field.fieldName} field={field} value={values[field.fieldName]} onChange={onChange} disabled={disabled} />
+          return <FormField 
+             key={field.fieldName} 
+             field={field} 
+             value={values[field.fieldName]} 
+             error={errors}
+             onChange={onChange} 
+             disabled={disabled} 
+             editMode={editMode}/>
         })}
+        {section.sections.map((sec, idx) => (
+            <FormSection 
+               key={idx} 
+               section={sec} 
+               values={values} 
+               errors={errors}
+               onChange={onChange} 
+               disabled={disabled} 
+               editMode={editMode}/>
+        ))}
       </div>
     </div>
   )

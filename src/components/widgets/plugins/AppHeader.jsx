@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Search, LayoutGrid, User, LogOut, Info, Settings, Filter, ChevronDown, Check } from "lucide-react"
+import LoginWidget from "@/components/pages/security/LoginWidget"
 
 // --- COMPOSANT CORRIGÉ ---
 export default function AppHeader({ 
@@ -20,11 +21,11 @@ export default function AppHeader({
 }) {
   const currentCategoryName = categories.find(c => c.id === selectedCategory)?.name || "Filtrer"
 
-  const navigate = useNavigate() // ✨ Initialisation du routeur
+  const navigate = useNavigate() 
 
   const handleLogout = () => {
     // Nettoyez ici d'éventuels tokens de session plus tard
-    navigate("/") // ✨ Redirection vers l'écran de connexion
+    navigate("/") 
   }
 
 
@@ -61,16 +62,7 @@ export default function AppHeader({
       </div>
 
       {/* 3. User Menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">JD</DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 p-1">
-          {/* 💡 Correction : div à la place de DropdownMenuLabel */}
-          <div className="px-2 py-1.5 text-sm font-medium text-slate-900">John Doe<p className="text-xs text-slate-500">j.doe@entreprise.com</p></div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem><User className="mr-2 h-4 w-4" />Mon Compte</DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLogout}><LogOut className="mr-2 h-4 w-4 text-red-600" /><span className="text-red-600">Se déconnecter</span></DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <LoginWidget  />
     </header>
   )
 }

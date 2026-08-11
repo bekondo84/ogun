@@ -1,12 +1,15 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import FieldLabel from "./FieldLabel"
 
-export default function BaseInput({ field, type, value, onChange, disabled }) {
+export default function BaseInput({ field, type, value, error, onChange, disabled }) {
+
+  const [hasError, setHasError] = useState(false)
 
   useEffect (() => {
-        // console.log('----------------------- /++++++ : '+JSON.stringify(field)+' ------- : '+value)
-      }, [field, value])
+        console.log('----------------------- /++++++ : '+JSON.stringify(error)+' ------- : '+value)
+        setHasError(!!error[field.fieldName])
+      }, [field, value, error])
 
   return (
     <div className="flex flex-row items-center gap-4 w-full min-h-[44px]">
@@ -24,6 +27,11 @@ export default function BaseInput({ field, type, value, onChange, disabled }) {
           className="h-8 text-xs border-t-0 border-l-0 border-r-0 border-b border-slate-200/80 bg-transparent focus-visible:ring-0 focus-visible:border-purple-600 rounded-none shadow-none px-0 transition-all dark:border-slate-800 w-full"
           required={field.mandatory}
         />
+        {hasError && (
+                <span className="text-[11px] text-red-500 font-medium animate-in fade-in duration-150">
+                  {error[field.fieldName]}
+                </span>
+              )}
       </div>
     </div>
   )
