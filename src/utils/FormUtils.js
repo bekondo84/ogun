@@ -8,7 +8,7 @@ export const validateForm = (formData, columns = []) => {
   columns.forEach((col) => {
     const value = formData[col.fieldName];
     const isRequired = col.mandatory;
-    //console.log('-------'+value+' --------- '+col.fieldName+' ----- '+isRequired)
+    console.log('-------'+value+' --------- '+col.fieldName+' ----- '+isRequired+' *********')
     // 1. Vérification des champs obligatoires
     if (isRequired && (value === undefined || value === null || String(value).trim() == "")) {
       newErrors[col.fieldName] = `Le champ "${col.label || col.fieldName}" est obligatoire.`;

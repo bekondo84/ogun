@@ -64,7 +64,7 @@ export default function MediaField({
   }
 
   return (
-    // 🚀 Utilisation de widthClass pour contrôler la largeur du bloc entier
+    //Utilisation de widthClass pour contrôler la largeur du bloc entier
     <div className={`flex flex-col gap-1.5 ${widthClass}`}>
       
       <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
@@ -80,7 +80,7 @@ export default function MediaField({
         className="hidden"
       />
 
-      {/* 🚀 Injection dynamique de heightClass pour contrôler la hauteur de la zone */}
+      {/* Injection dynamique de heightClass pour contrôler la hauteur de la zone */}
       <div 
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -122,7 +122,7 @@ export default function MediaField({
             <div className="p-2 bg-slate-100 dark:bg-slate-900 rounded-xl text-slate-400 group-hover:text-purple-600 transition-colors">
               <UploadCloud className="h-4 w-4" />
             </div>
-            {/* 🚀 Masquage intelligent du sous-texte sur les très petits formats de hauteur (ex: h-24) */}
+            {/* Masquage intelligent du sous-texte sur les très petits formats de hauteur (ex: h-24) */}
             <div className="space-y-0.5 max-w-[90%]">
               <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 line-clamp-2">
                 Glissez ou <span className="text-purple-700 dark:text-purple-400 font-bold">parcourez</span>

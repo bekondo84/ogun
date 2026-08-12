@@ -49,7 +49,7 @@ export default function ListDataModule({
   return (
     <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-950 flex flex-col antialiased">
       <DataControls
-        title={metadata.formViewTitle}
+        title={metadata.listViewTitle}
         columns={columns}
         allowedViews={allowedViews}
         metadata={metadata}

@@ -7,11 +7,12 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
-import { ChevronRight, Settings2, Copy, Trash2, Archive } from "lucide-react"
+import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft } from "lucide-react"
 import FormPageSkeleton from "../skeletons/FormPageSkeleton"
 import { validateForm } from "@/utils/FormUtils"
-import { data } from "react-router-dom"
 import { toast } from "sonner"
+import FormHeaderTitle from "@/components/widgets/form/FormHeaderTitle"
+import FormHeaderAction from "@/components/widgets/form/FormHeaderAction"
 
 export default function FormDataModule({
          metadata,
@@ -25,24 +26,23 @@ export default function FormDataModule({
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
 
-  useEffect (() => {
-     
+  useEffect(() => {
+     // Réinitialisation des erreurs lors du changement de fiche
+     setErrors({})
   }, [metadata, item])
+
   const handleFieldChange = (field, value) => {
-    //console.log('Handle change of field ---- : '+field+' --------------- value : '+value)
     setFormValues(prev => ({ ...prev, [field?.fieldName]: value }))
     
-    if (errors[fieldName]) {
-        setErrors(prev => ({ ...prev, [field?.fieldName]:null }))
+    if (errors[field?.fieldName]) {
+        setErrors(prev => ({ ...prev, [field?.fieldName]: null }))
     }     
   }
 
   const handleSubmit = async (mode, item) => {
-
     if (mode) {
-        const columns = metadata?.listView?.columns || [];
-       const formErrors = validateForm(data, columns)
-       //console.log('----------- '+mode+'----------------- '+JSON.stringify(formErrors))
+       const columns = metadata?.listView?.columns || [];
+       const formErrors = validateForm(item, columns)
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors)
             toast.warning("Formulaire invalide", {
@@ -51,83 +51,29 @@ export default function FormDataModule({
             return
         }
     }
-
-    //onSave(mode, item)
+    onSave(mode, item)
   }
 
   return (
     <div className="h-screen w-full bg-slate-100 dark:bg-slate-950 flex flex-col antialiased">
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 text-xs ">
-        
-        {/* 🛠️ BARRE STATUSBAR COMBINÉE (Style Odoo 17 Enterprise) */}
-        <div className="bg-white dark:bg-slate-900 px-6 py-2 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between flex-shrink-0 gap-3 z-10 shadow-sm">
-            
-            {/* Actions système de gauche */}
-            <div className="flex items-center gap-2">
-                {editMode && (
-                   <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
-                    Sauvegarder
-                </Button>
-                )} 
-                {!editMode && (
-                   <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
-                    Modifier
-                </Button>
-                )}                
-                <Button onClick={() => onCancel()} variant="outline" size="sm" className="h-8 text-slate-600 text-xs rounded-md cursor-pointer">
-                    Annuler
-                </Button>
-
-                {/* ✨ NOUVEAU : Menu Déroulant Actions Contextuelles */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                    <Button  variant="ghost" size="sm" className="h-8 border border-slate-200 text-slate-700 dark:text-slate-300 gap-1.5 cursor-pointer text-xs rounded-md">
-                        <Settings2 className="h-3.5 w-3.5 text-slate-400" />
-                        <span>Actions</span>
-                    </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-44 p-1">
-                    <DropdownMenuItem onClick={() => alert("Duplication")} className="cursor-pointer gap-2 text-xs"><Copy className="h-3.5 w-3.5 text-slate-500" /> Dupliquer la fiche</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => alert("Archivage")} className="cursor-pointer gap-2 text-xs"><Archive className="h-3.5 w-3.5 text-slate-500" /> Archiver la fiche</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => alert("Suppression")} className="cursor-pointer gap-2 text-xs text-red-600 focus:text-red-700 focus:bg-red-50"><Trash2 className="h-3.5 w-3.5" /> Supprimer</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-
-            {/* ✨ NOUVEAU : Fil d'Ariane d'étapes (Stages workflow) à droite */}
-            <div className="flex items-center border border-slate-100 dark:border-slate-800 rounded-md overflow-hidden bg-slate-50/50 dark:bg-slate-950 font-medium text-[11px]">
-            <button 
-                onClick={() => setCurrentStage("new")}
-                className={`px-3 py-1.5 transition-colors cursor-pointer ${currentStage === "new" ? "bg-purple-700 text-white font-bold" : "text-slate-500 hover:bg-slate-100"}`}
-            >
-                Nouveau
-            </button>
-            <div className="flex items-center text-slate-300 bg-white dark:bg-slate-900 px-0.5"><ChevronRight className="h-3 w-3" /></div>
-            <button 
-                onClick={() => setCurrentStage("in_progress")}
-                className={`px-3 py-1.5 transition-colors cursor-pointer ${currentStage === "in_progress" ? "bg-purple-700 text-white font-bold" : "text-slate-500 hover:bg-slate-100"}`}
-            >
-                En Cours
-            </button>
-            <div className="flex items-center text-slate-300 bg-white dark:bg-slate-900 px-0.5"><ChevronRight className="h-3 w-3" /></div>
-            <button 
-                onClick={() => setCurrentStage("won")}
-                className={`px-3 py-1.5 transition-colors cursor-pointer ${currentStage === "won" ? "bg-emerald-600 text-white font-bold" : "text-slate-500 hover:bg-slate-100"}`}
-            >
-                Gagné
-            </button>
-            </div>
-
+        <FormHeaderTitle item={item} metadata={metadata} onCancel={onCancel} />
+        <FormHeaderAction item={item} editMode={editMode} currentStage={currentStage} handleSubmit={handleSubmit} onCancel={onCancel} setCurrentStage={setCurrentStage} />
+       {/* Zone de contenu scrollable pour le formulaire */}
+        <div className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950 text-xs">
+          {isLoading ? (
+            <FormPageSkeleton />
+          ) : (
+            <DynamicForm 
+              schema={metadata?.editorarea} 
+              values={item} 
+              errors={errors} 
+              onChange={handleFieldChange} 
+              disabled={!editMode} 
+              editMode={editMode}
+            />
+          )}
         </div>
-
-        {/* Rendu automatique du formulaire */}
-        {isLoading ? (
-          <FormPageSkeleton />
-        ):(
-          <DynamicForm schema={metadata?.editorarea} values={item} errors={errors} onChange={handleFieldChange} disabled={!editMode} editMode={editMode}/>
-        )}
         
-        </div>
     </div>
   )
 }

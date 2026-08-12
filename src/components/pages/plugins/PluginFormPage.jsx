@@ -68,7 +68,7 @@ export default function PluginFormPage() {
     //console.log('-----------------------------! '+currentPage)
     try {
       if (metadata !== null) {
-         await fetchData (pageNumer, metadata)    
+         await fetchData (pageNumer, metadata, predicat, sortrules)    
       }
     } finally {
       setIsLoading(false);
@@ -106,7 +106,7 @@ export default function PluginFormPage() {
   }
 
   const handleSave = async(mode, item) => {
-   // console.log('---------------PluginFormPage.handleSave ----------------------- '+JSON.stringify(metadata))
+   console.log('---------------PluginFormPage.handleSave ----------------------- '+mode)
     
     setEditMode(!mode)
     if (mode) {
@@ -147,12 +147,13 @@ export default function PluginFormPage() {
      console.log('----------Dectection of OnAction Event ---------')
   }
 
-  const fetchData = async(page, meta) => {
+  const fetchData = async(page, meta, predicates, sortConf) => {
        setCurrentPage(page)
       const response = await executedPostMethod(meta.action, "fetchitems", {
         startIndex:(page - 1) * meta.pageSize,
         pageSize : meta.pageSize,
-        predicates : [],
+        predicates : !!predicates ? predicates : [] ,
+        sort:sortConf,
         class : meta.type
       })
       setData(response)
@@ -174,7 +175,7 @@ export default function PluginFormPage() {
       
       if (meta !== null) {
         setMetadata (meta)
-        await fetchData(1, meta)
+        await fetchData(1, meta, [], [])
       }
       //console.log (data)
       
