@@ -6,8 +6,9 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
 import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft } from "lucide-react"
+import ActionsDropdown from "../list/ActionsDropdown"
 
-export default function FormHeaderAction ({item, editMode, currentStage, handleSubmit, onCancel, setCurrentStage}) {
+export default function FormHeaderAction ({metadata, item, actions=[], editMode, currentStage, handleSubmit, onCancel, setCurrentStage}) {
 
     // Fonction pour centraliser le changement d'étape et notifier l'utilisateur si besoin
     const handleWorkflowAction = (nextStage) => {
@@ -22,12 +23,12 @@ export default function FormHeaderAction ({item, editMode, currentStage, handleS
                 
                 {/* Actions système de gauche */}
                 <div className="flex items-center gap-2">
-                    {editMode && (
+                    {(editMode === 'U' || editMode === 'C') && (
                        <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
                         Sauvegarder
                        </Button>
                     )} 
-                    {!editMode && (
+                    {editMode === 'V' && (
                        <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
                         Modifier
                        </Button>
@@ -37,19 +38,7 @@ export default function FormHeaderAction ({item, editMode, currentStage, handleS
                     </Button>
 
                     {/* Menu Déroulant Actions Contextuelles */}
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-8 border border-slate-200 text-slate-700 dark:text-slate-300 gap-1.5 cursor-pointer text-xs rounded-md focus-visible:ring-0">
-                              <Settings2 className="h-3.5 w-3.5 text-slate-400" />
-                              <span>Actions</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-44 p-1">
-                          <DropdownMenuItem onClick={() => alert("Duplication")} className="cursor-pointer gap-2 text-xs"><Copy className="h-3.5 w-3.5 text-slate-500" /> Dupliquer la fiche</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => alert("Archivage")} className="cursor-pointer gap-2 text-xs"><Archive className="h-3.5 w-3.5 text-slate-500" /> Archiver la fiche</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => alert("Suppression")} className="cursor-pointer gap-2 text-xs text-red-600 focus:text-red-700 focus:bg-red-50"><Trash2 className="h-3.5 w-3.5" /> Supprimer</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <ActionsDropdown metadata={metadata} actions={actions}/>
                 </div>
 
                 {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}

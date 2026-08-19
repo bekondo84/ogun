@@ -8,6 +8,7 @@ import FormPage from "@/components/pages/forms/FormPage"
 import { Loader2, AlertTriangle } from "lucide-react"
 import { getMeta } from "@/axios/MetaService"
 import { executedPostMethod } from "@/axios/DataService"
+import DashboardPage from "../dashbord/DashboardPage"
 
 export default function PluginFormPage() {
   const { id } = useParams()
@@ -35,20 +36,32 @@ export default function PluginFormPage() {
   const [totalPages, setTotalPages] = useState(0)
   const [viewMode, setViewMode] = useState("list")
   const [allowedViews, setAllowedViews] = useState("")
-  const [editMode, setEditMode] = useState(false)
+  const [editMode, setEditMode] = useState('V')
     
   
   // 🚀 SYNCHRONISATION : Dés que l'API renvoie les menus du serveur, on charge le premier par défaut
   useEffect(() => {
     if (plugin && plugin.menus && plugin.menus.length > 0) {
-      const firstMenu = plugin.menus[0]
-      setActiveMenu(firstMenu)
-      //handleMenuChange (firstMenu)
-      // On utilise le "viewMode" configuré par le serveur (ex: 'list' ou 'form')
-      setViewType(firstMenu.viewMode || "list")
-      setAllowedViews(firstMenu.viewMode)
+      const firstMenu = getFirstMenuItem(plugin.menus[0])
+
+      if (firstMenu) {
+        setActiveMenu(firstMenu)
+        handleMenuChange (firstMenu)
+        // On utilise le "viewMode" configuré par le serveur (ex: 'list' ou 'form')
+        setViewType(firstMenu.viewMode || "list")
+        setAllowedViews(firstMenu.viewMode)
+      }
     }
   }, [plugin])
+
+  const getFirstMenuItem =  (menu) => {
+      if (menu && menu.type) {
+        return menu;
+      } else if (menu.navigations.length > 0) {
+           return getFirstMenuItem(menu.navigations[0])
+      }
+      return null;
+  }
   // Gestion des actions de bascule
   const onRefresh = async (sortConf, predicat, page)  => {
     setIsLoading(true);
@@ -90,7 +103,7 @@ export default function PluginFormPage() {
       try {
          if (metadata !== null && activeMenu.viewMode.includes('view')) {
           setViewMode('view')
-          setEditMode(false)
+          setEditMode('V')
           //var item = data.data.filter(d => d.seqnumber == record.seqnumber)[0]
           const response = await executedPostMethod(metadata.action, "fetchitem", {
               data: record,
@@ -106,10 +119,11 @@ export default function PluginFormPage() {
   }
 
   const handleSave = async(mode, item) => {
-   console.log('---------------PluginFormPage.handleSave ----------------------- '+mode)
-    
-    setEditMode(!mode)
-    if (mode) {
+       
+    if (mode === 'V') {
+       setEditMode('U')
+    }
+    if (mode === 'C' || mode ==='U') {
         try {
           setIsLoading(true)
           const response = await executedPostMethod(metadata.action, "save", {
@@ -118,6 +132,7 @@ export default function PluginFormPage() {
           })
         } finally {
           setIsLoading(false)
+          setEditMode('V')
         }
     }
     
@@ -127,7 +142,7 @@ export default function PluginFormPage() {
     setIsLoading(true)
     try {
       setViewMode("view")
-      setEditMode(true)
+      setEditMode('C')
       const response = await executedPostMethod(metadata.action, "create", {
           class: metadata.type
       })
@@ -139,7 +154,7 @@ export default function PluginFormPage() {
   }
 
   const handleOnDelete = (indexs) => {
-    console.log('--------Detection dune demande de tri'+JSON.stringify(searchConfig))
+   // console.log('--------Detection dune demande de tri'+JSON.stringify(searchConfig))
     alert("delete ids : " + indexs)
   }
 
@@ -231,7 +246,7 @@ export default function PluginFormPage() {
           <div className="max-w-none w-full mx-auto animate-in fade-in duration-150">
             
               {metadata && (
-                viewMode !== "view"  ? (
+                viewMode !== "view" && viewMode !== "dashboard"  ? (
                 <ListFormPage
                   predicates={predicates}
                   setPredicates={setPredicates} 
@@ -253,7 +268,9 @@ export default function PluginFormPage() {
                   onRefresh={onRefresh}
                   onAction={handleOnAction}
                 />
-              ) : (
+              ) : viewMode ==="dashboard" ? (
+                   <DashboardPage metadata={{ type: "global", action: "analytics" }} />
+              ) :(
                 <FormPage 
                   metadata={metadata}
                   item={data}

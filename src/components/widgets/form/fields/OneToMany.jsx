@@ -5,19 +5,24 @@ import FieldLabel from "@/components/widgets/form/fields/FieldLabel"
 import FormPageModal from "@/components/widgets/form/fields/FormPageModal"
 import { executedPostMethod } from "@/axios/DataService"
 import { getMetaFromTypeCode } from "@/axios/MetaService"
+import { TableView } from "../../list"
+import { toast } from "sonner"
 
 export default function OneToMany({ field, value = [], onChange, disabled }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState(null) // null = création, number = édition d'une ligne
   const [selectedRowIndexes, setSelectedRowIndexes] = useState([])
-  const [item, setItem] = useState(null)
+  const [formData, setFormData] = useState({})
   const [metadata, setMetadata] = useState(null)
   const [columns, setColumns] = useState([])
+  //const [selectedIds, setSelectedIds] = useState([])
+  const [sortConfig, setSortConfig] = useState({})
 
   useEffect(() => {
        const meta = field?.meta || null
        setMetadata(meta)
        setColumns(meta?.listView?.columns?.filter(col => col.show) || [])
+       fetchMeta(meta)
       // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! '+JSON.stringify(meta?.listView?.columns?.filter(col => col.show)))
   }, [field, value])
   //const metadata = field?.meta || null
@@ -37,22 +42,33 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
   }
 
   // Gérer la coche unique
-  const handleSelectRow = (index) => {
-    setSelectedRowIndexes(prev => 
-      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
-    )
+  const handleSelectRow = (row) => {
+     setFormData(row)
+     setEditingIndex(null)
+     setIsModalOpen(true)
   }
 
+  const onToggleSelectRow = () => {
+     
+  }
+
+  const handleSort = (columnKey) => {
+  
+  }
   // Action : Enregistrer une ligne (Création ou Modification)
   const handleSaveItem = (itemData) => {
+    //console.log('const handleSaveItem = (itemData) => -------------- '+JSON.stringify(itemData))
     let updatedList = [...value]
     if (editingIndex !== null) {
       // Mode Édition
       updatedList[editingIndex] = itemData
     } else {
-      // Mode Création : Générer un ID temporaire si inexistant pour le composant React
-      const newItem = { ...itemData, id: itemData.id || `tmp_${Date.now()}` }
-      updatedList.push(newItem)
+       var index = updatedList.findIndex(i => i.seqnumber === itemData.seqnumber)
+       if (index >= 0) {
+           updatedList[index] = itemData
+       } else {
+         updatedList.push(itemData)      
+       }
     }
     onChange(field, updatedList)
     setIsModalOpen(false)
@@ -61,33 +77,48 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
 
   // Action : Retirer les lignes cochées du tableau
   const handleRemoveSelected = () => {
-    const updatedList = value.filter((_, index) => !selectedRowIndexes.includes(index))
+    const updatedList = value.filter(item => !selectedRowIndexes.includes(item.seqnumber))
     onChange(field, updatedList)
     setSelectedRowIndexes([])
   }
 
+  const fetchMeta = async (metadata) => {
+      const meta = await getMetaFromTypeCode(metadata.typeCode)
+          
+        if (meta) {
+          setMetadata(meta)
+        }
+  }
+
   const handleNewItem = async() => {
-    if (metadata) {
         try {
+          if (metadata) {
              const response = await executedPostMethod(metadata.action, "create", {
                class: metadata.type
              })      
-             const meta = await getMetaFromTypeCode(metadata.typeCode)
-            setItem(response.data)
+             var data = response.data
+             data.seqnumber = value.length+1 
+            setFormData(data)
+            /**
+            const meta = await getMetaFromTypeCode(metadata.typeCode)
             
             if (meta) {
               setMetadata(meta)
             }
-           // console.log('-----------------------------Metadata : '+JSON.stringify(meta))
-            setEditingIndex(index)
+               */
+            //console.log('-----------------------------Metadata : '+JSON.stringify(meta))
+          }
+            setEditingIndex(null)
              setIsModalOpen(true)
        } catch (error) {
-           console.error("Erreur de récupération :", error);
+           const serverMessage = error?.message
+           toast.error("Echec du chargement", {
+          description: `${serverMessage} (code: ${error?.status || 'Serveur'})`
+        })
        } finally {
 
        }
-    }
-       
+               
   }
   //console.log('--------OneToMany --------------------- '+JSON.stringify(metadata))
   //const columns = metadata?.fields || []
@@ -104,7 +135,7 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => { setEditingIndex(null); setIsModalOpen(true); }}
+              onClick={() => {handleNewItem(); setEditingIndex(null); setIsModalOpen(true); }}
               className="h-8 text-xs font-medium text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/30 border-none gap-1"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -126,74 +157,17 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
 
       {/* Conteneur Grille / Tableau */}
       <div className="w-full overflow-x-auto border border-slate-100 rounded-md dark:border-slate-800">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 font-medium border-b border-slate-100 dark:border-slate-800">
-              {!disabled && (
-                <th className="p-2.5 w-10 text-center">
-                  <input 
-                    type="checkbox" 
-                    onChange={handleSelectAllRows}
-                    checked={value.length > 0 && selectedRowIndexes.length === value.length}
-                    className="rounded border-slate-300 accent-purple-600 cursor-pointer"
-                  />
-                </th>
-              )}
-              {columns.map(col => (
-                <th key={col.fieldName} className="p-2.5 font-semibold uppercase tracking-wider text-slate-400">
-                  {col.label}
-                </th>
-              ))}
-              {!disabled && <th className="p-2.5 w-12 text-center"></th>}
-            </tr>
-          </thead>
-          <tbody>
-            {value?.map((item, index) => (
-              <tr 
-                key={item.id || index}
-                className="border-b border-slate-50 dark:border-slate-800/40 hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors"
-              >
-                {!disabled && (
-                  <td className="p-2.5 text-center">
-                    <input 
-                      type="checkbox"
-                      checked={selectedRowIndexes.includes(index)}
-                      onChange={() => handleSelectRow(index)}
-                      className="rounded border-slate-300 accent-purple-600 cursor-pointer"
-                    />
-                  </td>
-                )}
-                {columns.map(col => (
-                  <td key={col.fieldName} className="p-2.5 text-slate-700 dark:text-slate-300">
-                    {/* Formatage propre si la valeur est une date complexe */}
-                    {typeof item[col.fieldName] === 'string' && item[col.fieldName].includes('T') && item[col.fieldName].length > 16
-                      ? item[col.fieldName].substring(0, 16).replace('T', ' ')
-                      : String(item[col.fieldName] ?? '')}
-                  </td>
-                ))}
-                {!disabled && (
-                  <td className="p-2.5 text-center">
-                    <button
-                      type="button"
-                      onClick={handleNewItem}
-                      className="text-slate-400 hover:text-purple-600 transition-colors"
-                    >
-                      <Edit2 className="h-3.5 w-3.5" />
-                    </button>
-                  </td>
-                )}
-              </tr>
-            ))}
-            
-            {value.length === 0 && (
-              <tr>
-                <td colSpan={columns.length + (disabled ? 0 : 2)} className="p-6 text-center text-slate-400 italic">
-                  Aucun élément dans la table. Cliquez sur "Ajouter une ligne".
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <TableView 
+            columns={columns}
+            data={value} // On injecte les données triées
+            selectedIds={selectedRowIndexes}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            onToggleSelectAll={() => setSelectedRowIndexes(selectedRowIndexes.length === value.length ? [] : value.map(i => i.seqnumber))}
+            onToggleSelectRow={(id) => {setSelectedRowIndexes(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])}}
+            onRowClick={(id) => handleSelectRow(id)}
+            onlineEditable={true}
+            />
       </div>
 
       {/* Modal du Formulaire d'édition dynamique */}
@@ -201,10 +175,12 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
         isOpen={isModalOpen}
         onClose={() => { setIsModalOpen(false); setEditingIndex(null); }}
         metadata={metadata}
-        initialData={handleNewItem}
+        initialData={formData}
+        formData={formData}
+        setFormData={setFormData}
         onSave={handleSaveItem}
         onSearch={onSearch}
-        
+        disabled={disabled}
       />
     </div>
   )

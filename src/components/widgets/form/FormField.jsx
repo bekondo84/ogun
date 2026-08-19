@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import BaseInput from "@/components/widgets/form/fields/BaseInput"
 import TextArea from "@/components/widgets/form/fields/TextArea"
 import Selection from "@/components/widgets/form/fields/Selection"
@@ -11,11 +11,15 @@ import MediaField from "./fields/MediaField"
 import TextAreaField from "./fields/TextAreaField"
 
 export default function FormField({ field, value, error, onChange, disabled, editMode }) {
-  const readonly = disabled || !field?.editable || editMode && !field?.updatable
+
+  useEffect(() => {
+     // console.log('-******************************************* / '+JSON.stringify(editMode))
+  }, [field, value])
+  const readonly = disabled || editMode == 'V' || editMode==='C' && !field?.editable || editMode == 'U' && !field?.updatable
   switch (field.widget) {
     case "text":
     case "number":    
-      return <BaseInput field={field} value={value} error={error} onChange={onChange} disabled={readonly} />
+      return <BaseInput field={field} type={field.widget} value={value} error={error} onChange={onChange} disabled={readonly} />
     
     case "password":
        return <BaseInput field={field} type='password' value='...' error={error} onChange={onChange} disabled={readonly} />
@@ -36,7 +40,7 @@ export default function FormField({ field, value, error, onChange, disabled, edi
 
     case "select":
     case "manytoone":
-      return <ManyToOne field={field} value={value} error={error} onChange={onChange} disabled={readonly} />
+      return <ManyToOne field={field} value={value} error={error} onChange={onChange}  disabled={readonly} />
 
     case "switch":
     case "checkbox":
@@ -51,7 +55,7 @@ export default function FormField({ field, value, error, onChange, disabled, edi
 
     case "manytomany":
     case "manytomanylist":
-      return <ManyToMany field={field} value={value} onChange={onChange} disabled={readonly}/>
+      return <ManyToMany field={field} value={value} onChange={onChange} disabled={readonly} />
 
     case "onetomany":
       return <OneToMany field={field} value={value} onChange={onChange} disabled={readonly}/>

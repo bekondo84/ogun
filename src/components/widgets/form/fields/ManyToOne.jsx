@@ -4,6 +4,7 @@ import FieldLabel from "./FieldLabel"
 import SearchMoreModal from "./SearchMoreModal"
 import { Search, ChevronDown, Loader2, X } from "lucide-react"
 import { executedPostMethod } from "@/axios/DataService"
+import { toast } from "sonner"
 
 export default function ManyToOneInput({ field, value, error, onChange, disabled /*, onSearch, onFindById */}) {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,17 +23,19 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
 
   // 1. Charger le libellé initial depuis le serveur
   useEffect(() => {
-
+    //console.log('-----ManyToOneInput ----------------------------------- :'+JSON.stringify(value))
     if (value && field?.meta) {
       setInputValue(value?.stringValue)
       setSelectedItem(value)
-      setSuggestions([])
+      setSuggestions(value)
     } else {
       setSelectedItem(null)
       setInputValue("")
+      setSuggestions(null)
     }
   }, [value, field /*, onFindById*/])
 
+  
   // 2. Fermer le menu au clic extérieur
   useEffect(() => {
     function handleClickOutside(event) {
@@ -56,15 +59,20 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
     setIsOpen(true)
     try {
       const data = await onSearch(field, searchText, 5)
+      //console.log('--------- fetchSuggestions ----------- : '+JSON.stringify(data))
       setSuggestions(data || [])
     } catch (err) {
-      console.error("Erreur ManyToOne", err)
+      const serverMessage = error?.message
+           toast.error("Echec du chargement", {
+          description: `${serverMessage} (code: ${error?.status || 'Serveur'})`
+        })
     } finally {
       setLoading(false)
     }
   }
 
   const onSearch = async (field, searchText, size) => {
+       //console.log('----------- onSearch = async (field, searchText, size) ------- '+JSON.stringify(field)+' ---- '+field.meta+' ---- '+searchText+' ------ '+size)
        if (field && field.meta) {
            let meta = field.meta
            let predicates = []
@@ -198,6 +206,7 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
       <SearchMoreModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+        initialData={suggestions}
         meta={field?.meta}
         initialCriteria={inputValue} // On passe la saisie en cours à la modal
         onSearch={onSearch}

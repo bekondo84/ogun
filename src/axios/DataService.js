@@ -12,3 +12,22 @@ export async function executedPostMethod(action, method, data) {
     });
     return response.data;
 }
+
+export async function onSearch(field, searchText, size) {
+    if (field && field.meta) {
+               let meta = field.meta
+               let predicates = []
+               if (searchText && searchText.length > 0) {
+                  predicates = [{fieldName:'stringValue', label:'stringValue', type:'java.lang.String', value: searchText, cond: 'LIKE'}] 
+               }
+               const response = await executedPostMethod(meta.action, "fetchitems", {
+                  startIndex: 0,
+                  pageSize: size,
+                  class: meta.type,
+                  predicates: predicates
+               })
+               
+              //console.log('--------onSearch = async (field, searchText, size) ---------- : '+' searchText :  '+searchText+' ----------- '+JSON.stringify(suggestions)+'-------- '+suggestions.length)
+              return response.data 
+           }
+}

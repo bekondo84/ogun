@@ -15,7 +15,8 @@ import MobileMenu from "./MobileMenu"
 import LoginWidget from "@/components/pages/security/LoginWidget"
 
 export default function PluginHeader({ pluginName, menus, activeMenu, setActiveMenu }) {
-  
+  const navigate = useNavigate()
+
   //console.log (menus)
   return (
     <div className="w-full border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-6 py-2 flex items-center justify-between shadow-sm">

@@ -7,6 +7,7 @@ import Pagination from "./Pagination"
 export default function DataControls({
   title = "Menu",
   columns = [],
+  actions = [],
   allowedViews,
   metadata,
   predicates = [],
@@ -48,19 +49,23 @@ export default function DataControls({
       <div className="flex flex-1 max-w-2xl items-start gap-2">
         <ActionsDropdown 
           metadata={metadata}
+          actions={actions}
           onAction={onAction}
         />
         <SmartSearch columns={columns} predicates={predicates} setPredicates={setPredicates}  onRefresh={onRefresh} />
       </div>
 
       {/* SECTION 3 : Pagination & Mode de vue */}
-       <Pagination 
+      {currentPage <= totalPages && (
+          <Pagination 
           currentPage={currentPage} 
           totalPages={totalPages} 
           allowedViews={allowedViews} 
           viewMode={viewMode}
           setViewMode={setViewMode} 
           onPageChange={onPageChange}/>
+      )}
+       
     </div>
   )
 }

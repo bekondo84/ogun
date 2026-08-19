@@ -5,14 +5,13 @@ import BaseInput from "./BaseInput"
 import DynamicForm from "../DynamicForm"
 // Importez vos autres inputs spécifiques si nécessaire (ex: ManyToOneInput)
 
-export default function FormPagesModal({ isOpen, onClose, metadata, initialData, onSave, onSearch, onFindById }) {
-  const [formData, setFormData] = useState({})
+export default function FormPagesModal({ isOpen, onClose, metadata, initialData, formData, setFormData, onSave, disabled, onSearch, onFindById }) {
+  const [errors, setErrors] = useState({})
+  const [editMode, setEditMode] = useState(true)
 
   // Réinitialiser le formulaire à chaque ouverture/changement de mode
   useEffect(() => {
-    if (isOpen) {
-      setFormData(initialData ? { ...initialData } : {})
-    }
+    
   }, [isOpen, initialData])
 
   const handleFieldChange = (field, newValue) => {
@@ -20,9 +19,10 @@ export default function FormPagesModal({ isOpen, onClose, metadata, initialData,
       ...prev,
       [field.fieldName]: newValue
     }))
+    console.log('-------------FieldChange event---------!!! '+newValue)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e,) => {
     e.preventDefault()
     onSave(formData)
   }
@@ -42,9 +42,11 @@ export default function FormPagesModal({ isOpen, onClose, metadata, initialData,
         <div className="flex-1 overflow-y-auto py-4 pr-2 min-h-0 w-full">
           <DynamicForm 
             schema={metadata?.editorarea} 
-            values={initialData} 
+            values={initialData}
+            errors={errors} 
             onChange={handleFieldChange} 
-            disabled={false} 
+            disabled={!editMode} 
+            editMode={editMode}
           />
         </div>
         {/* Boutons d'actions */}

@@ -7,8 +7,8 @@ export default function BaseInput({ field, type, value, error, onChange, disable
   const [hasError, setHasError] = useState(false)
 
   useEffect (() => {
-        //console.log('----------------------- /++++++ : '+JSON.stringify(error)+' ------- : '+value)
-        setHasError(!!error[field.fieldName])
+        //console.log('----------------------- /++++++ : '+JSON.stringify(error)+' ------- : '+value+' ----- ')
+        setHasError(!!error[field?.fieldName])
       }, [field, value, error])
 
   return (

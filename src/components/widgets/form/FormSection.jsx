@@ -1,11 +1,10 @@
 import React, { useEffect } from "react"
 import FormField from "./FormField"
-import RelationTable from "./RelationTable"
 
 export default function FormSection({ section, values, errors, onChange, disabled, editMode }) {
 
   useEffect (() => {
-           //console.log('----------------------- /++++++ : '+JSON.stringify(errors)+' ------- : '+values)
+           //console.log('----------------------- /+===========================x   : '+JSON.stringify(errors)+' ------- : '+values)
         }, [section, values])
 
     const gridColumnsMap = {

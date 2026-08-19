@@ -1,6 +1,6 @@
 import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react"
+import { ArrowUp, ArrowDown, ArrowUpDown, Edit2 } from "lucide-react"
 import { fieldValue } from "@/utils/FieldUtils"
 
 export default function TableView({ 
@@ -12,11 +12,12 @@ export default function TableView({
   onRowClick,
   sortConfig,
   onSort,    
-  isSelectable=true
+  isSelectable=true,
+  onlineEditable = false
 }) {
 
   
-  const isAllSelected = data.length > 0 && selectedIds.length === data.length
+  const isAllSelected = data?.length > 0 && selectedIds?.length === data?.length
 
   return (
     // CONTENEUR GLOBAL : Gère le défilement horizontal fluide sur petit écran
@@ -68,7 +69,7 @@ export default function TableView({
         
         {/* Corps du tableau */}
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 font-medium">
-          {data.map((row) => {
+          {data?.map((row) => {
             const isSelected = selectedIds.includes(row.seqnumber)
             
             return (
@@ -91,20 +92,53 @@ export default function TableView({
                   return (
                     <td 
                       key={col.seqnumber} 
-                      className={`p-3.5 align-middle ${col.widget === 'number' ? "text-rigth" : "text-left"} ${col.className || ""}`}
-                      // Sécurité : Applique la largeur max définie dans les métadonnées si elle existe
+                      className={`p-3.5 align-middle ${col.widget === 'number' ? "text-right" : "text-left"} ${col.className || ""}`}
                       style={{ maxWidth: col.width || "300px" }}
                     >
-                      {/* Enveloppe de sécurité pour le texte long ou le composant rendu */}
                       <div className="truncate block">
-                        {col.render ? col.render(cellValue, row) : cellValue}
+                        {col.render ? (
+                          col.render(cellValue, row)
+                        ) : col.widget === 'checkbox' ? (
+                          <input 
+                            type="checkbox" 
+                            checked={!!cellValue} // Convertit en booléen strict
+                            disabled // Lecture seule dans le tableau
+                            className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 h-3.5 w-3.5 cursor-not-allowed accent-purple-600"
+                          />
+                        ) : col.widget === 'switch' ? (
+                          <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-purple-600' : 'bg-slate-200'}`}>
+                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition duration-200 ${cellValue ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                          </div>
+                        ) : (
+                          // Valeur textuelle par défaut (chaîne, date, nombre, etc.)
+                          String(cellValue ?? '')
+                        )}
                       </div>
-                    </td>
+                  </td>
+
                   )
                 })}
+                {onlineEditable && (
+                  <td className="p-2.5 text-center">
+                    <button
+                      type="button"
+                      onClick={() => onRowClick(row)}
+                      className="text-slate-400 hover:text-purple-600 transition-colors"
+                    >
+                      <Edit2 className="h-3.5 w-3.5" />
+                    </button>
+                  </td>
+                )}
               </tr>
             )
           })}
+          {data?.length === 0 && (
+              <tr>
+                <td colSpan={columns.length } className="p-6 text-center text-slate-400 italic">
+                  Aucun élément dans la table. Cliquez sur "Ajouter une ligne".
+                </td>
+              </tr>
+            )}
         </tbody>
 
       </table>

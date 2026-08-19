@@ -12,7 +12,7 @@ const STAT_BUTTONS = [
 export default function DynamicForm({ schema, values, errors, onChange, disabled, editMode }) {
 
   useEffect (() => {
-       //console.log('----------------------- /////////// : '+JSON.stringify(schema))
+       //console.log('-------.??????---------------- /////////// : '+JSON.stringify(errors)+' ----- '+JSON.stringify(values))
     }, [schema, values])
 
   return (

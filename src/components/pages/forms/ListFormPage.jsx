@@ -28,7 +28,7 @@ export default function ListDataModule({
   
   // MÉTA-DONNÉES DU TABLEAU (Mise à jour : Ajout du paramètre sortable)
   const columns = [...metadata.listView.columns.filter(col => col.show)]
-
+  const actions = [...metadata.listView.actions]
   // 3. Gestion du clic sur un en-tête de colonne
   const handleSort = (columnKey) => {
 
@@ -51,6 +51,7 @@ export default function ListDataModule({
       <DataControls
         title={metadata.listViewTitle}
         columns={columns}
+        actions={actions}
         allowedViews={allowedViews}
         metadata={metadata}
         setPredicates={setPredicates}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search, Loader2 } from "lucide-react"
@@ -9,7 +9,15 @@ import { TableView } from "../../list"
 import { executedPostMethod } from "@/axios/DataService"
 import Pagination from "../../list/Pagination"
 
-export default function SearchMoreModal({ isOpen, onClose, meta, onSelect }) {
+export default function SearchMoreModal({ 
+  isOpen, 
+  onClose,
+  meta,
+  initialData,
+  onSelect, 
+  isSelectable=false,
+  onSave
+}) {
   const [criteria, setCriteria] = useState("")
   const [results, setResults] = useState([])
   const [loading, setLoading] = useState(false)
@@ -25,18 +33,16 @@ export default function SearchMoreModal({ isOpen, onClose, meta, onSelect }) {
   useEffect (() => {
        if (meta && meta.listView) {
           setColumns(meta['listView']['columns'])
-          //setAllowedViews(meta.)
-          /*
-          const response = await executedPostMethod(meta.action, "fetchitems", {
-                  startIndex:0,
-                  pageSize : meta.pageSize,
-                  predicates : [],
-                  class : meta.type
-                })
-                setData([]) */
-                // console.log('-------------------------META : '+JSON.stringify(response.data))
        }
   }, [meta])
+
+  useEffect( () =>{
+     setPredicates([])
+     setData([])
+     setCurrentPage(1)
+     setTotalPages(0)
+  }, [isOpen])
+    
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -105,9 +111,16 @@ export default function SearchMoreModal({ isOpen, onClose, meta, onSelect }) {
     }
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    //console.log('---------ManyToMany -----------handleSubmit ----------- '+JSON.stringify(data))
+    onSave(data)
+    setData([])
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] text-xs">
+      <DialogContent className="w-full sm:max-w-4xl text-xs max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-sm font-semibold text-slate-800 dark:text-slate-200">
             Recherche avancée : {meta?.listViewTitle}
@@ -121,13 +134,15 @@ export default function SearchMoreModal({ isOpen, onClose, meta, onSelect }) {
                predicates={predicates} 
                setPredicates={setPredicates}  
                onRefresh={onRefresh} />
-          <Pagination
+          {currentPage <= totalPages &&(
+             <Pagination
               currentPage={currentPage}
               allowedViews={allowedViews}
               viewMode={viewMode}
               setViewMode={setViewMode}
               totalPages={totalPages}
               onPageChange={onPageChange} />
+          )}          
           
         </div>  
         {/* Grille / Liste de résultats */}
@@ -136,11 +151,27 @@ export default function SearchMoreModal({ isOpen, onClose, meta, onSelect }) {
             data={data}
             selectedIds={selectedIds}
             sortConfig={handleSearch}
-            onToggleSelectAll={() => setSelectedIds(selectedIds.length === items.length ? [] : items.map(i => i.seqnumber))}
+            onToggleSelectAll={() => setSelectedIds(selectedIds.length === data.length ? [] : data.map(i => i.seqnumber))}
             onToggleSelectRow={(id) => setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])}
             onRowClick={(item) => onRowClick(item)}
-            isSelectable={false}
+            isSelectable={isSelectable}
           />
+          {isSelectable && (
+             <DialogFooter className="border-t border-slate-100 pt-3 dark:border-slate-800">
+                <Button variant="outline" size="sm" type="button" onClick={onClose} className="h-8 text-xs">
+                  Annuler
+                </Button>
+                <Button 
+                  size="sm" 
+                  type="submit" 
+                  onClick={handleSubmit}
+                  className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Enregistrer
+                </Button>
+              </DialogFooter>
+          )}
+        
       </DialogContent>
     </Dialog>
   )
