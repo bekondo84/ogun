@@ -82,7 +82,7 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
            const response = await executedPostMethod(meta.action, "fetchitems", {
               startIndex: 0,
               pageSize: size,
-              class: meta.type,
+              typeCode: meta.typeCode,
               predicates: predicates
            })
            

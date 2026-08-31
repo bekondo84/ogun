@@ -21,7 +21,8 @@ export default function FormDataModule({
          isLoading,
          setFormValues,
          onSave,
-         onCancel
+         onCancel,
+         onAction
 }) {
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
@@ -59,7 +60,7 @@ export default function FormDataModule({
   return (
     <div className="h-screen w-full bg-slate-100 dark:bg-slate-950 flex flex-col antialiased">
         <FormHeaderTitle item={item} metadata={metadata} onCancel={onCancel} />
-        <FormHeaderAction item={item} metadata={metadata} actions={actions} editMode={editMode} currentStage={currentStage} handleSubmit={handleSubmit} onCancel={onCancel} setCurrentStage={setCurrentStage} />
+        <FormHeaderAction item={item} metadata={metadata} actions={actions} editMode={editMode} currentStage={currentStage} handleSubmit={handleSubmit} onCancel={onCancel} setCurrentStage={setCurrentStage} onAction={onAction}/>
        {/* Zone de contenu scrollable pour le formulaire */}
         <div className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950 text-xs">
           {isLoading ? (

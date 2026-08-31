@@ -52,7 +52,7 @@ export default function SearchMoreModal({
       const response = await executedPostMethod(meta.action, "fetchitems", {
                 startIndex: (pageNumer-1) * metadata.pageSize,
                 pageSize: metadata.pageSize,
-                class: metadata.type,
+                typeCode: metadata.typeCode,
                 predicates: predicat,
                 sort:sortrules
               });
@@ -96,7 +96,7 @@ export default function SearchMoreModal({
           const response = await executedPostMethod(meta.action, "fetchitems", {
                     startIndex: (pageNumer-1) * meta.pageSize,
                     pageSize: meta.pageSize,
-                    class: meta.type,
+                    typeCode: meta.typeCode,
                     predicates: predicates,
                     sort:[]
                   });

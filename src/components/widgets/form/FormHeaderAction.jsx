@@ -8,8 +8,20 @@ import {
 import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft } from "lucide-react"
 import ActionsDropdown from "../list/ActionsDropdown"
 
-export default function FormHeaderAction ({metadata, item, actions=[], editMode, currentStage, handleSubmit, onCancel, setCurrentStage}) {
+export default function FormHeaderAction ({
+       metadata, 
+       item, 
+       actions=[],
+        editMode, 
+        currentStage, 
+        handleSubmit, 
+        onCancel, 
+        setCurrentStage,
+        onAction
+      }) {
 
+    const listActions = actions.filter(act => act.position='actions')
+    const workflowactions = actions.filter(act => !(act.position='actions'))
     // Fonction pour centraliser le changement d'étape et notifier l'utilisateur si besoin
     const handleWorkflowAction = (nextStage) => {
         setCurrentStage(nextStage)
@@ -38,7 +50,7 @@ export default function FormHeaderAction ({metadata, item, actions=[], editMode,
                     </Button>
 
                     {/* Menu Déroulant Actions Contextuelles */}
-                    <ActionsDropdown metadata={metadata} actions={actions}/>
+                    <ActionsDropdown metadata={metadata} data={item} actions={listActions} onAction={onAction}/>
                 </div>
 
                 {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}
@@ -67,55 +79,57 @@ export default function FormHeaderAction ({metadata, item, actions=[], editMode,
             </div>
 
             {/* LIGNE 2 : Barre exclusive pour les actions / boutons de transition du Workflow */}
-            <div className="bg-slate-50 dark:bg-slate-900/40 px-6 py-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center h-10 select-none text-xs">
-                <div className="flex items-center gap-1.5">
-                    {currentStage === "new" && (
-                      <Button 
-                        type="button"
-                        onClick={() => handleWorkflowAction("in_progress")} 
-                        size="sm" 
-                        className="h-7 px-3 bg-purple-700 hover:bg-purple-800 text-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
-                      >
-                        Démarrer le traitement
-                      </Button>
-                    )}
-                    
-                    {currentStage === "in_progress" && (
-                      <>
+            {(workflowactions.length > 0)&&(
+                <div className="bg-slate-50 dark:bg-slate-900/40 px-6 py-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center h-10 select-none text-xs">
+                  <div className="flex items-center gap-1.5">
+                      {currentStage === "new" && (
                         <Button 
                           type="button"
-                          onClick={() => handleWorkflowAction("won")} 
+                          onClick={() => handleWorkflowAction("in_progress")} 
                           size="sm" 
-                          className="h-7 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
+                          className="h-7 px-3 bg-purple-700 hover:bg-purple-800 text-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
                         >
-                          Marquer comme Gagné
+                          Démarrer le traitement
                         </Button>
+                      )}
+                      
+                      {currentStage === "in_progress" && (
+                        <>
+                          <Button 
+                            type="button"
+                            onClick={() => handleWorkflowAction("won")} 
+                            size="sm" 
+                            className="h-7 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
+                          >
+                            Marquer comme Gagné
+                          </Button>
+                          <Button 
+                            type="button"
+                            onClick={() => handleWorkflowAction("new")} 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 px-3 text-slate-600 hover:text-slate-800 border-slate-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
+                          >
+                            Remettre à l'étape Nouveau
+                          </Button>
+                        </>
+                      )}
+
+                      {currentStage === "won" && (
                         <Button 
                           type="button"
-                          onClick={() => handleWorkflowAction("new")} 
+                          onClick={() => handleWorkflowAction("in_progress")} 
                           variant="outline" 
                           size="sm" 
-                          className="h-7 px-3 text-slate-600 hover:text-slate-800 border-slate-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
+                          className="h-7 px-3 text-purple-700 hover:bg-purple-50 border-purple-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
                         >
-                          Remettre à l'étape Nouveau
+                          Réactiver (Retour En Cours)
                         </Button>
-                      </>
-                    )}
-
-                    {currentStage === "won" && (
-                      <Button 
-                        type="button"
-                        onClick={() => handleWorkflowAction("in_progress")} 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-7 px-3 text-purple-700 hover:bg-purple-50 border-purple-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
-                      >
-                        Réactiver (Retour En Cours)
-                      </Button>
-                    )}
-                </div>
-            </div>
-
+                      )}
+                  </div>
+              </div>    
+            )}               
+            
         </div>
     )
 }

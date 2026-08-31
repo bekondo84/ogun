@@ -94,7 +94,7 @@ export default function OneToMany({ field, value = [], onChange, disabled }) {
         try {
           if (metadata) {
              const response = await executedPostMethod(metadata.action, "create", {
-               class: metadata.type
+               typeCode: metadata.typeCode
              })      
              var data = response.data
              data.seqnumber = value.length+1 

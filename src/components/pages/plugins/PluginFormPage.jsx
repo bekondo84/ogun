@@ -108,7 +108,8 @@ export default function PluginFormPage() {
           const response = await executedPostMethod(metadata.action, "fetchitem", {
               data: record,
               plugin: null,
-              class: metadata.type
+              class: metadata.type,
+              typeCode: metadata.typeCode
           })
           setData(response.data)
         //console.log('----------Vous avez selectionner : '+JSON.stringify(response.data))
@@ -128,7 +129,7 @@ export default function PluginFormPage() {
           setIsLoading(true)
           const response = await executedPostMethod(metadata.action, "save", {
             data: item,
-            class:metadata.type
+            typeCode:metadata.typeCode
           })
         } finally {
           setIsLoading(false)
@@ -144,7 +145,7 @@ export default function PluginFormPage() {
       setViewMode("view")
       setEditMode('C')
       const response = await executedPostMethod(metadata.action, "create", {
-          class: metadata.type
+          typeCode:metadata.typeCode
       })
       setData(response.data)
     } finally {
@@ -158,7 +159,7 @@ export default function PluginFormPage() {
     alert("delete ids : " + indexs)
   }
 
-  const handleOnAction = () => {
+  const handleOnAction = (metadata, data, action) => {
      console.log('----------Dectection of OnAction Event ---------')
   }
 
@@ -169,7 +170,7 @@ export default function PluginFormPage() {
         pageSize : meta.pageSize,
         predicates : !!predicates ? predicates : [] ,
         sort:sortConf,
-        class : meta.type
+        typeCode:meta.typeCode
       })
       setData(response)
       setTotalPages(Math.ceil(response.nbreofitems / meta.pageSize))
@@ -279,6 +280,7 @@ export default function PluginFormPage() {
                   setFormValues={setData}
                   onSave={handleSave}
                   onCancel={handleCancel} 
+                  onAction={handleOnAction}
                 />
               )
             )}

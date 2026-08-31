@@ -3,6 +3,7 @@ import { Settings2, MoreHorizontal, Download, FileText } from "lucide-react"
 
 export default function ActionsDropdown({
      metadata,
+     data,
      actions=[],
      onAction}) {
   const [isOpen, setIsOpen] = useState(false)
@@ -32,7 +33,7 @@ export default function ActionsDropdown({
       {isOpen && (
         <div className="absolute left-0 mt-1 z-50 w-52 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-1">
           {actions.map(action => {
-              <button onClick={() => { alert("Export Excel"); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <button onClick={() => {onAction(metadata, data, action) }} className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
                 {action.name}
               </button>
           })}          
