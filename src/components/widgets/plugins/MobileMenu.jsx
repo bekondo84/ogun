@@ -7,7 +7,7 @@ export default function MobileMenu({ item, setActiveMenu, activeMenu, depth = 0 
     <div className="flex flex-col w-full">
       {!hasChildren ? (
         <button
-          onClick={() => setActiveMenu(item.seqnumber)}
+          onClick={() => setActiveMenu(item)}
           style={{ paddingLeft: `${(depth * 12) + 12}px` }}
           className={`w-full text-left py-2 text-sm rounded-md transition-all ${
             activeMenu === item.seqnumber ? "bg-purple-700 text-white font-medium" : "text-slate-700 hover:bg-slate-100"

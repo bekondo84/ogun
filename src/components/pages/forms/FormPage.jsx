@@ -22,7 +22,8 @@ export default function FormDataModule({
          setFormValues,
          onSave,
          onCancel,
-         onAction
+         onAction,
+         shutcutAction
 }) {
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
@@ -73,6 +74,7 @@ export default function FormDataModule({
               onChange={handleFieldChange} 
               disabled={!editMode} 
               editMode={editMode}
+              shutcutAction={shutcutAction}
             />
           )}
         </div>

@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 export default function DesktopMenu({ item, setActiveMenu, activeMenu }) {
+  const btn ="flex items-center gap-1 px-3 py-2 text-sm whitespace-nowrap rounded-md hover:bg-purple-50 cursor-pointer"
+
   const hasChildren = item.navigations  && item.navigations.length > 0
 
   if (!hasChildren) {

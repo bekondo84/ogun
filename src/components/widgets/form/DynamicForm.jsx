@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import FormSection from "./FormSection"
-import { Calendar, CreditCard, Layers3, MessageSquare } from "lucide-react"
+import { icons, Circle } from "lucide-react"
+import Shutcut from "./Shutcut"
 
-const STAT_BUTTONS = [
-  { id: "meetings", label: "Réunions", value: "3", icon: Calendar },
-  { id: "invoices", label: "Factures", value: "1", icon: CreditCard },
-  { id: "tasks", label: "Tâches", value: "12", icon: Layers3 },
-]
-
-export default function DynamicForm({ schema, values, errors, onChange, disabled, editMode }) {
+export default function DynamicForm({ schema, values, errors, onChange, disabled, editMode, shutcutAction }) {
   const [shutcuts, setShutcuts] = useState([])
 
   useEffect (() => {
      setShutcuts(schema?.shutcuts)
-       //console.log('-------.??????---------------- /////////// : '+JSON.stringify(errors)+' ----- '+JSON.stringify(values))
+      // console.log('-------.??????---------------- /////////// : '+JSON.stringify(schema?.shutcuts)+' ----- '+JSON.stringify(values))
     }, [schema, values])
 
   return (
@@ -24,20 +19,9 @@ export default function DynamicForm({ schema, values, errors, onChange, disabled
       {/* Raccourcis hauts (Stat-Buttons) */}
       <div className="flex flex-wrap items-center justify-end gap-1 border-b border-slate-100 dark:border-slate-800 pb-4 mb-2">
         {shutcuts?.map((btn) => {
-          const Icon = btn.icon
+          const Icon = icons[btn.icon] ?? Circle
           return (
-            <button
-              key={btn.code}
-              type="button"
-              onClick={() => alert(`Navigation : ${btn.label}`)}
-              className="flex items-center gap-2 px-3 py-1 border border-slate-200 dark:border-slate-800 rounded-md bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-purple-700 text-xs font-medium cursor-pointer shadow-sm min-w-[90px]"
-            >
-              <Icon className="h-3.5 w-3.5 text-slate-400" />
-              <div className="text-left leading-none">
-                <span className="block font-bold text-slate-900 dark:text-white text-xs">{btn.counter}</span>
-                <span className="block text-[9px] text-slate-400 font-medium mt-0.5">{btn.label}</span>
-              </div>
-            </button>
+            <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction}/>
           )
         })}
       </div>

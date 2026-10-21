@@ -163,6 +163,10 @@ export default function PluginFormPage() {
      console.log('----------Dectection of OnAction Event ---------')
   }
 
+  const handleShutcutAction = (shutcut)  => {
+           console.log('----------Dectection of ShutcutAction Event ---------'+JSON.stringify(shutcut))
+  }
+
   const fetchData = async(page, meta, predicates, sortConf) => {
        setCurrentPage(page)
       const response = await executedPostMethod(meta.action, "fetchitems", {
@@ -281,6 +285,7 @@ export default function PluginFormPage() {
                   onSave={handleSave}
                   onCancel={handleCancel} 
                   onAction={handleOnAction}
+                  shutcutAction={handleShutcutAction}
                 />
               )
             )}
