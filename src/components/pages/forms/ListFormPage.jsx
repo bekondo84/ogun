@@ -11,6 +11,7 @@ export default function ListDataModule({
   setIsLoading,
   items,
   metadata,
+  breadcrumbs,
   currentPage,
   setCurrentPage,
   totalPages,
@@ -21,7 +22,8 @@ export default function ListDataModule({
   onDelete,
   onSelected,
   onRefresh,
-  onAction
+  onAction,
+  onBreadcrumbAction
 }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedIds, setSelectedIds] = useState([])
@@ -52,6 +54,7 @@ export default function ListDataModule({
         title={metadata.listViewTitle}
         columns={columns}
         actions={actions}
+        breadcrumbs={breadcrumbs}
         allowedViews={allowedViews}
         metadata={metadata}
         setPredicates={setPredicates}
@@ -68,6 +71,7 @@ export default function ListDataModule({
         onPageChange={(page) => handlePageChange(page)}
         onRefresh={onRefresh}
         onAction={onAction}
+        onBreadcrumbAction={onBreadcrumbAction}
       />
 
       <main className="flex-1 max-w-none w-full mx-auto overflow-y-auto">

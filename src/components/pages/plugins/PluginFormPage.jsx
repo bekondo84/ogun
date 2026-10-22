@@ -6,9 +6,10 @@ import PluginHeader from "@/components/widgets/plugins/PluginHeader"
 import ListFormPage from "@/components/pages/forms/ListFormPage"
 import FormPage from "@/components/pages/forms/FormPage"
 import { Loader2, AlertTriangle } from "lucide-react"
-import { getMeta } from "@/axios/MetaService"
+import { getMeta, getMetaFromTypeCode } from "@/axios/MetaService"
 import { executedPostMethod } from "@/axios/DataService"
 import DashboardPage from "../dashbord/DashboardPage"
+import { refreshBreadcrumbs, refreshSnapshaps, removeLastsystemSnapshaps, updateSystemSnapshaps } from "@/utils/Utils"
 
 export default function PluginFormPage() {
   const { id } = useParams()
@@ -37,9 +38,18 @@ export default function PluginFormPage() {
   const [viewMode, setViewMode] = useState("list")
   const [allowedViews, setAllowedViews] = useState("")
   const [editMode, setEditMode] = useState('V')
-    
+  const [snapshotstore, setSnapshotstore] = useState([])
+  const [breadcrumbs, setBreadcrumbs] = useState([{ label: 'Accueil', href: '/' },
+          { label: 'Gestion', href: '/gestion' },
+          { label: "Employés" }])
   
-  // 🚀 SYNCHRONISATION : Dés que l'API renvoie les menus du serveur, on charge le premier par défaut
+  
+  //For every change of th snapshots update the breadcrumps 
+  useEffect(() => {
+      setBreadcrumbs(refreshBreadcrumbs(snapshotstore))
+      //console.log('+++++++++++++++++++++++++++++'+JSON.stringify(refreshBreadcrumbs(snapshotstore)))
+  }, [snapshotstore])
+  //SYNCHRONISATION : Dés que l'API renvoie les menus du serveur, on charge le premier par défaut
   useEffect(() => {
     if (plugin && plugin.menus && plugin.menus.length > 0) {
       const firstMenu = getFirstMenuItem(plugin.menus[0])
@@ -93,6 +103,7 @@ export default function PluginFormPage() {
      try {
          await fetchData(currentPage, metadata)
          setViewMode("list")
+         setSnapshotstore(removeLastsystemSnapshaps(snapshotstore))
      } finally {
        setIsLoading(false)
      }
@@ -113,6 +124,7 @@ export default function PluginFormPage() {
           })
           setData(response.data)
         //console.log('----------Vous avez selectionner : '+JSON.stringify(response.data))
+        setSnapshotstore(updateSystemSnapshaps(snapshotstore, record.stringValue, metadata, response.data,[],'view'))
        }
       } finally {
          setIsLoading(false)
@@ -154,17 +166,67 @@ export default function PluginFormPage() {
     
   }
 
+  const onBreadcrumbAction = async(breadcrumb) => {
+     try {
+        setIsLoading(true)
+        const context = snapshotstore[breadcrumb.key]
+        const meta = context.meta
+        const data = context.data
+        const viewMode = context.viewmode
+        setMetadata(meta)
+        setViewMode(viewMode)
+        setAllowedViews(meta.viewMode)
+        //console.log('------------------------------------------ '+JSON.stringify(context.meta))
+        if (context.data != null) {
+           const response = await executedPostMethod(meta.action, "fetchitem", {
+              data: data,
+              plugin: null,
+              class: meta.type,
+              typeCode: meta.typeCode
+          })
+          setData(response.data)
+        } else {
+          await fetchData(1, meta, [], [])
+        }
+       //console.log('Click detected on breadcrumb  ::: '+JSON.stringify(breadcrumb.key)+'----------'+snapshotstore.length+' -----'+snapshotstore.slice(0,breadcrumb.key+1).length)
+       setSnapshotstore(updateSystemSnapshaps(refreshSnapshaps(breadcrumb.key, snapshotstore), context.label, meta, data, [], viewMode))
+     } finally {
+        setIsLoading(false)
+     }
+  }
+
   const handleOnDelete = (indexs) => {
    // console.log('--------Detection dune demande de tri'+JSON.stringify(searchConfig))
     alert("delete ids : " + indexs)
   }
 
   const handleOnAction = (metadata, data, action) => {
-     console.log('----------Dectection of OnAction Event ---------')
+     console.log('----------Dectection of OnAction Event ---------')     
   }
 
-  const handleShutcutAction = (shutcut)  => {
-           console.log('----------Dectection of ShutcutAction Event ---------'+JSON.stringify(shutcut))
+  const handleShutcutAction = async(shutcut)  => {
+           
+    setIsLoading(true)
+           try {
+                 setSelectedIds([])
+                 const meta = await getMetaFromTypeCode(shutcut.type)
+                 setMetadata(meta)
+                 await fetchData(1, meta, [], [])
+                 const targetView = meta.viewMode.split(',')[0]
+                //console.log("Changement de vue ERP : " +menuObject.viewMode)
+                setViewMode(targetView)
+                setAllowedViews(meta.viewMode)
+                if (targetView === "list") {
+                      // setFormData({ company: "", contact: "", email: "", value: "" })
+                  setSelectedIds([])
+                }  
+                let label = targetView != 'view' ? meta.listViewTitle : meta.formViewTitle
+                //Initialize the 
+                setSnapshotstore(updateSystemSnapshaps(snapshotstore, label, meta, null, [], targetView))
+
+           } finally {
+              setIsLoading(false)
+           }
   }
 
   const fetchData = async(page, meta, predicates, sortConf) => {
@@ -200,17 +262,18 @@ export default function PluginFormPage() {
       //console.log (data)
       
       setActiveMenu(menuObject)
-      const targetView = menuObject.viewMode.split(',')[0]
+      const targetView = meta.viewMode.split(',')[0]
       //console.log("Changement de vue ERP : " +menuObject.viewMode)
       setViewMode(targetView)
-      setAllowedViews(menuObject.viewMode)
+      setAllowedViews(meta.viewMode)
       
       // Nettoyage de l'espace de travail lors du changement d'onglet de liste
       if (targetView === "list") {
       // setFormData({ company: "", contact: "", email: "", value: "" })
         setSelectedIds([])
       }  
-      
+      //Initialize the 
+      setSnapshotstore(updateSystemSnapshaps([], menuObject.label, meta, null, [], targetView))
     } finally {
       setIsLoading(false)
     } /* (error) {
@@ -266,12 +329,14 @@ export default function PluginFormPage() {
                   totalPages={totalPages}
                   viewMode={viewMode}
                   allowedViews={allowedViews}
+                  breadcrumbs={breadcrumbs}
                   setViewMode={setViewMode}
                   onCreate={handleOnCreate}
                   onDelete={handleOnDelete}
                   onSelected={handleSelected}
                   onRefresh={onRefresh}
                   onAction={handleOnAction}
+                  onBreadcrumbAction={onBreadcrumbAction}
                 />
               ) : viewMode ==="dashboard" ? (
                    <DashboardPage metadata={{ type: "global", action: "analytics" }} />
@@ -279,6 +344,7 @@ export default function PluginFormPage() {
                 <FormPage 
                   metadata={metadata}
                   item={data}
+                  breadcrumbs={breadcrumbs}
                   editMode={editMode}
                   isLoading={isLoading}
                   setFormValues={setData}
@@ -286,6 +352,7 @@ export default function PluginFormPage() {
                   onCancel={handleCancel} 
                   onAction={handleOnAction}
                   shutcutAction={handleShutcutAction}
+                  onBreadcrumbAction={onBreadcrumbAction}
                 />
               )
             )}

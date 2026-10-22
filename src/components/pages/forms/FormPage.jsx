@@ -13,17 +13,20 @@ import { validateForm } from "@/utils/FormUtils"
 import { toast } from "sonner"
 import FormHeaderTitle from "@/components/widgets/form/FormHeaderTitle"
 import FormHeaderAction from "@/components/widgets/form/FormHeaderAction"
+import Breadcrumb from "@/components/widgets/Breadcrumb"
 
 export default function FormDataModule({
          metadata,
          item,
+         breadcrumbs,
          editMode,
          isLoading,
          setFormValues,
          onSave,
          onCancel,
          onAction,
-         shutcutAction
+         shutcutAction,
+         onBreadcrumbAction
 }) {
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
@@ -60,7 +63,8 @@ export default function FormDataModule({
 
   return (
     <div className="h-screen w-full bg-slate-100 dark:bg-slate-950 flex flex-col antialiased">
-        <FormHeaderTitle item={item} metadata={metadata} onCancel={onCancel} />
+      {/* Intégration du composant autonome */}
+        <FormHeaderTitle item={item} metadata={metadata} onCancel={onCancel} breadcrumbs={breadcrumbs} onBreadcrumbAction={onBreadcrumbAction}/>
         <FormHeaderAction item={item} metadata={metadata} actions={actions} editMode={editMode} currentStage={currentStage} handleSubmit={handleSubmit} onCancel={onCancel} setCurrentStage={setCurrentStage} onAction={onAction}/>
        {/* Zone de contenu scrollable pour le formulaire */}
         <div className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950 text-xs">
@@ -68,6 +72,7 @@ export default function FormDataModule({
             <FormPageSkeleton />
           ) : (
             <DynamicForm 
+              meta={metadata}
               schema={metadata?.editorarea} 
               values={item} 
               errors={errors} 

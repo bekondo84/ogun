@@ -4,7 +4,7 @@ import FormSection from "./FormSection"
 import { icons, Circle } from "lucide-react"
 import Shutcut from "./Shutcut"
 
-export default function DynamicForm({ schema, values, errors, onChange, disabled, editMode, shutcutAction }) {
+export default function DynamicForm({ meta, schema, values, errors, onChange, disabled, editMode, shutcutAction }) {
   const [shutcuts, setShutcuts] = useState([])
 
   useEffect (() => {
@@ -21,7 +21,7 @@ export default function DynamicForm({ schema, values, errors, onChange, disabled
         {shutcuts?.map((btn) => {
           const Icon = icons[btn.icon] ?? Circle
           return (
-            <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction}/>
+            <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction} meta={meta} item={values}/>
           )
         })}
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Search, Filter, X, Check, Trash2 } from "lucide-react"
+import { getColumnType } from "@/utils/Utils"
 
 export default function SmartSearch({ columns = [], predicates = [], setPredicates, onRefresh }) {
   const [inputValue, setInputValue] = useState("")
@@ -26,21 +27,6 @@ export default function SmartSearch({ columns = [], predicates = [], setPredicat
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const getColumnType = (type) => {
-      var coltype = type
-      if (type === 'int') {
-          coltype = 'java.lang.Integer'
-      } else if (type == 'float') {
-        coltype = 'java.lang.Float'
-      } else if (type == 'short') {
-        coltype = 'java.lang.Short'
-      }  else if (type == 'double') {
-        coltype = 'java.lang.Double'
-      }  else if (type == 'long') {
-        coltype = 'java.lang.Long'
-      }
-      return coltype;
-  }
 
   // Ajouter ou modifier un prédicat (Facette)
   const handleSelectField = (column, exactValue = null) => {
