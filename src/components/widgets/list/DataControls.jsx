@@ -28,7 +28,7 @@ export default function DataControls({
 }) {
 
   useEffect(() => {
-      //console.log('---------------DataControls---------- : '+metadata)
+     // console.log('---------------DataControls---------- : '+JSON.stringify(actions))
   }, [metadata, currentPage, totalPages,columns])
   return (
     <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4 shadow-sm flex-wrap">

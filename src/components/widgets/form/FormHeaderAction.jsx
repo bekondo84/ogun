@@ -5,8 +5,9 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
-import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft } from "lucide-react"
+import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft, icons } from "lucide-react"
 import ActionsDropdown from "../list/ActionsDropdown"
+import { useEffect, useState } from "react"
 
 export default function FormHeaderAction ({
        metadata, 
@@ -20,8 +21,14 @@ export default function FormHeaderAction ({
         onAction
       }) {
 
-    const listActions = actions.filter(act => act.position='actions')
-    const workflowactions = actions.filter(act => !(act.position='actions'))
+    useEffect(() => {
+           setWorkflowactions(actions.filter(act => act.position=='workflow'))
+           setCustomactions(actions.filter(act => act.position=='actions'))
+    }, [actions])
+
+    const [workflowactions, setWorkflowactions] = useState([])
+    const [customactions, setCustomactions] = useState([])
+   
     // Fonction pour centraliser le changement d'étape et notifier l'utilisateur si besoin
     const handleWorkflowAction = (nextStage) => {
         setCurrentStage(nextStage)
@@ -50,7 +57,7 @@ export default function FormHeaderAction ({
                     </Button>
 
                     {/* Menu Déroulant Actions Contextuelles */}
-                    <ActionsDropdown metadata={metadata} data={item} actions={listActions} onAction={onAction}/>
+                    <ActionsDropdown metadata={metadata} data={item} actions={customactions} onAction={onAction}/>
                 </div>
 
                 {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}
@@ -82,50 +89,21 @@ export default function FormHeaderAction ({
             {(workflowactions.length > 0)&&(
                 <div className="bg-slate-50 dark:bg-slate-900/40 px-6 py-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center h-10 select-none text-xs">
                   <div className="flex items-center gap-1.5">
-                      {currentStage === "new" && (
-                        <Button 
-                          type="button"
-                          onClick={() => handleWorkflowAction("in_progress")} 
-                          size="sm" 
-                          className="h-7 px-3 bg-purple-700 hover:bg-purple-800 text-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
-                        >
-                          Démarrer le traitement
-                        </Button>
-                      )}
-                      
-                      {currentStage === "in_progress" && (
-                        <>
-                          <Button 
-                            type="button"
-                            onClick={() => handleWorkflowAction("won")} 
-                            size="sm" 
-                            className="h-7 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
-                          >
-                            Marquer comme Gagné
-                          </Button>
-                          <Button 
-                            type="button"
-                            onClick={() => handleWorkflowAction("new")} 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-7 px-3 text-slate-600 hover:text-slate-800 border-slate-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
-                          >
-                            Remettre à l'étape Nouveau
-                          </Button>
-                        </>
-                      )}
-
-                      {currentStage === "won" && (
-                        <Button 
-                          type="button"
-                          onClick={() => handleWorkflowAction("in_progress")} 
-                          variant="outline" 
-                          size="sm" 
-                          className="h-7 px-3 text-purple-700 hover:bg-purple-50 border-purple-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
-                        >
-                          Réactiver (Retour En Cours)
-                        </Button>
-                      )}
+                      {workflowactions?.map((action, index)=> {
+                            const Icon = icons[action.icon] ?? null
+                            return (
+                              <Button 
+                                key={action.code ?? action.name ?? index}
+                                type="button"
+                                onClick={() => onAction(metadata, item, action)} 
+                                size="sm" 
+                                 className="h-7 px-3 text-slate-600 hover:text-slate-800 border-slate-200 bg-white font-medium text-[11px] rounded shadow-sm cursor-pointer"
+                              >
+                                {Icon && <Icon className="h-3.5 w-3.5 text-slate-400 shrink-0" />}
+                                <span className="truncate">{action.name}</span>
+                            </Button>
+                          )
+                      })}                      
                   </div>
               </div>    
             )}               

@@ -16,6 +16,8 @@ export default function ListDataModule({
   setCurrentPage,
   totalPages,
   viewMode,
+  selectedIds = [],
+  setSelectedIds,
   setViewMode,
   allowedViews,
   onCreate,
@@ -26,7 +28,7 @@ export default function ListDataModule({
   onBreadcrumbAction
 }) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedIds, setSelectedIds] = useState([])
+  //const [selectedIds, setSelectedIds] = useState([])
   
   // MÉTA-DONNÉES DU TABLEAU (Mise à jour : Ajout du paramètre sortable)
   const columns = [...metadata.listView.columns.filter(col => col.show)]

@@ -39,9 +39,8 @@ export default function PluginFormPage() {
   const [allowedViews, setAllowedViews] = useState("")
   const [editMode, setEditMode] = useState('V')
   const [snapshotstore, setSnapshotstore] = useState([])
-  const [breadcrumbs, setBreadcrumbs] = useState([{ label: 'Accueil', href: '/' },
-          { label: 'Gestion', href: '/gestion' },
-          { label: "Employés" }])
+  const [breadcrumbs, setBreadcrumbs] = useState([])
+  
   
   
   //For every change of th snapshots update the breadcrumps 
@@ -200,8 +199,18 @@ export default function PluginFormPage() {
     alert("delete ids : " + indexs)
   }
 
-  const handleOnAction = (metadata, data, action) => {
-     console.log('----------Dectection of OnAction Event ---------')     
+  const handleOnAction = async(metadata, data, action) => {
+     console.log('----------Dectection of OnAction Event ---------'+JSON.stringify(selectedIds));
+     
+     const isConfirmed = await confirm(`Voulez-vous vraiment appliquer  sur l'élément  ?`);
+
+     if (!isConfirmed) {
+        console.log("Action annulée par l'utilisateur.");
+        return;
+     }
+
+     // Poursuite du traitement...
+     console.log("Action confirmée, traitement en cours...");
   }
 
   const handleShutcutAction = async(shutcut)  => {
@@ -326,6 +335,8 @@ export default function PluginFormPage() {
                   metadata={metadata}
                   currentPage={currentPage}
                   setCurrentPage={setCurrentPage}
+                  selectedIds={selectedIds}
+                  setSelectedIds={setSelectedIds}
                   totalPages={totalPages}
                   viewMode={viewMode}
                   allowedViews={allowedViews}
@@ -356,8 +367,8 @@ export default function PluginFormPage() {
                 />
               )
             )}
-
           </div>
+          
         </div>
       </main>
 
