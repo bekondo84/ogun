@@ -4,12 +4,22 @@ import FormSection from "./FormSection"
 import { icons, Circle } from "lucide-react"
 import Shutcut from "./Shutcut"
 
-export default function DynamicForm({ meta, schema, values, errors, onChange, disabled, editMode, shutcutAction }) {
+export default function DynamicForm({ 
+  meta, 
+  schema, 
+  values, 
+  errors, 
+  resources,
+  setResources,
+  onChange, 
+  disabled, 
+  editMode, 
+  shutcutAction }) {
   const [shutcuts, setShutcuts] = useState([])
 
   useEffect (() => {
      setShutcuts(schema?.shutcuts)
-      // console.log('-------.??????---------------- /////////// : '+JSON.stringify(schema?.shutcuts)+' ----- '+JSON.stringify(values))
+       //console.log('-------.??????---------------- /////////// : '+JSON.stringify(meta)+' ----- '+JSON.stringify(values))
     }, [schema, values])
 
   return (
@@ -33,6 +43,8 @@ export default function DynamicForm({ meta, schema, values, errors, onChange, di
             section={section} 
             values={values} 
             errors={errors}
+            resources={resources}
+            setResources={setResources}
             onChange={onChange} 
             disabled={disabled}
             editMode={editMode} />
@@ -59,7 +71,15 @@ export default function DynamicForm({ meta, schema, values, errors, onChange, di
           {schema.tabs.map((tab) => (
             <TabsContent key={tab.id} value={tab.id} className="space-y-6 outline-none focus:ring-0 pt-2 animate-in fade-in-50 duration-200">
               {tab.sections.map((section, idx) => (
-                <FormSection key={idx} section={section} values={values} errors={errors} onChange={onChange} disabled={disabled} />
+                <FormSection 
+                     key={idx} 
+                     section={section} 
+                     values={values} 
+                     errors={errors} 
+                     resources={resources}
+                     setResources={setResources}
+                     onChange={onChange} 
+                     disabled={disabled} />
               ))}
             </TabsContent>
           ))}

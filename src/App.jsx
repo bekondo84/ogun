@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { Toaster } from 'sonner'
 import reactLogo from './assets/react.svg'
@@ -8,13 +8,19 @@ import './App.css'
 import LoginPage from './components/pages/security/LoginPage'
 import AppsPage from './components/pages/plugins/AppsPage'
 import PluginFormPage from './components/pages/plugins/PluginFormPage'
+import { useOdooModal } from './components/widgets/notification/useOdooModal'
+import { setGlobalModal } from './utils/modalService'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [modal, ModalElement] = useOdooModal();
 
+  useEffect(() => {
+      setGlobalModal(modal)
+  }, [modal])
   return (
     <>
-      <Toaster position="top-right" richColors closeButton duration={4000} />
+      <Toaster position="top-right" richColors closeButton duration={4000} />      
       <BrowserRouter>
         <Routes>
           {/* Route par défaut : Page de connexion */}
@@ -27,6 +33,7 @@ function App() {
 
         </Routes>
       </BrowserRouter>
+      {ModalElement}
     </>
   )
 }

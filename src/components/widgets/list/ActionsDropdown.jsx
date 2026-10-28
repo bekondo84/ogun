@@ -10,7 +10,7 @@ export default function ActionsDropdown({
   const actionsRef = useRef(null)
   
   useEffect(() => {
-    console.log('---------------------------------'+JSON.stringify(actions))
+    //console.log('---------------------------------'+JSON.stringify(actions))
     function handleClickOutside(event) {
       if (actionsRef.current && !actionsRef.current.contains(event.target)) {
         setIsOpen(false)

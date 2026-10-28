@@ -1,3 +1,4 @@
+import { triggerGlobalModal } from "@/utils/modalService"
 import axios from "axios"
 import { toast } from "sonner"
 
@@ -31,10 +32,10 @@ api.interceptors.response.use(
   (response) =>  {
         return response ;
   } ,
-  (error) => {
+  async(error) => {
     const status = error?.status;
     const serverMessage = error?.message;
-    console.log('-------- api.js -------------------'+status+'  --------- '+serverMessage)
+    //console.log('-------- api.js -------------------'+status+'  --------- '+JSON.stringify(error))
     switch(status) {
        case 401 : //Unauthirized (session expirée ou mauvais token)
            toast.error("Session expirée", {
@@ -54,9 +55,17 @@ api.interceptors.response.use(
          });
          break;
        case 500: 
+         await triggerGlobalModal({
+              title: "Erreur Serveur (500)",
+              message: serverMessage,
+              variant: "danger",
+              confirmText: "Fermer",
+              showCancel: false
+            });
+         /*
          toast.error("Erreur Serveur (500)", {
           description: "Un problème technique est survenu côté serveur. Réessayez plus tard.",
-        });
+        });*/
         break;
        default:
           toast.error("Erreur de connexion", {

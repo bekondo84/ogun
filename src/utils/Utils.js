@@ -141,3 +141,16 @@ export const refreshSnapshaps = (key, snapshaps) => {
 
     return snapshapstore
 }
+
+export const extension = (file) => {
+   const filename = file.name 
+   const fileExtension = filename.split('.').pop().toLowerCase();
+   return fileExtension
+}
+
+export const uuidFileName = (file) => {
+    const filename = file.name 
+    const extension = filename.split('.').pop().toLowerCase();
+    const uuid = crypto.randomUUID()
+    return uuid+'.'+extension
+}

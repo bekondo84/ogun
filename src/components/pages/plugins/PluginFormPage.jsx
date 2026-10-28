@@ -7,9 +7,10 @@ import ListFormPage from "@/components/pages/forms/ListFormPage"
 import FormPage from "@/components/pages/forms/FormPage"
 import { Loader2, AlertTriangle } from "lucide-react"
 import { getMeta, getMetaFromTypeCode } from "@/axios/MetaService"
-import { executedPostMethod } from "@/axios/DataService"
+import { executedPostMethod, uploadFile } from "@/axios/DataService"
 import DashboardPage from "../dashbord/DashboardPage"
 import { refreshBreadcrumbs, refreshSnapshaps, removeLastsystemSnapshaps, updateSystemSnapshaps } from "@/utils/Utils"
+import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
 
 export default function PluginFormPage() {
   const { id } = useParams()
@@ -30,6 +31,7 @@ export default function PluginFormPage() {
   const [metadata, setMetadata] = useState(null)
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({})
+  const [resources, setResources] = useState([]) //contains formData for upload files
   const [searchConfig, setSearchConfig] = useState({})
   const [predicates, setPredicates] = useState([])
   const [sortConfig, setSortConfig] = useState({})
@@ -40,9 +42,13 @@ export default function PluginFormPage() {
   const [editMode, setEditMode] = useState('V')
   const [snapshotstore, setSnapshotstore] = useState([])
   const [breadcrumbs, setBreadcrumbs] = useState([])
+  const [modal, ModalElement] = useOdooModal();
   
   
   
+  useEffect(() => {
+      //console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- '+JSON.stringify(data))
+  }, [resources])
   //For every change of th snapshots update the breadcrumps 
   useEffect(() => {
       setBreadcrumbs(refreshBreadcrumbs(snapshotstore))
@@ -109,6 +115,7 @@ export default function PluginFormPage() {
   }
 
   const handleSelected = async(record) => {
+      setResources([])
       setIsLoading(true)
       try {
          if (metadata !== null && activeMenu.viewMode.includes('view')) {
@@ -131,7 +138,7 @@ export default function PluginFormPage() {
   }
 
   const handleSave = async(mode, item) => {
-       
+    
     if (mode === 'V') {
        setEditMode('U')
     }
@@ -142,6 +149,15 @@ export default function PluginFormPage() {
             data: item,
             typeCode:metadata.typeCode
           })
+          //Upload resource and clean if exist
+          for (var index in resources) {
+            const resource = new FormData()
+            resource.append('file', resources[index].file)
+            resource.append('name', resources[index].name)
+            //console.log('-------------------- File recieve---- '+JSON.stringify(resources[res].file))
+              await uploadFile(resource)
+          }
+          setResources([])
         } finally {
           setIsLoading(false)
           setEditMode('V')
@@ -200,17 +216,18 @@ export default function PluginFormPage() {
   }
 
   const handleOnAction = async(metadata, data, action) => {
-     console.log('----------Dectection of OnAction Event ---------'+JSON.stringify(selectedIds));
-     
-     const isConfirmed = await confirm(`Voulez-vous vraiment appliquer  sur l'élément  ?`);
+    //console.log('Custom user action detected ---------------')
+     const isConfirmed = await modal({
+      title: "Confirmation de suppression",
+      message: `Êtes-vous sûr de vouloir supprimer l'élément  ? Cette action est irréversible.`,
+      variant: "danger",
+      confirmText: "Oui, supprimer",
+      cancelText: "Annuler",
+      showCancel: true
+    });
 
-     if (!isConfirmed) {
-        console.log("Action annulée par l'utilisateur.");
-        return;
-     }
-
-     // Poursuite du traitement...
-     console.log("Action confirmée, traitement en cours...");
+    if (!isConfirmed) return;
+    console.log('User confirm the execution of the action ---------------')
   }
 
   const handleShutcutAction = async(shutcut)  => {
@@ -346,7 +363,6 @@ export default function PluginFormPage() {
                   onDelete={handleOnDelete}
                   onSelected={handleSelected}
                   onRefresh={onRefresh}
-                  onAction={handleOnAction}
                   onBreadcrumbAction={onBreadcrumbAction}
                 />
               ) : viewMode ==="dashboard" ? (
@@ -359,6 +375,8 @@ export default function PluginFormPage() {
                   editMode={editMode}
                   isLoading={isLoading}
                   setFormValues={setData}
+                  resources={resources}
+                  setResources={setResources}
                   onSave={handleSave}
                   onCancel={handleCancel} 
                   onAction={handleOnAction}
@@ -368,7 +386,7 @@ export default function PluginFormPage() {
               )
             )}
           </div>
-          
+          {ModalElement}
         </div>
       </main>
 

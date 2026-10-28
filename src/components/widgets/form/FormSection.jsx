@@ -1,7 +1,15 @@
 import React, { useEffect } from "react"
 import FormField from "./FormField"
 
-export default function FormSection({ section, values, errors, onChange, disabled, editMode }) {
+export default function FormSection({ 
+  section, 
+  values, 
+  resources,
+  setResources,
+  errors, 
+  onChange, 
+  disabled, 
+  editMode }) {
 
   useEffect (() => {
            //console.log('----------------------- /+===========================x   : '+JSON.stringify(errors)+' ------- : '+values)
@@ -30,6 +38,8 @@ export default function FormSection({ section, values, errors, onChange, disable
           return <FormField 
              key={field.fieldName} 
              field={field} 
+             resources={resources}
+             setResources={setResources}
              value={values[field.fieldName]} 
              error={errors}
              onChange={onChange} 
@@ -41,6 +51,8 @@ export default function FormSection({ section, values, errors, onChange, disable
                key={idx} 
                section={sec} 
                values={values} 
+               resources={resources}
+               setResources={setResources}
                errors={errors}
                onChange={onChange} 
                disabled={disabled} 

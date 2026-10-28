@@ -9,12 +9,22 @@ import ManyToOne from "@/components/widgets/form/fields/ManyToOne"
 import OneToMany from "@/components/widgets/form/fields/OneToMany"
 import MediaField from "./fields/MediaField"
 import TextAreaField from "./fields/TextAreaField"
+import ImageField from "./fields/imageField"
 
-export default function FormField({ field, value, error, onChange, disabled, editMode }) {
+export default function FormField({ 
+  field, 
+  value, 
+  resources,
+  setResources,
+  error, 
+  onChange, 
+  disabled, 
+  editMode }) {
 
   useEffect(() => {
      // console.log('-******************************************* / '+JSON.stringify(editMode))
   }, [field, value])
+
   const readonly = disabled || editMode == 'V' || editMode==='C' && !field?.editable || editMode == 'U' && !field?.updatable
   switch (field.widget) {
     case "text":
@@ -49,10 +59,12 @@ export default function FormField({ field, value, error, onChange, disabled, edi
     case "file":
       return <FileUpload field={field} value={value} onChange={onChange} disabled={readonly} />
 
-    case "image":
     case "media":
       return <MediaField field={field} value={value} onChange={onChange} widthClass="w-48" heightClass="h-24" disabled={readonly} />
 
+    case "image":
+       return <ImageField field={field} value={value} onChange={onChange} widthClass="w-48" heightClass="h-24" disabled={readonly} resources={resources} setResources={setResources}/>
+    
     case "manytomany":
     case "manytomanylist":
       return <ManyToMany field={field} value={value} onChange={onChange} disabled={readonly} />

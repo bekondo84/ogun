@@ -10,7 +10,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  // 🚀 AJOUTEZ CE BLOC SERVER POUR LE PROXY
+  //AJOUTEZ CE BLOC SERVER POUR LE PROXY
   server: {
     proxy: {
       "/api": {

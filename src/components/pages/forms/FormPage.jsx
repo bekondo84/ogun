@@ -22,6 +22,8 @@ export default function FormDataModule({
          editMode,
          isLoading,
          setFormValues,
+         resources,
+         setResources,
          onSave,
          onCancel,
          onAction,
@@ -31,7 +33,12 @@ export default function FormDataModule({
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
   const [actions, setActions] = useState([])
-
+ // const [resources, setResources] = useState([]) //contains formData for upload files
+    
+useEffect(() => {
+      //console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- '+JSON.stringify(data))
+  }, [resources])
+ 
   useEffect(() => {
      // Réinitialisation des erreurs lors du changement de fiche
      setErrors({})
@@ -76,6 +83,8 @@ export default function FormDataModule({
               schema={metadata?.editorarea} 
               values={item} 
               errors={errors} 
+              resources={resources}
+              setResources={setResources}
               onChange={handleFieldChange} 
               disabled={!editMode} 
               editMode={editMode}

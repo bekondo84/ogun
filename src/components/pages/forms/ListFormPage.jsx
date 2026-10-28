@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { DataControls, TableView, KanbanView } from "@/components/widgets/list"
 import TableSkeleton from "@/components/widgets/list/TableSkeleton"
+import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
+import { useTranslation } from "react-i18next"
+import { executedPostMethod } from "@/axios/DataService"
+import { toast } from "sonner"
 
 export default function ListDataModule({
   predicates,
@@ -16,8 +20,6 @@ export default function ListDataModule({
   setCurrentPage,
   totalPages,
   viewMode,
-  selectedIds = [],
-  setSelectedIds,
   setViewMode,
   allowedViews,
   onCreate,
@@ -28,8 +30,9 @@ export default function ListDataModule({
   onBreadcrumbAction
 }) {
   const [searchQuery, setSearchQuery] = useState("")
-  //const [selectedIds, setSelectedIds] = useState([])
-  
+  const [selectedIds, setSelectedIds] = useState([])
+  const [modal, ModalElement] = useOdooModal();
+  const {t, i18n} = useTranslation();
   // MÉTA-DONNÉES DU TABLEAU (Mise à jour : Ajout du paramètre sortable)
   const columns = [...metadata.listView.columns.filter(col => col.show)]
   const actions = [...metadata.listView.actions]
@@ -48,6 +51,53 @@ export default function ListDataModule({
         //console.log('Handle page change event --------- '+page)
         //setCurrentPage(page)
         onRefresh(null, null, page)
+  }
+
+  const handleOnAction = async(meta, data, action) => {
+
+    if (action.type !== 'execute') {
+            await modal({
+                title: t('unauthorize_action'),
+                message: t('unauthorize_action_message'),
+                variant: "warning",
+                confirmText: t('close_btn'),
+                showCancel: false // Masque le bouton annuler (style simple alerte OK)
+              });
+              return
+    }
+    if (selectedIds == null || selectedIds.length <= 0) {
+          await modal({
+                title: t('nodata_selected'),
+                message: t('nodata_selected_message'),
+                variant: "warning",
+                confirmText: t('close_btn'),
+                showCancel: false // Masque le bouton annuler (style simple alerte OK)
+              });
+              return
+    }
+     setIsLoading(true)
+    try {
+        var data = []
+
+        for (var i in selectedIds) {
+            data.push(items[i])
+        }
+        //execution de l'action associée
+         
+        const response = await executedPostMethod(action.action, action.method, {
+                data: data,
+                plugin: null,
+                class: meta.type,
+                typeCode:meta.typeCode
+        })
+        toast.success(t('notification'), {
+              description: t('notification_success')
+        });
+    } finally {
+       setIsLoading(false)
+    }
+    
+    
   }
 
   return (
@@ -72,7 +122,7 @@ export default function ListDataModule({
         totalPages={totalPages}
         onPageChange={(page) => handlePageChange(page)}
         onRefresh={onRefresh}
-        onAction={onAction}
+        onAction={handleOnAction}
         onBreadcrumbAction={onBreadcrumbAction}
       />
 
@@ -103,6 +153,7 @@ export default function ListDataModule({
           />
         )}
       </main>
+      {ModalElement}
     </div>
   )
 }
