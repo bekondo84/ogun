@@ -10,7 +10,9 @@ export const fieldValue = (field, item) => {
         return formatTime(item[field.fieldName]);
      } else if (field.widget === 'password') {
         return '.......';
-     } else {
+     } else if (field.widget === 'media') {
+        return item[field.fieldName]?.url;
+     }else {
         return item[field.fieldName];
      }
 }

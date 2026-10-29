@@ -13,6 +13,18 @@ export async function executedPostMethod(action, method, data) {
     return response.data;
 }
 
+export async function executedDeleteMethod(action, method, data) {
+    const token = localStorage.getItem("erp_auth_token");
+    const response = await api.delete('/api/actions/execute/'+action+'/'+method, 
+        data,
+        {
+        headers: {
+            'Authorization':'Bearer '+token
+        }
+    });
+    return response.data;
+}
+
 export async function onSearch(field, searchText, size) {
     if (field && field.meta) {
         let meta = field.meta
@@ -65,3 +77,11 @@ export async function download (file) {
     return URL.createObjectURL(response.data);      
 }
 
+export async function deleteItem(item, metadata) {
+    await executedPostMethod(metadata.action, 'delete', {
+            data: item,
+            typeCode:metadata.typeCode,
+            class:metadata.type,
+            plugin: null
+       })
+}

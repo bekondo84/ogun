@@ -22,6 +22,8 @@ export default function ListDataModule({
   viewMode,
   setViewMode,
   allowedViews,
+  selectedIds,
+  setSelectedIds,
   onCreate,
   onDelete,
   onSelected,
@@ -30,7 +32,7 @@ export default function ListDataModule({
   onBreadcrumbAction
 }) {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedIds, setSelectedIds] = useState([])
+ // const [selectedIds, setSelectedIds] = useState([])
   const [modal, ModalElement] = useOdooModal();
   const {t, i18n} = useTranslation();
   // MÉTA-DONNÉES DU TABLEAU (Mise à jour : Ajout du paramètre sortable)

@@ -7,10 +7,11 @@ import ListFormPage from "@/components/pages/forms/ListFormPage"
 import FormPage from "@/components/pages/forms/FormPage"
 import { Loader2, AlertTriangle } from "lucide-react"
 import { getMeta, getMetaFromTypeCode } from "@/axios/MetaService"
-import { executedPostMethod, uploadFile } from "@/axios/DataService"
+import { deleteItem, executedPostMethod, uploadFile } from "@/axios/DataService"
 import DashboardPage from "../dashbord/DashboardPage"
 import { refreshBreadcrumbs, refreshSnapshaps, removeLastsystemSnapshaps, updateSystemSnapshaps } from "@/utils/Utils"
 import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
+import { useTranslation } from "react-i18next"
 
 export default function PluginFormPage() {
   const { id } = useParams()
@@ -43,6 +44,8 @@ export default function PluginFormPage() {
   const [snapshotstore, setSnapshotstore] = useState([])
   const [breadcrumbs, setBreadcrumbs] = useState([])
   const [modal, ModalElement] = useOdooModal();
+
+  const {t, i18n} = useTranslation()
   
   
   
@@ -85,7 +88,7 @@ export default function PluginFormPage() {
        setPredicates(predicat)
     }
     var sortrules = []
-    if(sortConf !== null && sortConf.key !== null) {
+    if(!!sortConf && Object.keys(sortConf).length >0) {
       setSortConfig(sortConf)
       sortrules = [sortConf.key+':'+sortConf.direction]
     }
@@ -210,24 +213,69 @@ export default function PluginFormPage() {
      }
   }
 
-  const handleOnDelete = (indexs) => {
+  const handleOnDelete = async(indexs) => {
    // console.log('--------Detection dune demande de tri'+JSON.stringify(searchConfig))
-    alert("delete ids : " + indexs)
-  }
-
-  const handleOnAction = async(metadata, data, action) => {
-    //console.log('Custom user action detected ---------------')
-     const isConfirmed = await modal({
-      title: "Confirmation de suppression",
-      message: `Êtes-vous sûr de vouloir supprimer l'élément  ? Cette action est irréversible.`,
+    const isConfirmed = await modal({
+      title: t('delete_warn'),
+      message: t('delete_warn_message'),
       variant: "danger",
-      confirmText: "Oui, supprimer",
-      cancelText: "Annuler",
+      confirmText: t('confirmation_btn'),
+      cancelText: t('close_btn'),
       showCancel: true
     });
 
     if (!isConfirmed) return;
-    console.log('User confirm the execution of the action ---------------')
+
+    var items = data['data']
+    //var selectedSeqNumber = [...indexs]
+    
+    for (var index in indexs) {
+      var pos = items.map(item => item.seqnumber).indexOf(indexs[index])
+       await deleteItem (items[pos], metadata)
+       //selectedSeqNumber.splice(index, 1)
+    }
+    setSelectedIds([])
+    //Refresh the list page
+    onRefresh(sortConfig, predicates, currentPage)
+  }
+
+  const handleOnAction = async(metadata, data, action) => {
+    //console.log('Custom user action detected ---------------')
+
+    if (action.askconfirmation == true) {
+        const isConfirmed = await modal({
+          title: t('delete_warn'),
+          message: t('delete_warn_message'),
+          variant: "danger",
+          confirmText: t('confirmation_btn'),
+          cancelText: t('close_btn'),
+          showCancel: true
+        });
+
+        try {
+          setIsLoading(true)
+        } finally {
+       setIsLoading(false)
+        }
+        if (!isConfirmed) return;
+    }//Show the conformation dialog if requiered
+
+    try {
+          setIsLoading(true)
+          const response = await executedPostMethod(action.action, action.method, {
+                          data: data,
+                          plugin: null,
+                          class: metadata.type,
+                          typeCode:metadata.typeCode
+                  })
+                  toast.success(t('notification'), {
+                        description: t('notification_success')
+                  });
+    } finally {
+       setIsLoading(false)
+    }
+     
+    console.log('User confirm the execution of the action ---------------'+JSON.stringify(data))
   }
 
   const handleShutcutAction = async(shutcut)  => {
@@ -279,6 +327,7 @@ export default function PluginFormPage() {
       setSearchConfig({})
       setSortConfig({})
       setPredicates([])
+      setSelectedIds([])
       const meta = await getMeta(menuObject.code)
       
       if (meta !== null) {
@@ -292,12 +341,6 @@ export default function PluginFormPage() {
       //console.log("Changement de vue ERP : " +menuObject.viewMode)
       setViewMode(targetView)
       setAllowedViews(meta.viewMode)
-      
-      // Nettoyage de l'espace de travail lors du changement d'onglet de liste
-      if (targetView === "list") {
-      // setFormData({ company: "", contact: "", email: "", value: "" })
-        setSelectedIds([])
-      }  
       //Initialize the 
       setSnapshotstore(updateSystemSnapshaps([], menuObject.label, meta, null, [], targetView))
     } finally {

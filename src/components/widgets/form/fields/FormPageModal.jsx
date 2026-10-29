@@ -5,7 +5,18 @@ import BaseInput from "./BaseInput"
 import DynamicForm from "../DynamicForm"
 // Importez vos autres inputs spécifiques si nécessaire (ex: ManyToOneInput)
 
-export default function FormPagesModal({ isOpen, onClose, metadata, initialData, formData, setFormData, onSave, disabled, onSearch, onFindById }) {
+export default function FormPagesModal({ 
+     isOpen, 
+     onClose, 
+     metadata, 
+     initialData, 
+     formData, 
+     setFormData, 
+     onSave, 
+     disabled, 
+     onSearch, 
+     onFindById 
+    }) {
   const [errors, setErrors] = useState({})
   const [editMode, setEditMode] = useState(true)
 
@@ -19,7 +30,7 @@ export default function FormPagesModal({ isOpen, onClose, metadata, initialData,
       ...prev,
       [field.fieldName]: newValue
     }))
-    console.log('-------------FieldChange event---------!!! '+newValue)
+    //console.log('-------------FieldChange event---------!!! '+newValue)
   }
 
   const handleSubmit = (e,) => {

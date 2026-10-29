@@ -10,5 +10,5 @@ export const triggerGlobalModal = (options) => {
     return showModalGlobal(options);
   }
   // Fallback si la modale n'est pas encore montée
-  alert(options.message);
+  // alert(options.message);
 };

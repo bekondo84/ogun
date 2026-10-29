@@ -37,7 +37,7 @@ export default function DynamicForm({
       </div>
 
       {/* Sections Globales */}
-      {schema.form && schema.form.sections && schema.form.sections.map((section, idx) => (
+      {schema?.form && schema?.form.sections && schema?.form.sections.map((section, idx) => (
         <FormSection 
             key={idx} 
             section={section} 
@@ -51,7 +51,7 @@ export default function DynamicForm({
       ))}
 
       {/* 🚀 CORRECTION : Rendu des Onglets Style Notebook Odoo */}
-      {schema.tabs && schema.tabs.length > 0 && (
+      {schema?.tabs && schema?.tabs.length > 0 && (
         <Tabs defaultValue={schema.tabs[0]?.id} className="w-full space-y-6 pt-4">
           
           {/* Liste d'onglets plats (Bordure basse grise, pas de fond gris de conteneur) */}

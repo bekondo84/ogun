@@ -19,7 +19,7 @@ export default function TableView({
 }) {
 
   
-  const isAllSelected = data?.length > 0 && selectedIds?.length === data?.length
+  const isAllSelected = data?.length > 0 && selectedIds?.length == data?.length
 
   return (
     // CONTENEUR GLOBAL : Gère le défilement horizontal fluide sur petit écran
@@ -111,7 +111,7 @@ export default function TableView({
                           <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-purple-600' : 'bg-slate-200'}`}>
                             <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition duration-200 ${cellValue ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
                           </div>
-                        ) : col.widget === 'image' ? (
+                        ) : col.widget === 'image' || col.widget === 'media' ? (
                             <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-purple-600' : 'bg-slate-200'}`}>
                               <TableImageCell value={cellValue} />
                            </div>

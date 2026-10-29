@@ -6,6 +6,7 @@ import FieldLabel from "@/components/widgets/form/fields/FieldLabel"
 import SearchMoreModal from "@/components/widgets/form/fields/SearchMoreModal"
 import { TableView } from "../../list"
 import { toast } from "sonner"
+import { useSearchMoreModal } from "../../notification/useSearchMoreModal"
 
 export default function ManyToMany({ field, value = [], onChange, disabled }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -15,6 +16,7 @@ export default function ManyToMany({ field, value = [], onChange, disabled }) {
   const [metadata, setMetadata] = useState(null)
   const [columns, setColumns] = useState([])
   const [sortConfig, setSortConfig] = useState({})
+  const [modal, ModalElement] = useSearchMoreModal()
 
   useEffect( () => {
       const meta = field?.meta || {}
@@ -22,7 +24,7 @@ export default function ManyToMany({ field, value = [], onChange, disabled }) {
       setMetadata (meta)
       setColumns(columns)
       //console.log('------------------------ : '+field)
-  }, [field, value])
+  }, [field])
 
   const handleSort = (columnKey) => {
   
@@ -35,7 +37,7 @@ export default function ManyToMany({ field, value = [], onChange, disabled }) {
   }
 
   const handleSubmit = (data) => {
-      console.log('***************************** : '+JSON.stringify(data))
+      //console.log('***************************** : '+JSON.stringify(data))
       let updatedList = [...value]
       if (data && data.length > 0 ) {
         data.forEach(i => {
@@ -103,6 +105,30 @@ export default function ManyToMany({ field, value = [], onChange, disabled }) {
          }
     }
 
+    const onShowModal = async () => {
+        setIsOpen(true);         
+        try {
+            const result = await modal({
+                isOpen: true, // 
+                onClose: () => setIsOpen(false),
+                meta: field?.meta,
+                data: inputValue,
+                onSelect: handleSelect, 
+                isSelectable: true,
+                onSave: handleSubmit
+            });
+            
+            // Si votre hook retourne les données sélectionnées via la promesse :
+            if (result) {
+                handleSubmit(result);
+            }
+        } catch (error) {
+            console.log("Modale fermée ou annulée", error);
+        } finally {
+            setIsOpen(false);
+        }
+    }
+
   // Extraire les colonnes à afficher depuis les métadonnées de la relation
   //const columns = metadata?.fields || [{ fieldName: "id", label: "ID" }, { fieldName: "displayName", label: "Libellé" }]
 
@@ -116,7 +142,7 @@ export default function ManyToMany({ field, value = [], onChange, disabled }) {
           <div className="flex items-center gap-2 self-end sm:self-auto">
             <button
               type="button"
-              onClick={() => setIsModalOpen(true)}
+              onClick={onShowModal}
               className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 hover:text-purple-700 bg-purple-50 dark:bg-purple-950/30 px-2.5 py-1 rounded"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -148,18 +174,7 @@ export default function ManyToMany({ field, value = [], onChange, disabled }) {
               onlineEditable={false}
               />
       </div>
-
-      {/* Modal de Sélection Avancée */}
-      <SearchMoreModal 
-              isOpen={isModalOpen} 
-              onClose={() => setIsModalOpen(false)} 
-              meta={field?.meta}
-              initialCriteria={inputValue} // On passe la saisie en cours à la modal
-              onSearch={onSearch}
-              onSelect={handleSelect}
-              isSelectable={true}
-              onSave={handleSubmit}
-            />
+       {ModalElement}      
     </div>
   )
 }

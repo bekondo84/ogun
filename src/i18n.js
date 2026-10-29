@@ -16,6 +16,9 @@ const resources = {
       notification_success:"L'opération s'est terminée avec succès.",
       delete_warn:"Confirmation de suppression",
       delete_warn_message: "Êtes-vous sûr de vouloir supprimer l'élément  ? Cette action est irréversible.",
+      create_btn:"Créer",
+      delete_btn:"Supprimer",
+      cancel_btn:"Annuler",
       logout: "Se déconnecter",
       greeting: "Bonjour, {{name}} !",
       items_count: "Vous avez {{count}} élément | Vous avez {{count}} éléments"

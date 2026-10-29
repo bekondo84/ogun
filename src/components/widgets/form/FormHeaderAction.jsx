@@ -8,6 +8,7 @@ import {
 import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft, icons } from "lucide-react"
 import ActionsDropdown from "../list/ActionsDropdown"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 export default function FormHeaderAction ({
        metadata, 
@@ -28,6 +29,7 @@ export default function FormHeaderAction ({
 
     const [workflowactions, setWorkflowactions] = useState([])
     const [customactions, setCustomactions] = useState([])
+    const {t, i18n} = useTranslation()
    
     // Fonction pour centraliser le changement d'étape et notifier l'utilisateur si besoin
     const handleWorkflowAction = (nextStage) => {
@@ -42,18 +44,18 @@ export default function FormHeaderAction ({
                 
                 {/* Actions système de gauche */}
                 <div className="flex items-center gap-2">
-                    {(editMode === 'U' || editMode === 'C') && (
+                    {(editMode === 'U' && metadata.canUpdate || editMode === 'C' && metadata.canCreate) && (
                        <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
                         Sauvegarder
                        </Button>
                     )} 
-                    {editMode === 'V' && (
+                    {editMode === 'V' && metadata.canUpdate && (
                        <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
                         Modifier
                        </Button>
                     )}                
                     <Button onClick={() => onCancel()} variant="outline" size="sm" className="h-8 text-slate-600 text-xs rounded-md cursor-pointer">
-                        Annuler
+                        {t('cancel_btn')}
                     </Button>
 
                     {/* Menu Déroulant Actions Contextuelles */}

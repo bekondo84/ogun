@@ -4,6 +4,7 @@ import ActionsDropdown from "./ActionsDropdown"
 import SmartSearch from "./SmartSearch"
 import Pagination from "./Pagination"
 import Breadcrumb from "../Breadcrumb"
+import { useTranslation } from "react-i18next"
 
 export default function DataControls({
   title = "Menu",
@@ -29,7 +30,10 @@ export default function DataControls({
 
   useEffect(() => {
      // console.log('---------------DataControls---------- : '+JSON.stringify(actions))
-  }, [metadata, currentPage, totalPages,columns])
+  }, [metadata, currentPage, totalPages,columns]);
+
+  const {t, i18n} = useTranslation();
+
   return (
     <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4 shadow-sm flex-wrap">
       
@@ -48,7 +52,7 @@ export default function DataControls({
               onClick={onCreate} 
               className="inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white h-8 px-3 text-xs font-semibold gap-1.5 rounded-md transition-colors cursor-pointer"
             >
-              <Plus className="h-3.5 w-3.5" /> Créer
+              <Plus className="h-3.5 w-3.5" /> {t('create_btn')}
             </button>
           )}
           {selectedCount > 0 && metadata?.canDelete && (
@@ -56,7 +60,7 @@ export default function DataControls({
               onClick={onDeleteSelected} 
               className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white h-8 px-3 text-xs font-semibold gap-1.5 rounded-md transition-all cursor-pointer"
             >
-              <Trash2 className="h-3.5 w-3.5" /> Supprimer ({selectedCount})
+              <Trash2 className="h-3.5 w-3.5" /> {t('delete_btn')} ({selectedCount})
             </button>
           )}
         </div>

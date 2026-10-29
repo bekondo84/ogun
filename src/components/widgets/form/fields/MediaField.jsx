@@ -1,6 +1,8 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { UploadCloud, X, RefreshCw, FileImage } from "lucide-react"
 import { toast } from "sonner"
+import { useSearchMoreModal } from "../../notification/useSearchMoreModal"
+import { download } from "@/axios/DataService"
 
 export default function MediaField({ 
   value,           
@@ -13,54 +15,88 @@ export default function MediaField({
   const [previewUrl, setPreviewUrl] = useState(value || null)
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef(null)
+  const [modal, ModalElement] = useSearchMoreModal()
+  const [isOpen, setIsOpen] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
+  const [inputValue, setInputValue] = useState("")
+  const [selectedItem, setSelectedItem] = useState(null)
 
-  const handleFileChange = (file) => {
-    if (!file) return
+   useEffect(() => {
+      //console.log('-----ManyToOneInput ----------------------------------- :'+JSON.stringify(value))
+      if (value && field?.meta) {
+        setInputValue(value?.stringValue)
+        setSelectedItem(value)
+        setSuggestions(value)
+      } else {
+        setSelectedItem(null)
+        setInputValue("")
+        setSuggestions(null)
+      }
+      downloadFile(value)
+    }, [value, field /*, onFindById*/])
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Format invalide", {
-        description: "Seuls les fichiers de type image (PNG, JPG, WEBP) sont autorisés."
-      })
-      return
+    const downloadFile = async(media) => {
+      var file = media?.url
+      try {
+          if (!file) {
+            return;
+          }
+          var isMounted = true
+          const objectUrl = await download(file)
+          // console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&& : '+JSON.stringify(objectUrl))
+            
+          if (isMounted && objectUrl != null) {
+            setPreviewUrl(objectUrl)
+          }
+      } catch (error) {
+        //console.error("Erreur lors du chargement de l'image sécurisée :", error);
+       // if (isMounted) setLoading(false);
+      }     
+      return () => {
+          isMounted = false;
+          if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+          }
+        };  
     }
 
-    if (file.size > maxSizeInMB * 1024 * 1024) {
-      toast.error("Fichier trop lourd", {
-        description: `La taille de l'image ne doit pas dépasser ${maxSizeInMB} Mo.`
-      })
-      return
+    const handleSelect = async(item) => {
+     // console.log('***************************** : '+JSON.stringify(item))
+      setSelectedItem(item)
+      setInputValue(item.stringValue)
+      onChange(field, item)
+      setIsOpen(false)
+      await downloadFile(item)
+      //setIsModalOpen(false)
     }
 
-    const objectUrl = URL.createObjectURL(file)
-    setPreviewUrl(objectUrl)
-
-    if (onChange) {
-      onChange(file)
-    }
-  }
-
-  const handleDragOver = (e) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
-
-  const handleDragLeave = () => {
-    setIsDragging(false)
-  }
-
-  const handleDrop = (e) => {
-    e.preventDefault()
-    setIsDragging(false)
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFileChange(e.dataTransfer.files[0])
-    }
+  const handleMediaChange = async() => {
+      setIsOpen(true);         
+      try {
+          const result = await modal({
+              isOpen: true, // 
+              onClose: () => setIsOpen(false),
+              meta: field?.meta,
+              data: suggestions,
+              onSelect: handleSelect
+          });
+          
+          // Si votre hook retourne les données sélectionnées via la promesse :
+          if (result) {
+              handleSubmit(result);
+          }
+      } catch (error) {
+          console.log("Modale fermée ou annulée", error);
+      } finally {
+          setIsOpen(false);
+      }
+    //console.log('------------ HandleMedia detected ------------------')
   }
 
   const handleClear = (e) => {
     e.stopPropagation() 
     setPreviewUrl(null)
-    if (onChange) onChange(null)
-    if (fileInputRef.current) fileInputRef.current.value = ""
+    if (onChange) onChange(field, null)
   }
 
   return (
@@ -72,20 +108,9 @@ export default function MediaField({
         {field.fieldName}
       </span>
 
-      <input 
-        type="file" 
-        ref={fileInputRef}
-        onChange={(e) => handleFileChange(e.target.files[0])}
-        accept="image/*"
-        className="hidden"
-      />
-
       {/* Injection dynamique de heightClass pour contrôler la hauteur de la zone */}
       <div 
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
+         onClick={handleMediaChange}
         className={`relative w-full rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden cursor-pointer group bg-slate-50/50 dark:bg-slate-950/20 transition-all ${heightClass} ${
           isDragging 
             ? "border-purple-600 bg-purple-50/20 dark:bg-purple-950/10" 
@@ -103,7 +128,7 @@ export default function MediaField({
             <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity duration-200 backdrop-blur-[1px]">
               <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                onClick={handleMediaChange}
                 className="p-2 bg-white/90 text-slate-700 rounded-full hover:bg-white hover:scale-110 shadow-md transition-all"
               >
                 <RefreshCw className="h-4 w-4" />
@@ -125,7 +150,7 @@ export default function MediaField({
             {/* Masquage intelligent du sous-texte sur les très petits formats de hauteur (ex: h-24) */}
             <div className="space-y-0.5 max-w-[90%]">
               <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 line-clamp-2">
-                Glissez ou <span className="text-purple-700 dark:text-purple-400 font-bold">parcourez</span>
+                Cliquer ou <span className="text-purple-700 dark:text-purple-400 font-bold">parcourez</span>
               </p>
               <p className="text-[9px] text-slate-400 dark:text-slate-500 hidden sm:block">
                 Max {maxSizeInMB} Mo
@@ -134,6 +159,7 @@ export default function MediaField({
           </div>
         )}
       </div>
+       {ModalElement}
     </div>
   )
 }
