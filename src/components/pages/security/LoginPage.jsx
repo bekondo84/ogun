@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, Lock, User, Globe, Loader2, AlertCircle } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("")
   const navigate = useNavigate()
   const loginMutation = useLogin()
+  const {t, i18n} = useTranslation()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -30,15 +32,17 @@ export default function LoginPage() {
           // 🔐 Stockage du token de session ERP
           //console.log(data);
           if (data?.access_token) {
-            localStorage.setItem("erp_auth_token", data.access_token)
-           // console.log('Hey this is the tolen store :: '+data.access_token);            
+            localStorage.setItem("erp_auth_token", data.access_token)            
+          }
+          if (data?.user_name) {
+              localStorage.setItem("user_name", data.user_name) 
           }
           navigate("/apps")
         },
         onError: (error) => {
           // Formatage du message d'erreur provenant de votre API REST
-          const apiError = error.response?.data?.message || "Identifiants ou Mot de passe incorrects."
-          console.log('----------------- : '+JSON.stringify(error))
+          const apiError = error.response?.data?.message || t('login_error')
+          //console.log('----------------- : '+JSON.stringify(error))
           setErrorMessage(apiError)
         }
       }
@@ -71,7 +75,7 @@ export default function LoginPage() {
                 <div className="p-3 border border-red-200 bg-red-50 text-red-700 text-xs font-semibold rounded-[4px] flex items-start gap-2 animate-in fade-in zoom-in-95 duration-150">
                   <AlertCircle className="h-4 w-4 shrink-0 text-red-600 mt-0.5" />
                   <div>
-                    <span className="block font-bold">Échec de la connexion</span>
+                    <span className="block font-bold">{t('connexion_fail')}</span>
                     <span className="block text-[11px] font-medium opacity-90 mt-0.5">{errorMessage}</span>
                   </div>
                 </div>
@@ -80,7 +84,7 @@ export default function LoginPage() {
               {/* Champ : Utilisateur */}
               <div className="space-y-1">
                 <Label htmlFor="username" className="text-xs font-semibold text-[#556b82]">
-                  Utilisateur
+                  {t('user')}
                 </Label>
                 <div className="relative flex items-center border-b border-[#a3b8cc] focus-within:border-[#0a6ed1] transition-colors">
                   <div className="flex h-10 w-9 items-center justify-center text-[#6a7d91] border-r border-[#e0e7ed] mr-2">
@@ -103,7 +107,7 @@ export default function LoginPage() {
               {/* Champ : Mot de passe */}
               <div className="space-y-1">
                 <Label htmlFor="password" className="text-xs font-semibold text-[#556b82]">
-                  Mot de passe
+                  {t('password')}
                 </Label>
                 <div className="relative flex items-center border-b border-[#a3b8cc] focus-within:border-[#0a6ed1] transition-colors">
                   <div className="flex h-10 w-9 items-center justify-center text-[#6a7d91] border-r border-[#e0e7ed] mr-2">
@@ -133,10 +137,10 @@ export default function LoginPage() {
               {/* Liens secondaires */}
               <div className="flex items-center justify-between pt-1 text-xs font-medium">
                 <a href="#" className="text-[#0a6ed1] hover:text-[#0854a0] hover:underline">
-                  Changer le mot de passe
+                  {t('change_passord')}
                 </a>
                 <a href="#" className="text-[#556b82] hover:text-[#333] hover:underline">
-                  Mot de passe oublié ?
+                  {t('forget_password')}
                 </a>
               </div>
 
@@ -163,7 +167,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-center gap-4 text-xs font-medium text-[#556b82] pt-2">
           <div className="flex items-center gap-1">
             <Globe className="h-3.5 w-3.5 text-[#6a7d91]" />
-            <span>Langue :</span>
+            <span>{t('language')}</span>
           </div>
           <select className="bg-transparent border-none text-[#0a6ed1] font-semibold cursor-pointer outline-none focus:underline">
             <option value="fr">Français (FR)</option>

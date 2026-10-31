@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react"
 import { UploadCloud, X, RefreshCw, FileImage } from "lucide-react"
 import { toast } from "sonner"
-import { extension, uuidFileName } from "@/utils/Utils"
+import { extension, MAX_FILE_SIZE, uuidFileName } from "@/utils/Utils"
 import { download } from "@/axios/DataService"
 import { useOdooModal } from "../../notification/useOdooModal"
 import { useTranslation } from "react-i18next"
@@ -10,7 +10,6 @@ export default function ImageField({
   value,           
   onChange,        
   field ,
-  maxSizeInMB = 5,
   widthClass = "w-full max-w-sm", 
   heightClass = "h-48",
   resources,
@@ -64,9 +63,9 @@ export default function ImageField({
       return
     }
 
-    if (file.size > maxSizeInMB * 1024 * 1024) {
-      toast.error("Fichier trop lourd", {
-        description: `La taille de l'image ne doit pas dépasser ${maxSizeInMB} Mo.`
+    if (file.size > MAX_FILE_SIZE * 1024 * 1024) {
+      toast.error(t('filesize_warning'), {
+        description: `${t('filesize_warning_message')} ${maxSizeInMB} Mo.`
       })
       return
     }
@@ -130,7 +129,7 @@ export default function ImageField({
     var images = [...resources]
     var index = images.map(ig => ig.name).indexOf(value)
     if (index >=0) {
-      images[index].action='delete'
+      images.splice(index, 1)
     }
     setResources(images)
 
@@ -145,7 +144,7 @@ export default function ImageField({
     <div className={`flex flex-col gap-1.5 ${widthClass}`}>
       
       <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-        <FileImage className="h-3.5 w-3.5 text-slate-400" />
+        <FileImage className="h-3.5 w-3.5 text-slate-400"  />
         {field.fieldName}
       </span>
 
@@ -205,7 +204,7 @@ export default function ImageField({
                 Glissez ou <span className="text-purple-700 dark:text-purple-400 font-bold">parcourez</span>
               </p>
               <p className="text-[9px] text-slate-400 dark:text-slate-500 hidden sm:block">
-                Max {maxSizeInMB} Mo
+                Max {MAX_FILE_SIZE} Mo
               </p>
             </div>
           </div>

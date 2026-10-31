@@ -57,7 +57,7 @@ export default function FormField({
       return <Toggle field={field} value={value} onChange={onChange} disabled={readonly} />
 
     case "file":
-      return <FileUpload field={field} value={value} onChange={onChange} disabled={readonly} />
+      return <FileUpload field={field} value={value} onChange={onChange} disabled={readonly} resources={resources} setResources={setResources} error={error}/>
 
     case "media":
       return <MediaField field={field} value={value} onChange={onChange} widthClass="w-48" heightClass="h-24" disabled={readonly} />

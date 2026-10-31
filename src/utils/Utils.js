@@ -1,3 +1,5 @@
+export const MAX_FILE_SIZE = 50
+
 /**
  * Convert the base java type to corresponding java type
  * @param {*} type 
@@ -153,4 +155,29 @@ export const uuidFileName = (file) => {
     const extension = filename.split('.').pop().toLowerCase();
     const uuid = crypto.randomUUID()
     return uuid+'.'+extension
+}
+
+export const  getInitials = (fullName) => {
+  if (!fullName || typeof fullName !== "string") return "";
+
+  return fullName
+    .trim()
+    .split(/\s+/) // Découpe par un ou plusieurs espaces
+    .map(word => word.charAt(0).toUpperCase()) // Prend la 1ère lettre de chaque mot en majuscule
+    .join(""); // Rassemble le tout
+}
+
+export const compare = (value_1, value_2, criteria) => {
+        if (criteria === 'eq') 
+            return value_1 == value_2
+        else if (criteria == 'neq')
+            return value_1 != value_2
+        else if (criteria == 'gt')
+            return value_1 > value_2
+        else if (criteria == 'ge')
+            return value_1 >= value_2
+        else if (criteria == 'lt')
+            return value_1 < value_2
+        else if (criteria == 'le')
+            return value_1 <= value_2
 }

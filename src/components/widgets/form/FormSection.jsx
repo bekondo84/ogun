@@ -1,5 +1,6 @@
 import React, { useEffect } from "react"
 import FormField from "./FormField"
+import { visible } from "@/utils/FormUtils"
 
 export default function FormSection({ 
   section, 
@@ -7,6 +8,7 @@ export default function FormSection({
   resources,
   setResources,
   errors, 
+  fields = [],
   onChange, 
   disabled, 
   editMode }) {
@@ -34,8 +36,8 @@ export default function FormSection({
       
       {/* Espacement horizontal large pour séparer proprement la colonne de gauche de celle de droite */}
       <div className={`grid grid-cols-1 ${gridClass} gap-x-12 gap-y-3`}>
-        {section.fields.map((field) => {
-          return <FormField 
+        {section.fields.map((field) => visible(fields, field.visibleWhen, values) ? (
+          <FormField 
              key={field.fieldName} 
              field={field} 
              resources={resources}
@@ -45,8 +47,8 @@ export default function FormSection({
              onChange={onChange} 
              disabled={disabled} 
              editMode={editMode}/>
-        })}
-        {section.sections.map((sec, idx) => (
+        ):null)}
+        {section.sections.map((sec, idx) =>  visible(fields, sec.visibleWhen, values) ? (
             <FormSection 
                key={idx} 
                section={sec} 
@@ -57,7 +59,7 @@ export default function FormSection({
                onChange={onChange} 
                disabled={disabled} 
                editMode={editMode}/>
-        ))}
+        ): null)}
       </div>
     </div>
   )

@@ -3,10 +3,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import FormSection from "./FormSection"
 import { icons, Circle } from "lucide-react"
 import Shutcut from "./Shutcut"
+import { getFormFields, visible } from "@/utils/FormUtils"
 
 export default function DynamicForm({ 
   meta, 
   schema, 
+  fields = [],
   values, 
   errors, 
   resources,
@@ -16,11 +18,11 @@ export default function DynamicForm({
   editMode, 
   shutcutAction }) {
   const [shutcuts, setShutcuts] = useState([])
-
+  
   useEffect (() => {
      setShutcuts(schema?.shutcuts)
-       //console.log('-------.??????---------------- /////////// : '+JSON.stringify(meta)+' ----- '+JSON.stringify(values))
-    }, [schema, values])
+     //  console.log('-------.??????---------------- /////////// : '+fieldList?.length)
+    }, [schema])
 
   return (
     // "shadow-sm border rounded-xl" imite la balise <sheet> d'Odoo
@@ -38,7 +40,7 @@ export default function DynamicForm({
 
       {/* Sections Globales */}
       {schema?.form && schema?.form.sections && schema?.form.sections.map((section, idx) => (
-        <FormSection 
+        visible(fields, section.visibleWhen, values) ? (<FormSection 
             key={idx} 
             section={section} 
             values={values} 
@@ -47,7 +49,9 @@ export default function DynamicForm({
             setResources={setResources}
             onChange={onChange} 
             disabled={disabled}
-            editMode={editMode} />
+            editMode={editMode} 
+            fields={fields}/>
+        ): null
       ))}
 
       {/* 🚀 CORRECTION : Rendu des Onglets Style Notebook Odoo */}
@@ -57,21 +61,21 @@ export default function DynamicForm({
           {/* Liste d'onglets plats (Bordure basse grise, pas de fond gris de conteneur) */}
           <TabsList className="justify-start w-full border-b rounded-none h-9 p-0 gap-0 bg-transparent border-slate-200 dark:border-slate-800">
             {schema.tabs.map((tab) => (
-              <TabsTrigger
-                key={tab.id}
-                value={tab.id}
+              visible(fields, tab.visibleWhen, values) ? (<TabsTrigger
+                key={tab.name}
+                value={tab.name}
                 className="text-xs font-bold text-slate-500 data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white rounded-none bg-transparent shadow-none border-b-2 border-transparent h-9 px-4 transition-all cursor-pointer hover:text-slate-800"
               >
-                {tab.label}
-              </TabsTrigger>
+                {tab.title}
+              </TabsTrigger>) : null
             ))}
           </TabsList>
 
           {/* Zones de contenus des onglets */}
           {schema.tabs.map((tab) => (
-            <TabsContent key={tab.id} value={tab.id} className="space-y-6 outline-none focus:ring-0 pt-2 animate-in fade-in-50 duration-200">
+            visible(fields, tab.visibleWhen, values) ? (<TabsContent key={tab.name} value={tab.name} className="space-y-6 outline-none focus:ring-0 pt-2 animate-in fade-in-50 duration-200">
               {tab.sections.map((section, idx) => (
-                <FormSection 
+                visible(fields, section.visibleWhen, values) ? (<FormSection 
                      key={idx} 
                      section={section} 
                      values={values} 
@@ -79,9 +83,10 @@ export default function DynamicForm({
                      resources={resources}
                      setResources={setResources}
                      onChange={onChange} 
-                     disabled={disabled} />
+                     disabled={disabled}
+                     fields={fields} />) : null
               ))}
-            </TabsContent>
+            </TabsContent>) : null
           ))}
           
         </Tabs>

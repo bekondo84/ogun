@@ -14,7 +14,11 @@ import DesktopMenu from "./DesktopMenu"
 import MobileMenu from "./MobileMenu"
 import LoginWidget from "@/components/pages/security/LoginWidget"
 
-export default function PluginHeader({ pluginName, menus, activeMenu, setActiveMenu }) {
+export default function PluginHeader({
+    pluginName, 
+    menus, 
+    activeMenu, 
+    setActiveMenu }) {
   const navigate = useNavigate()
 
   //console.log (menus)
