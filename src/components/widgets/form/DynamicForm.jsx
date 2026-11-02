@@ -29,14 +29,14 @@ export default function DynamicForm({
     <div className="w-full space-y-8 bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 p-6 md:p-8 shadow-sm relative">
       
       {/* Raccourcis hauts (Stat-Buttons) */}
-      <div className="flex flex-wrap items-center justify-end gap-1 border-b border-slate-100 dark:border-slate-800 pb-4 mb-2">
+      {editMode != 'C' && <div className="flex flex-wrap items-center justify-end gap-1 border-b border-slate-100 dark:border-slate-800 pb-4 mb-2">
         {shutcuts?.map((btn) => {
           const Icon = icons[btn.icon] ?? Circle
           return (
             <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction} meta={meta} item={values}/>
           )
         })}
-      </div>
+      </div>}
 
       {/* Sections Globales */}
       {schema?.form && schema?.form.sections && schema?.form.sections.map((section, idx) => (

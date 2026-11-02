@@ -23,8 +23,10 @@ export default function FormHeaderAction ({
       }) {
 
     useEffect(() => {
+        if (editMode != 'C') {
            setWorkflowactions(actions.filter(act => act.position=='workflow'))
            setCustomactions(actions.filter(act => act.position=='actions'))
+        }
     }, [actions])
 
     const [workflowactions, setWorkflowactions] = useState([])
@@ -59,7 +61,7 @@ export default function FormHeaderAction ({
                     </Button>
 
                     {/* Menu Déroulant Actions Contextuelles */}
-                    <ActionsDropdown metadata={metadata} data={item} actions={customactions} onAction={onAction}/>
+                    {customactions && customactions.length > 0 && <ActionsDropdown metadata={metadata} data={item} actions={customactions} onAction={onAction}/>}                    
                 </div>
 
                 {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}

@@ -33,9 +33,10 @@ api.interceptors.response.use(
         return response ;
   } ,
   async(error) => {
-    const status = error?.status;
-    const serverMessage = error?.message;
-    //console.log('-------- api.js -------------------'+status+'  --------- '+JSON.stringify(error))
+    const data = error?.response?.data
+    const status = error?.response?.status;
+    const serverMessage = data?.message;
+    //console.log('-------- api.js -------------------'+status+'  --------- '+JSON.stringify(error?.response))
     switch(status) {
        case 401 : //Unauthirized (session expirée ou mauvais token)
            toast.error("Session expirée", {

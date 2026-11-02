@@ -12,6 +12,8 @@ import DashboardPage from "../dashbord/DashboardPage"
 import { refreshBreadcrumbs, refreshSnapshaps, removeLastsystemSnapshaps, updateSystemSnapshaps } from "@/utils/Utils"
 import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
 import { useTranslation } from "react-i18next"
+import { executeAction, executeModal, executeNavigate } from "@/utils/ActionUtils"
+import { useActionModal } from "@/components/widgets/notification/useActionModal"
 
 export default function PluginFormPage() {
   const { id } = useParams()
@@ -44,6 +46,7 @@ export default function PluginFormPage() {
   const [snapshotstore, setSnapshotstore] = useState([])
   const [breadcrumbs, setBreadcrumbs] = useState([])
   const [modal, ModalElement] = useOdooModal();
+  const [actionModal, ActionModalElement] = useActionModal()
 
   const {t, i18n} = useTranslation()
   
@@ -161,6 +164,8 @@ export default function PluginFormPage() {
               await uploadFile(resource)
           }
           setResources([])
+           //Refresh the item value
+          await handleSelected(item)
         } finally {
           setIsLoading(false)
           setEditMode('V')
@@ -243,39 +248,20 @@ export default function PluginFormPage() {
     //console.log('Custom user action detected ---------------')
 
     if (action.askconfirmation == true) {
-        const isConfirmed = await modal({
-          title: t('delete_warn'),
-          message: t('delete_warn_message'),
-          variant: "danger",
-          confirmText: t('confirmation_btn'),
-          cancelText: t('close_btn'),
-          showCancel: true
-        });
-
-        try {
-          setIsLoading(true)
-        } finally {
-       setIsLoading(false)
-        }
+        const isConfirmed = await modal({title: t('action_confirm'), message: t('action_confirm_message'), variant: "warning", confirmText: t('confirmation_btn'), cancelText: t('close_btn'), showCancel: true});
         if (!isConfirmed) return;
     }//Show the conformation dialog if requiered
 
-    try {
-          setIsLoading(true)
-          const response = await executedPostMethod(action.action, action.method, {
-                          data: data,
-                          plugin: null,
-                          class: metadata.type,
-                          typeCode:metadata.typeCode
-                  })
-                  toast.success(t('notification'), {
-                        description: t('notification_success')
-                  });
-    } finally {
-       setIsLoading(false)
-    }
-     
-    console.log('User confirm the execution of the action ---------------'+JSON.stringify(data))
+     if (action.type == 'execute') {
+         await executeAction(metadata, action, data, setIsLoading, setData, toast)
+     } else if (action.type == 'navigate') {
+         await executeNavigate(action, data, setMetadata, setEditMode, setViewMode, setAllowedViews, setSnapshotstore, updateSystemSnapshaps, snapshotstore, setData, setIsLoading, toast)
+          setEditMode('C')
+     } else if (action.type == 'modal') {
+        await executeModal(action, data, actionModal, toast)
+     } else {
+         //Show modal to notify that the action type is unknow
+     }
   }
 
   const handleShutcutAction = async(shutcut)  => {
@@ -291,7 +277,6 @@ export default function PluginFormPage() {
                 setViewMode(targetView)
                 setAllowedViews(meta.viewMode)
                 if (targetView === "list") {
-                      // setFormData({ company: "", contact: "", email: "", value: "" })
                   setSelectedIds([])
                 }  
                 let label = targetView != 'view' ? meta.listViewTitle : meta.formViewTitle
@@ -429,7 +414,7 @@ export default function PluginFormPage() {
               )
             )}
           </div>
-          {ModalElement}
+          {ModalElement}  {ActionModalElement}
         </div>
       </main>
 

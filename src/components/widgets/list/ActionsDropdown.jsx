@@ -49,13 +49,13 @@ export default function ActionsDropdown({
                   </button>
               )
           })}       
-          {actions?.length > 0 && <div className="h-px bg-slate-100 dark:bg-slate-800 my-1" />}
-          <button onClick={() => { alert("Export Excel"); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+          {false && actions?.length > 0 && <div className="h-px bg-slate-100 dark:bg-slate-800 my-1" />}
+          {false && <button onClick={() => { alert("Export Excel"); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
             <Download className="h-3.5 w-3.5 text-slate-500" /> Exporter les lignes (.xlsx)
-          </button>
-          <button onClick={() => { alert("Génération PDF"); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+          </button>}
+          {false && <button onClick={() => { alert("Génération PDF"); setIsOpen(false); }} className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-xs rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
             <FileText className="h-3.5 w-3.5 text-slate-500" /> Imprimer la vue en PDF
-          </button>
+          </button>}          
         </div>
       )}
     </div>

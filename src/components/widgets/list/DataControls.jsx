@@ -68,11 +68,7 @@ export default function DataControls({
 
       {/* SECTION 2 : Recherche & Actions (Intégration des sous-composants) */}
       <div className="flex flex-1 max-w-2xl items-start gap-2">
-        <ActionsDropdown 
-          metadata={metadata}
-          actions={actions}
-          onAction={onAction}
-        />
+        {actions && actions.length > 0 && <ActionsDropdown metadata={metadata} actions={actions}  onAction={onAction} />}        
         <SmartSearch columns={columns} predicates={predicates} setPredicates={setPredicates}  onRefresh={onRefresh} />
       </div>
 

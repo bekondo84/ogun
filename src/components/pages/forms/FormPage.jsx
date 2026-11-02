@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft } from "lucide-react"
 import FormPageSkeleton from "../skeletons/FormPageSkeleton"
-import { getFormFields, isDependsOn, validateForm } from "@/utils/FormUtils"
+import { dependsOn, getFormFields, isDependsOn, validateForm } from "@/utils/FormUtils"
 import { toast } from "sonner"
 import FormHeaderTitle from "@/components/widgets/form/FormHeaderTitle"
 import FormHeaderAction from "@/components/widgets/form/FormHeaderAction"
@@ -67,15 +67,15 @@ useEffect(() => {
        
        for (var index in dependsOnFields) {
            var dependField = dependsOnFields[index]
-           console.log('FormPage.handleFieldChange ----------------'+JSON.stringify(dependField))
-           /*
-           const result = await executedPostMethod(metadata.action, dependField.handler, {
+           var d = dependsOn(field.fieldName, dependField)
+           
+           const result = await executedPostMethod(metadata.action, d.handler, {
                   data: value,
                   plugin: null,
                   class: metadata.type,
                   typeCode: metadata.typeCode
               })
-              setFormValues(prev => ({...prev, [dependField?.fieldName]:result}))*/
+              setFormValues(prev => ({...prev, [dependField?.fieldName]:result?.data}))
        }
     }
   }
@@ -89,7 +89,8 @@ useEffect(() => {
                         class: metadata.type,
                         typeCode: metadata.typeCode
                     })
-          const hasDuplicate = response && Object.keys(response).length > 0;
+          //console.log('FormPage. ------------------ '+JSON.stringify(response))
+          const hasDuplicate = response && response.data && Object.keys(response.data).length > 0;
           if (hasDuplicate) {
             await modal({
                       title: t('duplicate_key'),
@@ -102,7 +103,8 @@ useEffect(() => {
             return false
           }
           //Validation of uniques contraints
-          //TODO
+          //Extract all unique keys fields which is not primary key
+          const uniquekeys = fields.filter(field => field.unique && !field.primaryKey)
        }
        return true
   }
@@ -120,11 +122,9 @@ useEffect(() => {
         }
     }
      //console.log('FormPage.handleSubmit --------------------------------- '+checkContraints(mode, item))
-    if (await checkContraints(mode, item)) {
-         onSave(mode, item)
-    } else {
-        
-    }
+    /*if (await checkContraints(mode, item)) */{
+         onSave(mode, item)         
+    } 
    
   }
 

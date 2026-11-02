@@ -117,8 +117,12 @@ export const visible = (fields, rulestr, formdata) => {
       }   
       
 }
+
 /**
- * Check if field_1 depends on field_2
+ * 
+ * @param {*} field_1 
+ * @param {*} field_2 
+ * @returns 
  */
 export const isDependsOn = (field_1, field_2) => {
   //console.log ('FormUtils.isDependsOn ----------------- '+field_1.dependsOn)
@@ -128,6 +132,24 @@ export const isDependsOn = (field_1, field_2) => {
     if (!Array.isArray(dependsOn))
       return false
     return dependsOn.map(d => d.field).includes(field_2.fieldName)
+}
+
+/**
+ * 
+ * @param {*} name 
+ * @param {*} field 
+ * @returns 
+ */
+export const dependsOn = (name, field) => {
+      if (name == null || name == undefined)
+        return null
+      if (field == null || field == undefined) 
+        return null
+      const dependsOn = new Function(`return ${field.dependsOn}`) ()
+     if (!Array.isArray(dependsOn))
+       return null
+     const values =  dependsOn.filter(fie => fie.field == name)
+     return values.length > 0 ? values[0] : null
 }
 
 const getSectionFields = (section, fields) => {
