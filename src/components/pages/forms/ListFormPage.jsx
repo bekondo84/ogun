@@ -9,6 +9,8 @@ import { toast } from "sonner"
 export default function ListDataModule({
   predicates,
   setPredicates,
+  filters,
+  setFilters,
   sortConfig,
   setSortConfig,
   isLoading,
@@ -113,6 +115,8 @@ export default function ListDataModule({
         metadata={metadata}
         setPredicates={setPredicates}
         predicates={predicates}
+        filters={filters}
+        setFilters={setFilters}
         viewMode={viewMode}
         setViewMode={setViewMode}
         searchQuery={searchQuery}
@@ -137,6 +141,7 @@ export default function ListDataModule({
            
         ): viewMode === "list" ? (
           <TableView
+            metadata={metadata}
             columns={columns}
             data={items} // On injecte les données triées
             selectedIds={selectedIds}

@@ -1,11 +1,13 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowUp, ArrowDown, ArrowUpDown, Edit2 } from "lucide-react"
 import { fieldValue } from "@/utils/FieldUtils"
 import TableImageCell from "../form/fields/TableImageCell"
+import { combovalues } from "@/axios/DataService"
 
 
 export default function TableView({ 
+  metadata,
   columns, 
   data, 
   selectedIds, 
@@ -18,7 +20,47 @@ export default function TableView({
   onlineEditable = false
 }) {
 
-  
+useEffect(() => {
+      buildSelectValues();      
+}, [columns])  
+
+  const [selectValues, setSelectValues] = useState([]) //
+
+  /**
+   * Build all the combobox fild value
+   * @returns 
+   */
+  const buildSelectValues = async() => {
+     const rows =  columns.filter(col => col.widget == 'combobox');
+     const result = []
+
+     for (var index in rows) {
+          var row  = rows[index]
+          var values = await combovalues(metadata.typeCode, row)
+          result.push({
+              field: row.fieldName,
+              values: values
+          })
+     }
+    // console.log('TableView.useEffect ---------------------- '+JSON.stringify(result))
+    setSelectValues(result);
+  }
+
+  /**
+   * Value of t
+   * @param {*} fieldName 
+   * @param {*} id 
+   */
+  const getComboxValue = (fieldName, id) => {
+        const items = selectValues?.filter(it => it.field == fieldName)
+        
+        if (items && Array.isArray(items)  && items.length > 0) {
+           return items[0].values[id]
+        }
+
+        return id;
+  }
+
   const isAllSelected = data?.length > 0 && selectedIds?.length == data?.length
 
   return (
@@ -115,6 +157,8 @@ export default function TableView({
                             <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-purple-600' : 'bg-slate-200'}`}>
                               <TableImageCell value={cellValue} />
                            </div>
+                        ):col.widget === 'combobox' ? (
+                            String(getComboxValue(col.fieldName, cellValue), '')
                         ): (
                           // Valeur textuelle par défaut (chaîne, date, nombre, etc.)
                           String(cellValue ?? '')

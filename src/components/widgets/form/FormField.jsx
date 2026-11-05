@@ -10,11 +10,13 @@ import OneToMany from "@/components/widgets/form/fields/OneToMany"
 import MediaField from "./fields/MediaField"
 import TextAreaField from "./fields/TextAreaField"
 import ImageField from "./fields/imageField"
+import Combobox from "./fields/Combobox"
 
 export default function FormField({ 
   field, 
   value, 
   resources,
+  metadata,
   setResources,
   error, 
   onChange, 
@@ -71,6 +73,9 @@ export default function FormField({
 
     case "onetomany":
       return <OneToMany field={field} value={value} onChange={onChange} disabled={readonly}/>
+    
+    case "combobox":
+      return <Combobox  metadata={metadata} field={field} value={value} onChange={onChange} disabled={readonly} error={error}/>
 
     default:
       return null

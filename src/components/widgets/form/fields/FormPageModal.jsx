@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button"
 import BaseInput from "./BaseInput"
 import DynamicForm from "../DynamicForm"
+import { useTranslation } from "react-i18next"
 // Importez vos autres inputs spécifiques si nécessaire (ex: ManyToOneInput)
 
 export default function FormPagesModal({ 
@@ -19,6 +20,7 @@ export default function FormPagesModal({
     }) {
   const [errors, setErrors] = useState({})
   const [editMode, setEditMode] = useState(true)
+  const {t, i18n} = useTranslation()
 
   // Réinitialiser le formulaire à chaque ouverture/changement de mode
   useEffect(() => {

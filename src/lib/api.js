@@ -27,7 +27,7 @@ api.interceptors.request.use(
   }
 )
 
-// 🛡️ 3. L'Intercepteur Erreur : Déconnecte automatiquement si le jeton a expiré (Erreur 401)
+// 3. L'Intercepteur Erreur : Déconnecte automatiquement si le jeton a expiré (Erreur 401)
 api.interceptors.response.use(
   (response) =>  {
         return response ;
@@ -68,6 +68,8 @@ api.interceptors.response.use(
           description: "Un problème technique est survenu côté serveur. Réessayez plus tard.",
         });*/
         break;
+       case 204 :
+          break;
        default:
           toast.error("Erreur de connexion", {
           description: "Impossible de joindre le serveur API. Vérifiez votre réseau.",

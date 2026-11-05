@@ -26,6 +26,7 @@ export default function SearchMoreModal({
   const [allowedViews, setAllowedViews] = useState("")
   const [viewMode, setViewMode] = useState("list")
   const [sortConfig, setSortConfig] = useState({})
+  const [filters, setFilters] = useState([]) 
 
   useEffect(() => {
    const handleKeyDown = (e) => {
@@ -136,9 +137,12 @@ export default function SearchMoreModal({
         {/* Barre de recherche et Pagination */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-2">
           <SmartSearch 
+            metadata={meta}
             columns={columns} 
             predicates={predicates} 
             setPredicates={setPredicates}  
+            filters={filters}
+            setFilters={setFilters}
             onRefresh={(config, preds) => onRefresh(config, preds, 1)} 
           />
           

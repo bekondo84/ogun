@@ -15,6 +15,8 @@ export default function DataControls({
   metadata,
   predicates = [],
   setPredicates,
+  filters,
+  setFilters,
   viewMode = "list",
   setViewMode,
   selectedCount = 0,
@@ -66,14 +68,26 @@ export default function DataControls({
         </div>
       </div>
 
-      {/* SECTION 2 : Recherche & Actions (Intégration des sous-composants) */}
-      <div className="flex flex-1 max-w-2xl items-start gap-2">
-        {actions && actions.length > 0 && <ActionsDropdown metadata={metadata} actions={actions}  onAction={onAction} />}        
-        <SmartSearch columns={columns} predicates={predicates} setPredicates={setPredicates}  onRefresh={onRefresh} />
-      </div>
+     {/* SECTION 2 : Recherche & Actions */}
+  <div className="flex flex-1 max-w-2xl items-center gap-2 min-w-0">
+    {actions && actions.length > 0 && (
+      <ActionsDropdown metadata={metadata} actions={actions} onAction={onAction} />
+    )}       
+    <div className="flex-1 min-w-0">
+      <SmartSearch 
+        metadata={metadata}
+        columns={columns} 
+        predicates={predicates} 
+        setPredicates={setPredicates}  
+        filters={filters}
+        setFilters={setFilters}
+        onRefresh={onRefresh} 
+      />
+    </div>
+  </div>
 
       {/* SECTION 3 : Pagination & Mode de vue */}
-      {currentPage <= totalPages && (
+      {true && (
           <Pagination 
           currentPage={currentPage} 
           totalPages={totalPages} 

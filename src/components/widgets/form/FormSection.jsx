@@ -3,6 +3,7 @@ import FormField from "./FormField"
 import { visible } from "@/utils/FormUtils"
 
 export default function FormSection({ 
+  metadata,
   section, 
   values, 
   resources,
@@ -39,6 +40,7 @@ export default function FormSection({
         {section.fields.map((field) => visible(fields, field.visibleWhen, values) ? (
           <FormField 
              key={field.fieldName} 
+             metadata={metadata}
              field={field} 
              resources={resources}
              setResources={setResources}
@@ -51,6 +53,7 @@ export default function FormSection({
         {section.sections.map((sec, idx) =>  visible(fields, sec.visibleWhen, values) ? (
             <FormSection 
                key={idx} 
+               metadata={metadata}
                section={sec} 
                values={values} 
                resources={resources}

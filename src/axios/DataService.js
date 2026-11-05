@@ -85,3 +85,13 @@ export async function deleteItem(item, metadata) {
             plugin: null
        })
 }
+
+export async function combovalues (typeCode, field) {
+    const token = localStorage.getItem("erp_auth_token");
+    const response = await api.get(`/api/i18n/values?typecode=${typeCode}&field=${field.fieldName}`, {
+        headers: {
+                     'Authorization':'Bearer '+token,
+                }
+    });
+    return response.data
+}

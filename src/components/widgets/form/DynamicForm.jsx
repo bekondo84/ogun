@@ -42,6 +42,7 @@ export default function DynamicForm({
       {schema?.form && schema?.form.sections && schema?.form.sections.map((section, idx) => (
         visible(fields, section.visibleWhen, values) ? (<FormSection 
             key={idx} 
+            metadata={meta}
             section={section} 
             values={values} 
             errors={errors}
@@ -77,6 +78,7 @@ export default function DynamicForm({
               {tab.sections.map((section, idx) => (
                 visible(fields, section.visibleWhen, values) ? (<FormSection 
                      key={idx} 
+                     metadata={meta}
                      section={section} 
                      values={values} 
                      errors={errors} 

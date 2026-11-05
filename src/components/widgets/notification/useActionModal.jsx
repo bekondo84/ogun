@@ -5,7 +5,7 @@ export function useActionModal() {
     const [modalState, setModalState] = useState({
         isOpen: false,
         metadata : null,
-        data : null,
+        formData : null,
         toast : null,
         resolveFn: null,
     });

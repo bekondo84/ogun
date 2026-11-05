@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useTransition } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import DynamicForm from "../form/DynamicForm"
 import { validateForm } from "@/utils/FormUtils"
 import { executedPostMethod, uploadFile } from "@/axios/DataService"
+import { useTranslation } from "react-i18next"
 // Importez vos autres inputs spécifiques si nécessaire (ex: ManyToOneInput)
 
 export default function ActionModal({ 
@@ -17,9 +18,14 @@ export default function ActionModal({
     }) {
   const [errors, setErrors] = useState({})
   const [editMode, setEditMode] = useState(true)
-  const [data, setData] = useState(formData)
+  const [data, setData] = useState(null)
   const [resources, setResources] = useState([])
+  const {t, i18n} = useTranslation()
 
+  useEffect (() => {
+        setData (formData)
+       // console.log('ActionModal.useEffect ---------'+JSON.stringify(FormData))
+  }, [formData])
   // Réinitialiser le formulaire à chaque ouverture/changement de mode
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -34,11 +40,12 @@ export default function ActionModal({
   if (!isOpen) return null;
 
   const handleFieldChange = (field, newValue) => {
-    setData(prev => ({
-      ...prev,
-      [field.fieldName]: newValue
-    }))
-    //console.log('-------------FieldChange event---------!!! '+newValue)
+    if (field) {
+      setData(prev => ({
+        ...prev,
+        [field.fieldName]: newValue
+      }))    
+    }
   }
 
   const handleSubmit = async(e,) => {
@@ -93,7 +100,7 @@ export default function ActionModal({
         {/* Boutons d'actions */}
         <DialogFooter className="border-t border-slate-100 pt-3 dark:border-slate-800">
           <Button variant="outline" size="sm" type="button" onClick={onClose} className="h-8 text-xs">
-            Annuler
+            {t('cancel_btn')}
           </Button>
           <Button 
             size="sm" 
@@ -101,7 +108,7 @@ export default function ActionModal({
             onClick={handleSubmit}
             className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white"
           >
-            Enregistrer
+            {t('save_btn')}
           </Button>
         </DialogFooter>
       </DialogContent>

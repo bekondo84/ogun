@@ -20,13 +20,16 @@ export default function ImageField({
   const fileInputRef = useRef(null)
   const [loading, setLoading] = useState(true)
   const [modal, ModalElement] = useOdooModal();
+  const [localChange, setLocalChange] = useState(false)
 
   const {t, i18n} = useTranslation()
 
   useEffect(() => {
-        downloadFile(value)
-        
-  }, [value])
+
+    if (!localChange) {
+        downloadFile(value)      
+     }  
+  }, [value, localChange])
 
  const downloadFile = async(file) => {
       try {
@@ -36,7 +39,8 @@ export default function ImageField({
         }
         var isMounted = true
         const objectUrl = await download(file)
-       // console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&& : '+JSON.stringify(objectUrl))
+        
+       console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&& : '+JSON.stringify(localChange))
           
         if (isMounted && objectUrl != null) {
           setPreviewUrl(objectUrl)
@@ -72,6 +76,7 @@ export default function ImageField({
 
     const objectUrl = URL.createObjectURL(file)
     setPreviewUrl(objectUrl)
+    setLocalChange(true)
     
     const images = [...resources]
     
@@ -115,6 +120,7 @@ export default function ImageField({
     e.preventDefault()
     setIsDragging(false)
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setLocalChange(true)
       handleFileChange(e.dataTransfer.files[0])
     }
   }

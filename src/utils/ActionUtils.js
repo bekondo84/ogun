@@ -14,7 +14,7 @@ export const executeModal = async (
                   class: meta.type,
                   data: data
               })
-    console.log ('ActionUtils.executeModal ....................... '+JSON.stringify(response.data))
+    //console.log ('ActionUtils.executeModal ....................... '+JSON.stringify(response.data))
        if (response && response.data) {
             await modal({
                 metadata: meta, formData: response.data, toast
@@ -77,7 +77,7 @@ export const executeNavigate = async(
  * @param {*} setDataFn 
  * @param {*} toast 
  */
-export const executeAction = async(metadata, action, data, isLoadinFn, setDataFn, toast) => {
+export const executeAction = async(metadata, action, data, isLoadinFn, setDataFn, toast, t) => {
   try {
           isLoadinFn(true)
           const response = await executedPostMethod(action.action, action.method, {

@@ -37,6 +37,7 @@ export default function PluginFormPage() {
   const [resources, setResources] = useState([]) //contains formData for upload files
   const [searchConfig, setSearchConfig] = useState({})
   const [predicates, setPredicates] = useState([])
+  const [filters, setFilters] = useState([]) //Save filters
   const [sortConfig, setSortConfig] = useState({})
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
@@ -50,15 +51,18 @@ export default function PluginFormPage() {
 
   const {t, i18n} = useTranslation()
   
-  
-  
+  //Reset filter and predicates  when metadata change
+  useEffect(() => {
+      setFilters([])
+      setPredicates([])
+  }, [metadata])
+
   useEffect(() => {
       //console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- '+JSON.stringify(data))
   }, [resources])
   //For every change of th snapshots update the breadcrumps 
   useEffect(() => {
       setBreadcrumbs(refreshBreadcrumbs(snapshotstore))
-      //console.log('+++++++++++++++++++++++++++++'+JSON.stringify(refreshBreadcrumbs(snapshotstore)))
   }, [snapshotstore])
   //SYNCHRONISATION : Dés que l'API renvoie les menus du serveur, on charge le premier par défaut
   useEffect(() => {
@@ -253,7 +257,7 @@ export default function PluginFormPage() {
     }//Show the conformation dialog if requiered
 
      if (action.type == 'execute') {
-         await executeAction(metadata, action, data, setIsLoading, setData, toast)
+         await executeAction(metadata, action, data, setIsLoading, setData, toast, t)
      } else if (action.type == 'navigate') {
          await executeNavigate(action, data, setMetadata, setEditMode, setViewMode, setAllowedViews, setSnapshotstore, updateSystemSnapshaps, snapshotstore, setData, setIsLoading, toast)
           setEditMode('C')
@@ -372,6 +376,8 @@ export default function PluginFormPage() {
                 <ListFormPage
                   predicates={predicates}
                   setPredicates={setPredicates} 
+                  filters={filters}
+                  setFilters={setFilters}
                   sortConfig={sortConfig}
                   setSortConfig={setSortConfig}
                   isLoading={isLoading}
