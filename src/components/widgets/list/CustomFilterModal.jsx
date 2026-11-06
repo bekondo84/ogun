@@ -36,7 +36,11 @@ export default function CustomFilterModal({
 
   useEffect(() => {
         setPredicates(initialFilter?.predicates || [{ field: searchableColumns[0]?.fieldName || "", criteria: "eq", value: "" }])
-        setOperators(applicableOperators(searchableColumns[0]?.fieldName, t))
+
+        if (searchableColumns[0] && Object.keys(searchableColumns[0]).length > 0) {
+          setOperators(applicableOperators(searchableColumns[0], t)) 
+        }
+        
   }, [searchableColumns])
   // Ajouter une nouvelle ligne de condition
   const handleAddPredicate = () => {
@@ -157,7 +161,7 @@ export default function CustomFilterModal({
                   </select>
 
                   {/* 3. Saisie de la valeur (masquée si l'opérateur est un test d'existence de type is_null) */}
-                  {!["is_null", "is_not_null"].includes(predicate.criteria) && (
+                  {!["isempty", "notempty"].includes(predicate.criteria) && (
                     <input
                       type="text"
                       placeholder="Valeur..."

@@ -37,9 +37,14 @@ export default function ListDataModule({
  // const [selectedIds, setSelectedIds] = useState([])
   const [modal, ModalElement] = useOdooModal();
   const {t, i18n} = useTranslation();
+  const [columns, setColumns] = useState([])
   // MÉTA-DONNÉES DU TABLEAU (Mise à jour : Ajout du paramètre sortable)
-  const columns = [...metadata.listView.columns.filter(col => col.show)]
+  //const columns = 
   const actions = [...metadata.listView.actions]
+
+  useEffect(() => {
+      setColumns([...metadata.listView.columns.filter(col => col.show)])
+  },  [metadata])
   // 3. Gestion du clic sur un en-tête de colonne
   const handleSort = (columnKey) => {
 
@@ -109,6 +114,7 @@ export default function ListDataModule({
       <DataControls
         title={metadata.listViewTitle}
         columns={columns}
+        setColumns={setColumns}
         actions={actions}
         breadcrumbs={breadcrumbs}
         allowedViews={allowedViews}

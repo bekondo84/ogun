@@ -183,13 +183,15 @@ export const compare = (value_1, value_2, criteria) => {
 }
 
 export const applicableOperators = (field, t) => {
-    //console.log('Utils.applicableOperators -------------- '+(field.type == 'boolean' )+' ---- '+field.type)
+    console.log('Utils.applicableOperators -------------- '+field) 
     
     const numericTypes = ['int', 'java.lang.Integer', 'short', 'java.lang.Short', 'long','java.lang.Long', 'float', 'java.lang.Float','double','java.lang.Double']
     if (field && field.type == 'boolean' || field.type == 'java.lang.Boolean') {
         return [
             { value: "eq", label: "=" },
             { value: "neq", label: "<>" },
+            { value: "isempty", label: t('is_null_lb') },
+            { value: "notempty", label: t('is_not_null_lb') },
         ];
     } else if (field && numericTypes.includes(field.type)) {
          return [
@@ -199,16 +201,17 @@ export const applicableOperators = (field, t) => {
             { value: "lt", label: "<" },
             { value: "ge", label: ">=" },
             { value: "le", label: "<=" },
-            { value: "is_null", label: t('is_null_lb') },
-            { value: "is_not_null", label: t('is_not_null_lb') },
+            { value: "isempty", label: t('is_null_lb') },
+            { value: "notempty", label: t('is_not_null_lb') },
         ];
     } else {
          return [
             { value: 'like', label: t('like_lb') },
+            { value: 'notlike', label: t('notlike_lb') },
             { value: "eq", label: "=" },
             { value: "neq", label: "<>" },
-            { value: "is_null", label: t('is_null_lb') },
-            { value: "is_not_null", label: t('is_not_null_lb') },
+            { value: "isempty", label: t('is_null_lb') },
+            { value: "notempty", label: t('is_not_null_lb') },
         ];
     }
     return []

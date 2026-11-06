@@ -21,17 +21,19 @@ export default function TableView({
 }) {
 
 useEffect(() => {
-      buildSelectValues();      
+      buildSelectValues();    
+      setActivecolumns(columns?.filter(col => col.show))  
 }, [columns])  
 
-  const [selectValues, setSelectValues] = useState([]) //
+  const [selectValues, setSelectValues] = useState([]) 
+  const [activecolumns, setActivecolumns] = useState([])
 
   /**
    * Build all the combobox fild value
    * @returns 
    */
   const buildSelectValues = async() => {
-     const rows =  columns.filter(col => col.widget == 'combobox');
+     const rows =  activecolumns.filter(col => col.widget == 'combobox');
      const result = []
 
      for (var index in rows) {
@@ -79,7 +81,7 @@ useEffect(() => {
                   <Checkbox checked={isAllSelected} onCheckedChange={onToggleSelectAll} />
                 </th>            
             )}
-            {columns.map((col) => {
+            {activecolumns.map((col) => {
               const isSorted = sortConfig?.key === col.fieldName
               const isAsc = sortConfig?.direction === "asc"
               
@@ -131,7 +133,7 @@ useEffect(() => {
                     <Checkbox checked={isSelected} onCheckedChange={() => onToggleSelectRow(row.seqnumber)} />
                   </td>                
                 )}
-                {columns.map((col) => {
+                {activecolumns.map((col) => {
                   const cellValue =  fieldValue(col, row)//row[col.fieldName]===null ? row[col.fieldName] : (typeof row[col.fieldName] === 'object' ? row[col.fieldName]['stringValue'] : row[col.fieldName])
                   return (
                     <td 
@@ -184,7 +186,7 @@ useEffect(() => {
           })}
           {data?.length === 0 && (
               <tr>
-                <td colSpan={columns.length } className="p-6 text-center text-slate-400 italic">
+                <td colSpan={activecolumns.length } className="p-6 text-center text-slate-400 italic">
                   Aucun élément dans la table. Cliquez sur "Ajouter une ligne".
                 </td>
               </tr>

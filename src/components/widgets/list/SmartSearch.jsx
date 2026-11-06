@@ -13,12 +13,15 @@ export default function SmartSearch({
   , onRefresh }) {
   const [inputValue, setInputValue] = useState("")
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [searchableColumns, setSearchableColumns] = useState([])
   
   const dropdownRef = useRef(null)
 
   // Filtrer uniquement les colonnes autorisées à la recherche
-  const searchableColumns = columns.filter(col => col.searchable !== false)
-
+  
+  useEffect(() => {
+      setSearchableColumns(columns.filter(col => col.searchable !== false))
+  }, [columns])
   // Fermer les suggestions au clic à l'extérieur
   useEffect(() => {
     function handleClickOutside(event) {

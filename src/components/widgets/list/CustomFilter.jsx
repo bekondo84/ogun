@@ -67,6 +67,7 @@ export default function CustomFilter({
             typeCode: metadata.typeCode,
         })
         setFilters(response.data)
+        //console.log('----------------------------------- '+JSON.stringify(response.data))
   }
   // Ouverture pour la création
   const handleOpenCreate = () => {
@@ -109,14 +110,14 @@ export default function CustomFilter({
       <button 
         type="button"
         onClick={() => setShowCustomFilters(!showCustomFilters)}
-        className={`h-8 px-3 inline-flex items-center justify-center gap-1.5 text-xs font-medium rounded-md border transition-colors cursor-pointer ${
+        className={`h-8 px-2.5 inline-flex items-center justify-center gap-1.5 text-xs font-medium rounded-md transition-colors cursor-pointer select-none ${
           showCustomFilters 
-            ? "bg-purple-50 border-purple-300 text-purple-700 dark:bg-purple-950/40 dark:border-purple-800" 
-            : "bg-white border-slate-200 text-slate-700 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 hover:bg-slate-50"
+            ? "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 shadow-xs" 
+            : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60"
         }`}
       >
-        <Filter className="h-3.5 w-3.5 text-slate-500" />
-        <span>...</span>
+        <Filter className={`h-3.5 w-3.5 ${showCustomFilters ? "text-purple-600 dark:text-purple-400" : "text-slate-400"}`} />
+        <span></span>
       </button>
 
       {/* Dropdown Menu */}

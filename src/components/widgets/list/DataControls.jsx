@@ -5,11 +5,13 @@ import SmartSearch from "./SmartSearch"
 import Pagination from "./Pagination"
 import Breadcrumb from "../Breadcrumb"
 import { useTranslation } from "react-i18next"
+import ColumnCustomizer from "./ColumnCustomizer"
 
 export default function DataControls({
   title = "Menu",
   breadcrumbs, 
   columns = [],
+  setColumns,
   actions = [],
   allowedViews,
   metadata,
@@ -73,6 +75,7 @@ export default function DataControls({
     {actions && actions.length > 0 && (
       <ActionsDropdown metadata={metadata} actions={actions} onAction={onAction} />
     )}       
+    <ColumnCustomizer metadata={metadata} columns={columns} setColumns={setColumns}/>
     <div className="flex-1 min-w-0">
       <SmartSearch 
         metadata={metadata}

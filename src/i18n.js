@@ -37,6 +37,7 @@ const resources = {
       language: "Langue :",
       logout: "Se déconnecter",
       like_lb: "Contient",
+      notlike_lb:"Ne contient pas",
       is_null_lb: "Est Null",
       is_not_null_lb: "N'est pas null",
       filter_name:"Nom du filtre",
@@ -47,6 +48,8 @@ const resources = {
       registred_filter:"Filtres enregistrés",
       placeholder_lb:"Sélectionner...",
       searchPlaceholder_lb:"Rechercher...",
+      column_coustomizer_modal:`Personaliser les colonnes`,
+      column_coustomizer_modal_message: "Cochez les colonnes à afficher et utilisez les flèches pour modifier leur ordre d'apparition.",
       greeting: "Bonjour, {{name}} !",
       items_count: "Vous avez {{count}} élément | Vous avez {{count}} éléments"
     }
