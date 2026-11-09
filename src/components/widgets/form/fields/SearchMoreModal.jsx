@@ -6,6 +6,7 @@ import SmartSearch from "../../list/SmartSearch"
 import { TableView } from "../../list"
 import { executedPostMethod } from "@/axios/DataService"
 import Pagination from "../../list/Pagination"
+import { loadColumnsSettings } from "@/utils/FormUtils"
 
 export default function SearchMoreModal({ 
   isOpen, 
@@ -38,15 +39,18 @@ export default function SearchMoreModal({
     };
   }, [isOpen, onClose])
   // Charger les colonnes du tableau depuis les métadonnées
-  useEffect(() => {
+ /*  useEffect(() => {
     if (meta && meta.listView) {
       setColumns(meta['listView']['columns'] || [])
+      
     }
-  }, [meta])
+  }, [meta]) */
 
   // Réinitialiser les états à l'ouverture de la modale
   useEffect(() => {
     if (isOpen) {
+      setColumns(meta.listView.columns)
+      loadColumnsSettings(meta, setColumns, setLoading)
       setPredicates([])
       setData([])
       setSelectedIds([])

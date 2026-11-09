@@ -1,4 +1,5 @@
-import {compare} from './Utils'
+import { executedPostMethod } from '@/axios/DataService';
+import {compare, getColumnType} from './Utils'
 
 export const validateForm = (formData, columns = []) => {
   const newErrors = {};
@@ -152,6 +153,60 @@ export const dependsOn = (name, field) => {
      return values.length > 0 ? values[0] : null
 }
 
+/**
+ * 
+ * @param {*} metadata 
+ * @param {*} setColumns 
+ * @returns 
+ */
+export const loadColumnsSettings = async(metadata, setColumns, setIsLoading) => {
+   setIsLoading(false)
+  try {
+    const response =  await executedPostMethod("settingsAction", "get_user_table_settings", {
+        typeCode: metadata.typeCode,
+    })
+    const settings = response.data
+
+    if (settings && Object.keys(settings).length > 0) {
+          setColumns(settings?.columns?.sort((a, b) => {
+              return (a.sequence || 0) - (b.sequence || 0);
+          }))
+          return;
+    } 
+    setColumns([...metadata.listView.columns])
+  } finally {
+     setIsLoading(false)
+  }
+}
+
+/**
+ * 
+ * @param {*} editingFilter 
+ * @param {*} searchableColumns 
+ * @param {*} setPredicates 
+ * @param {*} onRefresh 
+ */
+export const applyPredicatesFilter = (editingFilter, searchableColumns, predicates, setPredicates, onRefresh) => {
+      if (editingFilter.type === '1') {
+        const currentPredicates = [...predicates]
+        if (editingFilter && editingFilter.predicates.length > 0) {
+            editingFilter.predicates.forEach(pred => {
+              var field = searchableColumns.filter(col => col.fieldName == pred.field)[0]
+              currentPredicates.push({
+                    fieldName: field.fieldName,
+                    label: field.label ,
+                    value: pred.value,
+                    type: getColumnType(field.type),
+                    cond: pred.criteria
+                });
+                //console.log('CustomFilter.useEffect ----------------------------- '+field.fieldName+' --- '+field.label+' ---- '+JSON.stringify(field))
+            });         
+            setPredicates(currentPredicates)
+            if (onRefresh) onRefresh(null, currentPredicates, null) 
+        }
+      }
+}
+
 const getSectionFields = (section, fields) => {
     if (section) {
        if (section.fields && section.fields.length > 0) {
@@ -169,3 +224,4 @@ const getSectionFields = (section, fields) => {
        }
     }
 }
+

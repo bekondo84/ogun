@@ -2,6 +2,9 @@ import { SlidersHorizontal } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import ColumnCustomizerModal from "../notification/ColumnCustomizerModal";
 import { Button } from "@base-ui/react";
+import { useOdooModal } from "../notification/useOdooModal";
+import { useTranslation } from "react-i18next";
+import { executedPostMethod } from "@/axios/DataService";
 export default function ColumnCustomizer ({
       metadata,
       columns,
@@ -13,14 +16,39 @@ export default function ColumnCustomizer ({
     }, [metadata]);
     
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modal, ModalElement] = useOdooModal()
+    const {t, i18n} = useTranslation()
+
+    const handleOpenAction = async() => {
+           setIsModalOpen(true)
+    }
 
     /**
      * 
-     * @param {*} columnsConfig 
+     * @returns 
      */
-    const handleSave = (columnsConfig) => {
-           setColumns(columnsConfig)
+    const handleResetAction = async() => {
+        setIsModalOpen(false)
+       const isConfirmed = await modal({
+        title: t('action_confirm'),
+        message: t('config_lost_risk'),
+        variant: "danger",
+        confirmText: t('confirmation_btn'),
+        cancelText: t('close_btn'),
+        showCancel: true
+        });
+
+        if (!isConfirmed) {
+            setIsModalOpen(true)
+            return;
+        }
+        const response  = await executedPostMethod("settingsAction", "reset_columns_settings", {
+            typeCode: metadata.typeCode,
+        })
+        const localColumns = metadata?.listView?.columns
+        setColumns(localColumns)
     }
+    
 
     return (
         <div  className="relative shrink-0">
@@ -42,8 +70,9 @@ export default function ColumnCustomizer ({
                 onClose={() => setIsModalOpen(false)}
                 columns={columns} 
                 setColumns={setColumns}
-                onSave={handleSave}
+                onReset={handleResetAction}
             />
+            {ModalElement}
         </div>
     )
 

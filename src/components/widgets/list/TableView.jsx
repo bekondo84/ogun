@@ -4,11 +4,13 @@ import { ArrowUp, ArrowDown, ArrowUpDown, Edit2 } from "lucide-react"
 import { fieldValue } from "@/utils/FieldUtils"
 import TableImageCell from "../form/fields/TableImageCell"
 import { combovalues } from "@/axios/DataService"
+import { loadColumnsSettings } from "@/utils/FormUtils"
 
 
 export default function TableView({ 
   metadata,
   columns, 
+  setColumns,
   data, 
   selectedIds, 
   onToggleSelectAll, 
@@ -19,6 +21,8 @@ export default function TableView({
   isSelectable=true,
   onlineEditable = false
 }) {
+
+
 
 useEffect(() => {
       buildSelectValues();    
@@ -81,7 +85,7 @@ useEffect(() => {
                   <Checkbox checked={isAllSelected} onCheckedChange={onToggleSelectAll} />
                 </th>            
             )}
-            {activecolumns.map((col) => {
+            {activecolumns?.map((col) => {
               const isSorted = sortConfig?.key === col.fieldName
               const isAsc = sortConfig?.direction === "asc"
               
@@ -161,6 +165,8 @@ useEffect(() => {
                            </div>
                         ):col.widget === 'combobox' ? (
                             String(getComboxValue(col.fieldName, cellValue), '')
+                        ):col.widget === 'password' ? (
+                             String('...')
                         ): (
                           // Valeur textuelle par défaut (chaîne, date, nombre, etc.)
                           String(cellValue ?? '')

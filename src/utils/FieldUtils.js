@@ -1,7 +1,7 @@
 export const fieldValue = (field, item) => {
     if (!field || !item ) return "";
      if (field.widget === "manytoone") {
-        return item[field.fieldName] !== null ? item[field.fieldName]['stringValue'] : "";
+        return item[field.fieldName]  ? item[field.fieldName]['stringValue'] : "";
      }else if (field.widget === 'date') {
         return formatDate(item[field.fieldName]);
      } else if (field.widget === 'datetime-local') {
@@ -9,7 +9,7 @@ export const fieldValue = (field, item) => {
      } else if (field.widget === 'time') {
         return formatTime(item[field.fieldName]);
      } else if (field.widget === 'password') {
-        return '.......';
+        return '...';
      } else if (field.widget === 'media') {
         return item[field.fieldName]?.url;
      }else {

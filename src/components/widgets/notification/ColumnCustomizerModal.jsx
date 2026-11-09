@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Eye, EyeOff, ArrowUp, ArrowDown, RotateCcw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { executedPostMethod } from "@/axios/DataService"
-import { data } from "react-router-dom"
 
 export default function ColumnCustomizerModal({ 
   metadata,
@@ -12,7 +11,7 @@ export default function ColumnCustomizerModal({
   onClose, 
   columns = [], 
   setColumns ,
-  onSave        // Callback pour sauvegarder la nouvelle configuration
+  onReset       
 }) {
   const [localColumns, setLocalColumns] = useState([])
   const {t, i18n} = useTranslation()
@@ -22,6 +21,9 @@ export default function ColumnCustomizerModal({
   useEffect(() => {
       getSettings()
   }, [metadata])
+   useEffect(() => {
+      getSettings()
+  }, [isOpen])
   // Synchroniser les colonnes locales à l'ouverture de la modale
   useEffect(() => {
     if (isOpen && columns) {
@@ -67,38 +69,39 @@ export default function ColumnCustomizerModal({
     const temp = newCols[index]
     newCols[index] = newCols[targetIndex]
     newCols[targetIndex] = temp
-
+    //Set sequence to memorise position in the list
     setLocalColumns(newCols)
   }
 
   // Réinitialiser aux paramètres par défaut
   const handleReset = () => {
-    setLocalColumns(
-      columns.map((col, index) => ({
-        ...col,
-        show: true,
-        order: index
-      }))
-    )
+    if (onReset) onReset()
   }
 
   // Validation et sauvegarde
   const handleSave = async() => {
+    const temp = []
+    localColumns.forEach((item, index) => {
+          item.sequence = index+1
+          temp.push(item)
+    })
+    //setLocalColumns(temp)
+    setColumns(temp)
     const setting = {
         typeCode: metadata.typeCode,
         type: '2',
-        columns: localColumns
+        columns: temp
     }
     const response = await executedPostMethod("settingsAction", "save_table_settings", {
           data: setting,
     })
-    setColumns(localColumns)
+  
     onClose()
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-full sm:max-w-md text-xs max-h-[85vh] flex flex-col">
+      <DialogContent className="w-full sm:max-w-md text-xs max-h-[85vh] flex flex-col z-[999]">
         <DialogHeader>
           <DialogTitle className="text-sm font-semibold text-slate-800 dark:text-slate-200">
            {t('column_coustomizer_modal')}

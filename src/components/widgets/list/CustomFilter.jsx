@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getColumnType } from "@/utils/Utils";
 import { executedPostMethod } from "@/axios/DataService";
 import { data } from "react-router-dom";
+import { applyPredicatesFilter } from "@/utils/FormUtils";
 
 export default function CustomFilter({
     metadata,
@@ -34,22 +35,9 @@ export default function CustomFilter({
   }, [showCustomFilters])
 
   useEffect(() => {
-       const currentPredicates = [...predicates]
-       if (editingFilter && editingFilter.predicates.length > 0) {
-           editingFilter.predicates.forEach(pred => {
-            var field = searchableColumns.filter(col => col.fieldName == pred.field)[0]
-            currentPredicates.push({
-                  fieldName: field.fieldName,
-                  label: field.label ,
-                  value: pred.value,
-                  type: getColumnType(field.type),
-                  cond: pred.criteria
-               });
-               //console.log('CustomFilter.useEffect ----------------------------- '+field.fieldName+' --- '+field.label+' ---- '+JSON.stringify(field))
-           });         
-           setPredicates(currentPredicates)
-           if (onRefresh) onRefresh(null, currentPredicates, null) 
-       }
+      if (editingFilter) {
+         applyPredicatesFilter(editingFilter, searchableColumns, predicates, setPredicates, onRefresh);
+      }
   }, [editingFilter])
   // Fermer le menu au clic à l'extérieur
   useEffect(() => {

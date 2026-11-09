@@ -5,6 +5,7 @@ import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
 import { useTranslation } from "react-i18next"
 import { executedPostMethod } from "@/axios/DataService"
 import { toast } from "sonner"
+import { loadColumnsSettings } from "@/utils/FormUtils"
 
 export default function ListDataModule({
   predicates,
@@ -43,8 +44,29 @@ export default function ListDataModule({
   const actions = [...metadata.listView.actions]
 
   useEffect(() => {
-      setColumns([...metadata.listView.columns.filter(col => col.show)])
+      setColumns(metadata.listView.columns)
+      loadColumnsSettings(metadata, setColumns, setIsLoading)
   },  [metadata])
+
+  /* const loadColumnsSettings = async() => {
+    setIsLoading(true)
+    try {
+      const response =  executedPostMethod("settingsAction", "get_user_table_settings", {
+          typeCode: metadata.typeCode,
+      })
+      const settings = response.data
+
+      if (settings && Object.keys(settings).length > 0) {
+           setColumns(settings?.columns?.sort((a, b) => {
+                return a.sequence <= b.sequence
+           }))
+           return;
+      } 
+      setColumns([...metadata.listView.columns])
+    } finally {
+      setIsLoading(false)
+    }
+  } */
   // 3. Gestion du clic sur un en-tête de colonne
   const handleSort = (columnKey) => {
 

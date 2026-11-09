@@ -18,6 +18,7 @@ const resources = {
       delete_warn_message: "Êtes-vous sûr de vouloir supprimer l'élément  ? Cette action est irréversible.",
       action_confirm:"Confirmation de l'action",
       action_confirm_message:"Vous êtes sur le point d'exécuter l'action sélectionnée. Souhaitez-vous poursuivre ?",
+      config_lost_risk:"Cette opération peut entraîner la perte des configurations actuellement enregistrées. Si vous poursuivez, certaines de vos personnalisations pourraient être définitivement supprimées. \n\nSouhaitez-vous réellement continuer ?",
       create_btn:"Créer",
       delete_btn:"Supprimer",
       cancel_btn:"Annuler",

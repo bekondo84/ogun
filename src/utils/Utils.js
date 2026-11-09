@@ -183,7 +183,7 @@ export const compare = (value_1, value_2, criteria) => {
 }
 
 export const applicableOperators = (field, t) => {
-    console.log('Utils.applicableOperators -------------- '+field) 
+    //console.log('Utils.applicableOperators -------------- '+field) 
     
     const numericTypes = ['int', 'java.lang.Integer', 'short', 'java.lang.Short', 'long','java.lang.Long', 'float', 'java.lang.Float','double','java.lang.Double']
     if (field && field.type == 'boolean' || field.type == 'java.lang.Boolean') {
