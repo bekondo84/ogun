@@ -14,6 +14,7 @@ import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
 import { useTranslation } from "react-i18next"
 import { executeAction, executeModal, executeNavigate } from "@/utils/ActionUtils"
 import { useActionModal } from "@/components/widgets/notification/useActionModal"
+import { loadDashboardMenu, loadMetaMenu } from "@/utils/PluginUtils"
 
 export default function PluginFormPage() {
   const { id } = useParams()
@@ -32,6 +33,7 @@ export default function PluginFormPage() {
   const [formData, setFormData] = useState({ company: "", contact: "", email: "", value: "" })
   const [selectedIds, setSelectedIds] = useState([])
   const [metadata, setMetadata] = useState(null)
+  const [dashboard, setDashboard] = useState(null)
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({})
   const [resources, setResources] = useState([]) //contains formData for upload files
@@ -68,13 +70,12 @@ export default function PluginFormPage() {
   useEffect(() => {
     if (plugin && plugin.menus && plugin.menus.length > 0) {
       const firstMenu = getFirstMenuItem(plugin.menus[0])
-
       if (firstMenu) {
-        setActiveMenu(firstMenu)
+        //setActiveMenu(firstMenu)
         handleMenuChange (firstMenu)
         // On utilise le "viewMode" configuré par le serveur (ex: 'list' ou 'form')
-        setViewType(firstMenu.viewMode || "list")
-        setAllowedViews(firstMenu.viewMode)
+        //(firstMenu.viewMode || "list")
+       // setAllowedViews(firstMenu.viewMode)
       }
     }
   }, [plugin])
@@ -306,32 +307,27 @@ export default function PluginFormPage() {
   }
   // Déclencheur lors d'un clic sur le menu ou sous-menu récursif
   const handleMenuChange = async (menuObject) => {
-
+     
     try {
       //console.log(menuObject)
       if (!menuObject) return
       
-      setIsLoading(true)
       //Inti searchConfig, predicates et sortConfig elements
       setSearchConfig({})
       setSortConfig({})
       setPredicates([])
       setSelectedIds([])
-      const meta = await getMeta(menuObject.code)
       
-      if (meta !== null) {
-        setMetadata (meta)
-        await fetchData(1, meta, [], [])
+      setIsLoading(true)
+      
+      const targetView = menuObject.viewMode.split(',')[0]
+      if (targetView === 'dashboard') {
+          await loadDashboardMenu (menuObject, setDashboard, setActiveMenu, setViewMode, setAllowedViews)
+        
+      } else {
+          await loadMetaMenu(menuObject, setMetadata, setActiveMenu, setViewMode, setAllowedViews, setSnapshotstore, updateSystemSnapshaps, fetchData)
       }
-      //console.log (data)
       
-      setActiveMenu(menuObject)
-      const targetView = meta.viewMode.split(',')[0]
-      //console.log("Changement de vue ERP : " +menuObject.viewMode)
-      setViewMode(targetView)
-      setAllowedViews(meta.viewMode)
-      //Initialize the 
-      setSnapshotstore(updateSystemSnapshaps([], menuObject.label, meta, null, [], targetView))
     } finally {
       setIsLoading(false)
     } /* (error) {
@@ -370,55 +366,58 @@ export default function PluginFormPage() {
       <main className="flex-1 bg-slate-50 dark:bg-slate-950 flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-0 md:p-0 scrollbar-thin">
           <div className="max-w-none w-full mx-auto animate-in fade-in duration-150">
-            
-              {metadata && (
-                viewMode !== "view" && viewMode !== "dashboard"  ? (
-                <ListFormPage
-                  predicates={predicates}
-                  setPredicates={setPredicates} 
-                  filters={filters}
-                  setFilters={setFilters}
-                  sortConfig={sortConfig}
-                  setSortConfig={setSortConfig}
-                  isLoading={isLoading}
-                  setIsLoading={setIsLoading}
-                  items={data.data}
-                  metadata={metadata}
-                  currentPage={currentPage}
-                  setCurrentPage={setCurrentPage}
-                  selectedIds={selectedIds}
-                  setSelectedIds={setSelectedIds}
-                  totalPages={totalPages}
-                  viewMode={viewMode}
-                  allowedViews={allowedViews}
-                  breadcrumbs={breadcrumbs}
-                  setViewMode={setViewMode}
-                  onCreate={handleOnCreate}
-                  onDelete={handleOnDelete}
-                  onSelected={handleSelected}
-                  onRefresh={onRefresh}
-                  onBreadcrumbAction={onBreadcrumbAction}
-                />
-              ) : viewMode ==="dashboard" ? (
-                   <DashboardPage metadata={{ type: "global", action: "analytics" }} />
-              ) :(
-                <FormPage 
-                  metadata={metadata}
-                  item={data}
-                  breadcrumbs={breadcrumbs}
-                  editMode={editMode}
-                  isLoading={isLoading}
-                  setFormValues={setData}
-                  resources={resources}
-                  setResources={setResources}
-                  onSave={handleSave}
-                  onCancel={handleCancel} 
-                  onAction={handleOnAction}
-                  shutcutAction={handleShutcutAction}
-                  onBreadcrumbAction={onBreadcrumbAction}
-                />
-              )
-            )}
+    
+              {/* Si le mode est "dashboard", on l'affiche directement sans bloquer sur metadata */}
+              {viewMode === "dashboard" ? (
+                  <DashboardPage dashboard={dashboard}/>
+              ) : metadata ? (
+                  // Sinon, on gère les listes et les formulaires qui nécessitent des métadonnées
+                  viewMode !== "view" ? (
+                      <ListFormPage
+                        predicates={predicates}
+                        setPredicates={setPredicates} 
+                        filters={filters}
+                        setFilters={setFilters}
+                        sortConfig={sortConfig}
+                        setSortConfig={setSortConfig}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading}
+                        items={data.data}
+                        metadata={metadata}
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        selectedIds={selectedIds}
+                        setSelectedIds={setSelectedIds}
+                        totalPages={totalPages}
+                        viewMode={viewMode}
+                        allowedViews={allowedViews}
+                        breadcrumbs={breadcrumbs}
+                        setViewMode={setViewMode}
+                        onCreate={handleOnCreate}
+                        onDelete={handleOnDelete}
+                        onSelected={handleSelected}
+                        onRefresh={onRefresh}
+                        onBreadcrumbAction={onBreadcrumbAction}
+                      />
+                  ) : (
+                      <FormPage 
+                        metadata={metadata}
+                        item={data}
+                        breadcrumbs={breadcrumbs}
+                        editMode={editMode}
+                        isLoading={isLoading}
+                        setFormValues={setData}
+                        resources={resources}
+                        setResources={setResources}
+                        onSave={handleSave}
+                        onCancel={handleCancel} 
+                        onAction={handleOnAction}
+                        shutcutAction={handleShutcutAction}
+                        onBreadcrumbAction={onBreadcrumbAction}
+                      />
+                  )
+              ) : null}
+
           </div>
           {ModalElement}  {ActionModalElement}
         </div>

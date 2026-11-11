@@ -1,20 +1,34 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { RefreshCw } from "lucide-react"
 
-// Importation de vos sous-composants existants + le nouveau Pipeline
 import KpiCards from "@/components/widgets/dashboard/KpiCards"
-import ConversionPipeline from "@/components/widgets/dashboard/ConversionPipeline"
-import PerformanceCharts from "@/components/widgets/dashboard/PerformanceCharts"
-import DistributionPie from "@/components/widgets/dashboard/DistributionPie"
 import ActivityLogs from "@/components/widgets/dashboard/ActivityLogs"
+import WorflowKpiCards from "@/components/widgets/dashboard/WorflowKpiCards"
+import LineChart from "@/components/charts/LineChart"
+import DoughnutChart from "@/components/charts/DoughnutChart"
+import { BarChart } from "@/components/charts/BarChart"
+import { PieChart } from "@/components/charts/PieChart"
+import { RadarChart } from "@/components/charts/RadarChart"
+import { ScatterChart } from "@/components/charts/ScatterChart"
+import Charts from "@/components/widgets/dashboard/Charts"
 
-export default function DashboardPage() {
+export default function DashboardPage({
+   dashboard
+}) {
+
+  useEffect(() => {
+      setSections(dashboard?.dashbordItems)
+      //console.log('DashboardPage.useEffect --------------- '+JSON.stringify(dashboard))
+  }, [dashboard]);
+
+  
   const [isLoading, setIsLoading] = useState(false)
 
   const handleRefreshSimulation = () => {
     setIsLoading(true)
     setTimeout(() => setIsLoading(false), 500)
   }
+  const [sections, setSections] = useState([])
 
   return (
     <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950 p-6 space-y-6 antialiased text-xs select-none">
@@ -35,19 +49,31 @@ export default function DashboardPage() {
           <span>Actualiser</span>
         </button>
       </div>
-
-      {/* 2. SECTION KPI CARDS */}
+       
+       {sections?.map((section, idx) => (
+           section.type === 'kpiCards' ? (
+               <KpiCards kpiCardsMeta={section} />
+           ): section.type === 'WorflowKpiCards' ? (
+              <WorflowKpiCards worflowKpiCards={section}/>
+           ): null
+       ))}
+      {/* 2. SECTION KPI CARDS 
       <KpiCards isLoading={isLoading} />
 
-      {/* 3. 🚀 NOUVELLE SECTION : LE PIPELINE DE CONVERSION COMMERCIAL */}
-      <ConversionPipeline />
+      */}
+
+      {/* 3. 🚀 NOUVELLE SECTION : LE PIPELINE DE CONVERSION COMMERCIAL
+      <WorflowKpiCards />
+       */}
 
       {/* 4. PERFORMANCE CHARTS (HISTOGRAMME / COURBE) */}
-      <PerformanceCharts />
+      <Charts />
 
       {/* 5. BASE DES COMPTES (PIE / GRAPH ACTIVITÉ) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <DistributionPie />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">        
+        <BarChart />
+        <PieChart />
+        <ScatterChart />
         <ActivityLogs />
       </div>
 

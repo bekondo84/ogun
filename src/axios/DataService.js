@@ -13,6 +13,34 @@ export async function executedPostMethod(action, method, data) {
     return response.data;
 }
 
+/**
+ * 
+ * @param {*} action 
+ * @param {*} method 
+ * @param {*} data 
+ */
+export async function executeGetMethod(action, method, data) {
+    const token = localStorage.getItem("erp_auth_token");
+    var baseurl = '/api/actions/execute/'+action+'/'+method;
+    var params = '';
+
+    Object.keys(data).array.forEach((key, i)=> {
+        if (i <= 0)
+           params += key+'='+data[key]
+        else
+            params += '&'+key+'='+data[key]
+    });
+
+    if (params != '') {
+        baseurl+='?'+params;
+    }
+    const response = await api.get(baseurl, {
+          headers: {
+              'Authorization':'Bearer '+token
+          }
+    })
+}
+
 export async function executedDeleteMethod(action, method, data) {
     const token = localStorage.getItem("erp_auth_token");
     const response = await api.delete('/api/actions/execute/'+action+'/'+method, 

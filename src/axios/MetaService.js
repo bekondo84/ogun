@@ -19,3 +19,17 @@ export const getMetaFromTypeCode =  async(typecode) => {
     });
     return response.data;
 }
+
+/**
+ * 
+ * @param {*} dashboardCode 
+ */
+export const getDashboard = async(dashboardCode) => {
+    const token = localStorage.getItem("erp_auth_token");
+    const response = await api.get('/api/actions/navigation/dashboard/'+dashboardCode, {
+          headers: {
+            'Authorization':'Bearer '+token
+        }
+    });
+    return response.data;
+}
