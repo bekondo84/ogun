@@ -55,28 +55,10 @@ export default function DashboardPage({
                <KpiCards kpiCardsMeta={section} />
            ): section.type === 'WorflowKpiCards' ? (
               <WorflowKpiCards worflowKpiCards={section}/>
+           ):section.type ==='Charts' ? (
+              <Charts data={section}/>
            ): null
        ))}
-      {/* 2. SECTION KPI CARDS 
-      <KpiCards isLoading={isLoading} />
-
-      */}
-
-      {/* 3. 🚀 NOUVELLE SECTION : LE PIPELINE DE CONVERSION COMMERCIAL
-      <WorflowKpiCards />
-       */}
-
-      {/* 4. PERFORMANCE CHARTS (HISTOGRAMME / COURBE) */}
-      <Charts />
-
-      {/* 5. BASE DES COMPTES (PIE / GRAPH ACTIVITÉ) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">        
-        <BarChart />
-        <PieChart />
-        <ScatterChart />
-        <ActivityLogs />
-      </div>
-
     </div>
   )
 }

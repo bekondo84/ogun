@@ -4,12 +4,18 @@ import './chartConfig';
 
 export function BarChart() {
   const data = {
-    labels: ['Produit A', 'Produit B', 'Produit C', 'Produit D'],
+    labels: ['Q1', 'Q2', 'Q3', 'Q4'],
     datasets: [
       {
-        label: 'Unités vendues',
-        data: [120, 190, 80, 150],
+        label: 'Objectif (€)',
+        data: [100000, 120000, 140000, 180000],
         backgroundColor: '#3b82f6', // Bleu
+        borderRadius: 4,
+      },
+      {
+        label: 'Réalisé (€)',
+        data: [95000, 125000, 135000, 190000],
+        backgroundColor: '#10b981', // Vert
         borderRadius: 4,
       },
     ],

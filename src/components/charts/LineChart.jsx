@@ -1,24 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import './chartConfig'; // Importe l'enregistrement des composants
+import { executedPostMethod } from '@/axios/DataService';
 
-export default function LineChart() {
+export default function LineChart({
+    lineChart
+}) {
   // 1. Les données du graphique
   const data = {
-    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil'],
+    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
     datasets: [
       {
-        label: 'Chiffre d’affaires 2026 (€)',
-        data: [12000, 19000, 15500, 24000, 22500, 31000, 29000],
-        borderColor: '#9333ea', // Violet (aux couleurs de ton ERP)
-        backgroundColor: 'rgba(147, 51, 234, 0.08)', // Effet de transparence léger
+        label: 'Année 2026 (€)',
+        data: [30000, 45000, 28000, 60000, 75000, 90000],
+        borderColor: '#9333ea', // Violet (Principal)
+        backgroundColor: 'rgba(147, 51, 234, 0.05)',
         fill: true,
-        tension: 0.35, // Arrondi des courbes
+        tension: 0.3,
         borderWidth: 2,
-        pointBackgroundColor: '#9333ea',
+      },
+      {
+        label: 'Année 2025 (€)',
+        data: [25000, 38000, 30000, 52000, 68000, 81000],
+        borderColor: '#cbd5e1', // Gris clair (Secondaire)
+        backgroundColor: 'transparent',
+        fill: true,
+        //borderDash: [5, 5], // Ligne en pointillés pour la différencier
+        tension: 0.3,
+        borderWidth: 2,
       },
     ],
   };
+  
 
   // 2. Les options de style et de comportement
   const options = {
@@ -53,6 +66,20 @@ export default function LineChart() {
       },
     },
   };
+
+  useEffect(() => {
+       if (lineChart) {
+           fetchData()
+       }
+  }, [lineChart])
+
+  const fetchData= async() => {
+     const response = await executedPostMethod(lineChart.action, lineChart.method, {
+          data: lineChart,
+     });
+     const result = response.data;
+     console.log('LineChart.fetchData ------------------ '+JSON.stringify(result))
+  }
 
   return (
     <div className="w-full h-72 bg-white dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
