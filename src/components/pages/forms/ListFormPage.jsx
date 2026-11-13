@@ -32,6 +32,7 @@ export default function ListDataModule({
   onSelected,
   onRefresh,
   onAction,
+  onCustomFilter,
   onBreadcrumbAction
 }) {
   const [searchQuery, setSearchQuery] = useState("")
@@ -158,6 +159,7 @@ export default function ListDataModule({
         onRefresh={onRefresh}
         onAction={handleOnAction}
         onBreadcrumbAction={onBreadcrumbAction}
+        onCustomFilter={onCustomFilter}
       />
 
       <main className="flex-1 max-w-none w-full mx-auto overflow-y-auto">

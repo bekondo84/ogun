@@ -29,7 +29,8 @@ export default function DataControls({
   onPageChange,
   onRefresh,
   onAction,
-  onBreadcrumbAction
+  onBreadcrumbAction,
+  onCustomFilter
 }) {
 
   useEffect(() => {
@@ -85,6 +86,7 @@ export default function DataControls({
         filters={filters}
         setFilters={setFilters}
         onRefresh={onRefresh} 
+        onCustomFilter={onCustomFilter}
       />
     </div>
   </div>

@@ -3,6 +3,7 @@ import { useGetSessionPlugins, useGetPluginCategories } from "@/hooks/usePlugin"
 import AppHeader from "@/components/widgets/plugins/AppHeader"
 import AppCard from "@/components/widgets/plugins/AppCard"
 import { useNavigate } from "react-router-dom"
+import ogunLogoImage from "@/assets/ogun.png"
 
 import { 
   Briefcase, ShoppingCart, Users, FileText, 
@@ -20,6 +21,7 @@ export default function AppsPage() {
   const {data: categories = [], isCategoriesLoading, isCategoriesError, categorieserror, categoriesrefetch} = useGetPluginCategories()
   const CATEGORIES = [...ALLCATEGORIE, ...categories]  
   const navigate = useNavigate()
+  const [appTitle, setAppTitle] = useState("Ogun")
 
   const handleLaunchApp = (appId) => {
     navigate(`/apps/${appId}`)
@@ -40,6 +42,8 @@ export default function AppsPage() {
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
         categories={CATEGORIES}
+        companyLogo={ogunLogoImage}
+        companyName={appTitle}
       />
 
       <main className="flex-1 p-6 md:p-10 max-w-none w-full mx-auto space-y-6  overflow-y-auto">

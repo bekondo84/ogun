@@ -15,11 +15,13 @@ import { useTranslation } from "react-i18next"
 import { executeAction, executeModal, executeNavigate } from "@/utils/ActionUtils"
 import { useActionModal } from "@/components/widgets/notification/useActionModal"
 import { loadDashboardMenu, loadMetaMenu } from "@/utils/PluginUtils"
+import ogunLogoImage from "@/assets/ogun.png"
+import PluginSidebar from "@/components/widgets/plugins/PluginSidebar"
 
 export default function PluginFormPage() {
   const { id } = useParams()
   
-  // 🚀 Appel API REST TanStack Query sécurisé (Ne se lance que si l'ID de route existe)
+  // Appel API REST TanStack Query sécurisé (Ne se lance que si l'ID de route existe)
   const { 
     data: plugin = {}, 
     isLoading: isPluginLoading, 
@@ -50,6 +52,8 @@ export default function PluginFormPage() {
   const [breadcrumbs, setBreadcrumbs] = useState([])
   const [modal, ModalElement] = useOdooModal();
   const [actionModal, ActionModalElement] = useActionModal()
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [appTitle, setAppTitle] = useState("Ogun ERP")
 
   const {t, i18n} = useTranslation()
   
@@ -340,6 +344,21 @@ export default function PluginFormPage() {
     
   }
 
+  /**
+   * 
+   * @param {*} filter 
+   */
+  const applyCustomFilter = async(filter) => {
+    const response = await executedPostMethod(metadata.action, 'customfilter', {
+         filter: filter,
+         typeCode:metadata.typeCode,
+         class:metadata.type,
+         startIndex:-1,
+         pageSize : 0,
+    });
+    setData(response.data)
+  }
+
   // 2. Gestion des anomalies de route
   if (isPluginError) {
     return (
@@ -354,75 +373,91 @@ export default function PluginFormPage() {
   return (
     <div className="h-screen w-full bg-slate-50 flex flex-col antialiased overflow-hidden">
       
-      {/* Inclusion de l'en-tête dynamique alimenté par le serveur */}
+      {/* 1. En-tête en haut sur toute la largeur */}
       <PluginHeader 
         pluginName={plugin.label || "Application"} 
         menus={plugin.menus || []} 
         activeMenu={activeMenu} 
         setActiveMenu={(menuId, obj) => handleMenuChange(obj || menuId)} 
+        companyLogo={ogunLogoImage}
+        companyName={appTitle}
       />
-      
-      {/* Zone principale figée (Désactivation du scroll principal de la page) */}
-      <main className="flex-1 bg-slate-50 dark:bg-slate-950 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-0 md:p-0 scrollbar-thin">
-          <div className="max-w-none w-full mx-auto animate-in fade-in duration-150">
-    
-              {/* Si le mode est "dashboard", on l'affiche directement sans bloquer sur metadata */}
-              {viewMode === "dashboard" ? (
-                  <DashboardPage dashboard={dashboard}/>
-              ) : metadata ? (
-                  // Sinon, on gère les listes et les formulaires qui nécessitent des métadonnées
-                  viewMode !== "view" ? (
-                      <ListFormPage
-                        predicates={predicates}
-                        setPredicates={setPredicates} 
-                        filters={filters}
-                        setFilters={setFilters}
-                        sortConfig={sortConfig}
-                        setSortConfig={setSortConfig}
-                        isLoading={isLoading}
-                        setIsLoading={setIsLoading}
-                        items={data.data}
-                        metadata={metadata}
-                        currentPage={currentPage}
-                        setCurrentPage={setCurrentPage}
-                        selectedIds={selectedIds}
-                        setSelectedIds={setSelectedIds}
-                        totalPages={totalPages}
-                        viewMode={viewMode}
-                        allowedViews={allowedViews}
-                        breadcrumbs={breadcrumbs}
-                        setViewMode={setViewMode}
-                        onCreate={handleOnCreate}
-                        onDelete={handleOnDelete}
-                        onSelected={handleSelected}
-                        onRefresh={onRefresh}
-                        onBreadcrumbAction={onBreadcrumbAction}
-                      />
-                  ) : (
-                      <FormPage 
-                        metadata={metadata}
-                        item={data}
-                        breadcrumbs={breadcrumbs}
-                        editMode={editMode}
-                        isLoading={isLoading}
-                        setFormValues={setData}
-                        resources={resources}
-                        setResources={setResources}
-                        onSave={handleSave}
-                        onCancel={handleCancel} 
-                        onAction={handleOnAction}
-                        shutcutAction={handleShutcutAction}
-                        onBreadcrumbAction={onBreadcrumbAction}
-                      />
-                  )
-              ) : null}
 
+      {/* 2. Conteneur horizontal pour Sidebar + Main */}
+      <div className="flex flex-1 overflow-hidden">
+        
+        {/* Barre latérale à gauche */}
+        <PluginSidebar 
+          menus={plugin.menus || []}
+          activeMenu={activeMenu}
+          setActiveMenu={(menu) => handleMenuChange(menu)}
+          isCollapsed={isSidebarCollapsed}
+          setIsCollapsed={setIsSidebarCollapsed}
+        />
+        
+        {/* Zone principale à droite de la sidebar */}
+        <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-slate-50 dark:bg-slate-950">
+          <div className="flex-1 overflow-y-auto p-0 md:p-0 scrollbar-thin">
+            <div className="max-w-none w-full mx-auto animate-in fade-in duration-150">
+        
+                {/* Si le mode est "dashboard", on l'affiche directement sans bloquer sur metadata */}
+                {viewMode === "dashboard" ? (
+                    <DashboardPage dashboard={dashboard}/>
+                ) : metadata ? (
+                    // Sinon, on gère les listes et les formulaires qui nécessitent des métadonnées
+                    viewMode !== "view" ? (
+                        <ListFormPage
+                          predicates={predicates}
+                          setPredicates={setPredicates} 
+                          filters={filters}
+                          setFilters={setFilters}
+                          sortConfig={sortConfig}
+                          setSortConfig={setSortConfig}
+                          isLoading={isLoading}
+                          setIsLoading={setIsLoading}
+                          items={data.data}
+                          metadata={metadata}
+                          currentPage={currentPage}
+                          setCurrentPage={setCurrentPage}
+                          selectedIds={selectedIds}
+                          setSelectedIds={setSelectedIds}
+                          totalPages={totalPages}
+                          viewMode={viewMode}
+                          allowedViews={allowedViews}
+                          breadcrumbs={breadcrumbs}
+                          setViewMode={setViewMode}
+                          onCreate={handleOnCreate}
+                          onDelete={handleOnDelete}
+                          onSelected={handleSelected}
+                          onRefresh={onRefresh}
+                          onBreadcrumbAction={onBreadcrumbAction}
+                          onCustomFilter={applyCustomFilter}
+                        />
+                    ) : (
+                        <FormPage 
+                          metadata={metadata}
+                          item={data}
+                          breadcrumbs={breadcrumbs}
+                          editMode={editMode}
+                          isLoading={isLoading}
+                          setFormValues={setData}
+                          resources={resources}
+                          setResources={setResources}
+                          onSave={handleSave}
+                          onCancel={handleCancel} 
+                          onAction={handleOnAction}
+                          shutcutAction={handleShutcutAction}
+                          onBreadcrumbAction={onBreadcrumbAction}
+                        />
+                    )
+                ) : null}
+
+            </div>
+            {ModalElement}  {ActionModalElement}
           </div>
-          {ModalElement}  {ActionModalElement}
-        </div>
-      </main>
+        </main>
 
+      </div>
     </div>
   )
 }

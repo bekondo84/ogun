@@ -26,7 +26,7 @@ export default function TableImageCell ({value}) {
 
     return (
         <div className="w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shadow-xs">
-          <img src={imageSrc} alt="Miniature" className="w-full h-full object-cover" />
+          <img src={imageSrc} alt="Miniature" className="w-full h-full object-cover h-8 w-8" />
         </div>
     );
 }

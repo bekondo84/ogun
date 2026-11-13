@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { DollarSign, Users, TrendingUp, ShoppingBag, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import KpiCard from "./KpiCard"
 import { executedPostMethod, executeGetMethod } from "@/axios/DataService";
+import { useInterval } from "@/hooks/useInterval";
 
 export default function KpiCards({kpiCardsMeta }) {
 
@@ -12,7 +13,7 @@ export default function KpiCards({kpiCardsMeta }) {
 
    useEffect(() => {
       if (kpiCardsMeta) {
-            fetchKpi()
+          fetchKpi()
       }      
    }, [kpiCardsMeta]);
 
@@ -20,6 +21,12 @@ export default function KpiCards({kpiCardsMeta }) {
         setKpiItems(kpiData?.items)
         //console.log('------------------------------'+JSON.stringify(kpiData?.items))
    }, [kpiData]);
+
+   useInterval(() => {
+       if (kpiCardsMeta) {
+            fetchKpi();
+       }
+   }, kpiCardsMeta?.refresh || 3600000);
 
   const fetchKpi = async() => { 
      try {

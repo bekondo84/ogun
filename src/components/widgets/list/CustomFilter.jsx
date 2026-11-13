@@ -17,7 +17,8 @@ export default function CustomFilter({
     onRefresh,
     onCreateFilter,
     onEditFilter,
-    onDeleteFilter
+    onDeleteFilter,
+    onCustomFilter
 }) {
   const [showCustomFilters, setShowCustomFilters] = useState(false);
   const customFiltersRef = useRef(null);
@@ -35,8 +36,10 @@ export default function CustomFilter({
   }, [showCustomFilters])
 
   useEffect(() => {
-      if (editingFilter) {
+      if (editingFilter && editingFilter.type == '1') {
          applyPredicatesFilter(editingFilter, searchableColumns, predicates, setPredicates, onRefresh);
+      } else if (editingFilter && editingFilter.type == '2') {
+          onCustomFilter (editingFilter);
       }
   }, [editingFilter])
   // Fermer le menu au clic à l'extérieur
@@ -150,7 +153,7 @@ export default function CustomFilter({
                         <Pencil className="h-3 w-3" />
                       </button>
                     )}
-                    {filter.scope == '1' && (
+                    {(filter.scope == '1' && filter.type == '1') && (
                       <button
                         type="button"
                         title="Supprimer"

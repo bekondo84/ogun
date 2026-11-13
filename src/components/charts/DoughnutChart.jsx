@@ -2,26 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import './chartConfig';
 import { executedPostMethod } from '@/axios/DataService';
+import { useInterval } from '@/hooks/useInterval';
 
 export default function DoughnutChart({
   doughnut
 }) {
-  /* const data = {
-    labels: ['En stock', 'En rupture', 'En commande', 'Réservé'],
-    datasets: [
-      {
-        data: [65, 10, 15, 10],
-        backgroundColor: [
-          '#10b981', // Vert
-          '#ef4444', // Rouge
-          '#f59e0b', // Orange
-          '#6366f1', // Indigo
-        ],
-        borderWidth: 0,
-        hoverOffset: 4,
-      },
-    ],
-  }; */
+ 
   const [data, setData] = useState(null)
   const [titre, setTitre] = useState(null)
 
@@ -50,6 +36,13 @@ export default function DoughnutChart({
           fetchData();
       }
   }, [doughnut]);
+
+  useInterval(() => {
+      if (doughnut) {
+          fetchData();
+      }
+  }, doughnut?.refresh || 3600000);
+  
 
   const fetchData = async() => {
           const response = await executedPostMethod(doughnut.action, doughnut.method, {

@@ -10,7 +10,8 @@ export default function SmartSearch({
   , setPredicates
   , filters
   , setFilters
-  , onRefresh }) {
+  , onRefresh
+  , onCustomFilter }) {
   const [inputValue, setInputValue] = useState("")
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [searchableColumns, setSearchableColumns] = useState([])
@@ -85,6 +86,7 @@ export default function SmartSearch({
             onRefresh={onRefresh}
             onDeleteFilter={() => alert('Vous avez cliqué sur la suppression du filtre')}
             onEditFilter={() => alert('Vous avez cliqué sur la modification du filtre')}
+            onCustomFilter={onCustomFilter}
          />        
         
         {/* Conteneur de l'input avec position relative stricte */}

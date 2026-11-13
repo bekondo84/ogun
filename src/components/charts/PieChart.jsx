@@ -2,19 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
 import './chartConfig';
 import { executedPostMethod } from '@/axios/DataService';
+import { useInterval } from '@/hooks/useInterval';
 
 export function PieChart({
     pieData
 }) {
-   /* const data = {
-    labels: ['Administration', 'Production', 'Logistique', 'Ventes'],
-    datasets: [
-      {
-        data: [15, 40, 25, 20],
-        backgroundColor: ['#ef4444', '#f59e0b', '#10b981', '#6366f1'],
-      },
-    ],
-  };  */
 
   const options = { responsive: true, maintainAspectRatio: false };
   const [data, setData] = useState(null)
@@ -23,11 +15,18 @@ export function PieChart({
   useEffect(() => {
     if (pieData) {
         setTitre (pieData.label);
-        fetchData()
+        fetchData();
+       // refresh(fetchData, pieData.refresh);
     }      
   }, [pieData])
 
 
+  useInterval(() => {
+      if (pieData) {
+          fetchData();
+      }
+  }, pieData?.refresh || 3600000);
+  
 
   const fetchData = async() => {
         const response = await executedPostMethod(pieData.action, pieData.method, {

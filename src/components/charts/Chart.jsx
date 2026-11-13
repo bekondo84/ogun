@@ -18,9 +18,7 @@ export default function Chart({
            ): chart.type === 'doughnut' ? (
                <DoughnutChart doughnut={chart}/>
            ): chart.type === 'bar' ? (
-              <BarChart />
-           ): chart.type === 'activitylogs' ? (
-              <ActivityLogs />
+              <BarChart chartdata={chart}/>
            ): null}          
         </div>       
     )  

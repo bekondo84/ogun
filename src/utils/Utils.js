@@ -216,3 +216,21 @@ export const applicableOperators = (field, t) => {
     }
     return []
 }
+
+/**
+ * 
+ * @param {*} fecthFn 
+ * @param {*} interval 
+ * @returns 
+ */
+export const refresh = (fecthFn, interval) => {
+   // console.log('--------------------- '+interval)
+    if (interval && fecthFn) {
+        const intervalId = setInterval(() => {
+            fecthFn()
+        }, interval * 1000)
+
+        // Nettoyage de l'intervalle si le composant est démonté ou si kpiCardsMeta change
+        return () => clearInterval(intervalId)
+    }
+}
