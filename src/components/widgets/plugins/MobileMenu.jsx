@@ -1,39 +1,58 @@
-import React from "react"
+import React, { useEffect } from "react"
 
-export default function MobileMenu({ item, setActiveMenu, activeMenu, depth = 0 }) {
+export default function MobileMenu({ item, loadPlugin, setActiveMenu, activeMenu, depth = 0, isPlugin = false }) {
   const hasChildren = item.navigations  && item.navigations.length > 0
-
-  return (
-    <div className="flex flex-col w-full">
-      {!hasChildren ? (
-        <button
-          onClick={() => setActiveMenu(item)}
-          style={{ paddingLeft: `${(depth * 12) + 12}px` }}
-          className={`w-full text-left py-2 text-sm rounded-md transition-all ${
-            activeMenu === item.seqnumber ? "bg-purple-700 text-white font-medium" : "text-slate-700 hover:bg-slate-100"
-          }`}
-        >
-          {item.label}
-        </button>
-      ) : (
-        <>
-          <div 
+   
+  useEffect(() => {
+    // console.log('******************************** : '+JSON.stringify(item))
+  }, [item])
+  if (!isPlugin) {
+    return (
+      <div className="flex flex-col w-full">
+        {!hasChildren ? (
+          <button
+            onClick={() => setActiveMenu(item)}
             style={{ paddingLeft: `${(depth * 12) + 12}px` }}
-            className="w-full text-left py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 mt-2"
+            className={`w-full text-left py-2 text-sm rounded-md transition-all ${
+              activeMenu === item.seqnumber ? "bg-purple-700 text-white font-medium" : "text-slate-700 hover:bg-slate-100"
+            }`}
           >
             {item.label}
-          </div>
-          {item.navigations.map((child) => (
-            <MobileMenu 
-              key={child.seqnumber} 
-              item={child} 
-              setActiveMenu={setActiveMenu} 
-              activeMenu={activeMenu} 
-              depth={depth + 1} 
-            />
-          ))}
-        </>
-      )}
-    </div>
-  )
+          </button>
+        ) : (
+          <>
+            <div 
+              style={{ paddingLeft: `${(depth * 12) + 12}px` }}
+              className="w-full text-left py-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 mt-2"
+            >
+              {item.label}
+            </div>
+            {item.navigations.map((child) => (
+              <MobileMenu 
+                key={child.seqnumber} 
+                item={child} 
+                setActiveMenu={setActiveMenu} 
+                activeMenu={activeMenu} 
+                depth={depth + 1} 
+              />
+            ))}
+          </>
+        )}
+      </div>
+    )
+  } else {
+     return (
+        <div className="flex flex-col w-full">
+        <button
+            onClick={() => loadPlugin(item.id)}
+            style={{ paddingLeft: `${(depth * 12) + 12}px` }}
+            className={`w-full text-left py-2 text-sm rounded-md transition-all ${
+              activeMenu === item.id ? "bg-purple-700 text-white font-medium" : "text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            {item.name}
+        </button>
+      </div>
+     )
+  }
 }

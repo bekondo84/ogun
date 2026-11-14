@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom"
 import { Toaster } from 'sonner'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
@@ -10,14 +10,28 @@ import AppsPage from './components/pages/plugins/AppsPage'
 import PluginFormPage from './components/pages/plugins/PluginFormPage'
 import { useOdooModal } from './components/widgets/notification/useOdooModal'
 import { setGlobalModal } from './utils/modalService'
+import { getSettingValue } from './axios/DataService'
 
 function App() {
   const [count, setCount] = useState(0)
   const [modal, ModalElement] = useOdooModal();
+  /**
+   * NAV_PLUGIN_001 : Plugin Landing Page then Vertical Menu
+   * NAV_PLUGIN_002 : Plugin Langing Page then Horizontal Menu
+   * NAV_PLUGIN_003 : Global plugin horizontal menu and Vertical menu for plugin details
+   */
+  const [erptemplate, setErptemplate] = useState(() => {
+       return localStorage.getItem('erp_template')
+  });
 
   useEffect(() => {
       setGlobalModal(modal)
-  }, [modal])
+  }, [modal]);
+
+  const showAppsPage = () => {
+       return ['NAV_PLUGIN_001', 'NAV_PLUGIN_002'].includes(erptemplate)
+  }
+  
   return (
     <>
       <Toaster position="top-right" richColors closeButton duration={4000} />      
@@ -27,9 +41,10 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           
           {/* Route après connexion : Tableau de bord des applications */}
-          <Route path="/apps" element={<AppsPage />} />
+          { showAppsPage() ? (<Route path="/apps" element={<AppsPage erpTemplate={erptemplate} />} />) 
+            :(<Route path="/apps" element={<PluginFormPage erpTemplate={erptemplate}/>} />)}          
 
-          <Route path="/apps/:id" element={<PluginFormPage />} />
+          <Route path="/apps/:id" element={<PluginFormPage erpTemplate={erptemplate}/>} />
 
         </Routes>
       </BrowserRouter>

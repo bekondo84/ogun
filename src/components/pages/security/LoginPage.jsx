@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, Lock, User, Globe, Loader2, AlertCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { getSettingValue } from "@/axios/DataService"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -16,6 +17,23 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const loginMutation = useLogin()
   const {t, i18n} = useTranslation()
+
+  /**
+   * Tenant settings i has priority on userSetting.
+   * Apply first tenant setting and when no teant settings is found apply user setting or none
+   */
+  const sessionSettings = async() => {
+        //Global variable name is NAV_PLUGIN
+        var erpTemplate = localStorage.getItem('erp_template');
+        const navLogic = await getSettingValue('erp_template');
+        if (navLogic && ['NAV_PLUGIN_001', 'NAV_PLUGIN_002', 'NAV_PLUGIN_003'].includes(navLogic)) {
+           erpTemplate = navLogic;
+        }
+        if (erpTemplate == null || erpTemplate == undefined) {
+          erpTemplate = 'NAV_PLUGIN_002';
+        }
+         localStorage.setItem('erp_template', erpTemplate)
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -28,7 +46,7 @@ export default function LoginPage() {
     loginMutation.mutate(
       { username, password },
       {
-        onSuccess: (data) => {
+        onSuccess: async(data) => {
           // 🔐 Stockage du token de session ERP
           //console.log(data);
           if (data?.access_token) {
@@ -37,6 +55,8 @@ export default function LoginPage() {
           if (data?.user_name) {
               localStorage.setItem("user_name", data.user_name) 
           }
+          //Set Session settings to personalize user ui experiences
+          await sessionSettings()
           navigate("/apps")
         },
         onError: (error) => {

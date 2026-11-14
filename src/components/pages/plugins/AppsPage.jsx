@@ -14,7 +14,9 @@ const ALLCATEGORIE = [
      { id: "all", name: "Tous les modules" },
 ]
 
-export default function AppsPage() {
+export default function AppsPage({
+  erpTemplate
+}) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const { data: plugins = [], isLoading, isError, error, refetch } = useGetSessionPlugins()

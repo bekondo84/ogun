@@ -7,7 +7,7 @@ import ListFormPage from "@/components/pages/forms/ListFormPage"
 import FormPage from "@/components/pages/forms/FormPage"
 import { Loader2, AlertTriangle } from "lucide-react"
 import { getMeta, getMetaFromTypeCode } from "@/axios/MetaService"
-import { deleteItem, executedPostMethod, uploadFile } from "@/axios/DataService"
+import { deleteItem, executedPostMethod, getSessionPlugins, loadPlugin, uploadFile } from "@/axios/DataService"
 import DashboardPage from "../dashbord/DashboardPage"
 import { refreshBreadcrumbs, refreshSnapshaps, removeLastsystemSnapshaps, updateSystemSnapshaps } from "@/utils/Utils"
 import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
@@ -18,16 +18,18 @@ import { loadDashboardMenu, loadMetaMenu } from "@/utils/PluginUtils"
 import ogunLogoImage from "@/assets/ogun.png"
 import PluginSidebar from "@/components/widgets/plugins/PluginSidebar"
 
-export default function PluginFormPage() {
+export default function PluginFormPage({erpTemplate}) {
   const { id } = useParams()
   
   // Appel API REST TanStack Query sécurisé (Ne se lance que si l'ID de route existe)
+  /*
   const { 
     data: plugin = {}, 
     isLoading: isPluginLoading, 
     isError: isPluginError, 
     error: pluginError 
-  } = useGetPlugin(id)
+  } = useGetPlugin(id || 'backoffice')
+   */
 
   // États de l'interface ERP
   const [activeMenu, setActiveMenu] = useState(null)
@@ -54,24 +56,30 @@ export default function PluginFormPage() {
   const [actionModal, ActionModalElement] = useActionModal()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [appTitle, setAppTitle] = useState("Ogun ERP")
-
+  const [plugin, setPlugin] = useState(null)
+  
   const {t, i18n} = useTranslation()
   
+  useEffect(() => {
+     console.log('PluginFormPage ----------------------- '+erpTemplate)
+     if (erpTemplate != 'NAV_PLUGIN_003') {
+          setSelectedPlugin();
+     }
+  }, [erpTemplate]);
+
   //Reset filter and predicates  when metadata change
   useEffect(() => {
       setFilters([])
       setPredicates([])
   }, [metadata])
 
-  useEffect(() => {
-      //console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- '+JSON.stringify(data))
-  }, [resources])
   //For every change of th snapshots update the breadcrumps 
   useEffect(() => {
       setBreadcrumbs(refreshBreadcrumbs(snapshotstore))
   }, [snapshotstore])
   //SYNCHRONISATION : Dés que l'API renvoie les menus du serveur, on charge le premier par défaut
   useEffect(() => {
+    console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- ')
     if (plugin && plugin.menus && plugin.menus.length > 0) {
       const firstMenu = getFirstMenuItem(plugin.menus[0])
       if (firstMenu) {
@@ -82,8 +90,14 @@ export default function PluginFormPage() {
        // setAllowedViews(firstMenu.viewMode)
       }
     }
-  }, [plugin])
+  }, [plugin]);
 
+  const setSelectedPlugin =  async () => {
+      if (id) {
+        const plug = await loadPlugin(id);
+        setPlugin(plug);
+      }
+   }
   const getFirstMenuItem =  (menu) => {
       if (menu && menu.type) {
         return menu;
@@ -324,6 +338,7 @@ export default function PluginFormPage() {
       
       setIsLoading(true)
       
+      console.log ('PluginFormPage.handleMenuChange ......................... '+JSON.stringify(menuObject))
       const targetView = menuObject.viewMode.split(',')[0]
       if (targetView === 'dashboard') {
           await loadDashboardMenu (menuObject, setDashboard, setActiveMenu, setViewMode, setAllowedViews)
@@ -359,8 +374,12 @@ export default function PluginFormPage() {
     setData(response.data)
   }
 
+  const showPluginSlideBar = () => {
+    return ['NAV_PLUGIN_001', 'NAV_PLUGIN_003'].includes(erpTemplate);
+  }
+
   // 2. Gestion des anomalies de route
-  if (isPluginError) {
+  /* if (isPluginError) {
     return (
       <div className="h-screen w-full flex flex-col items-center justify-center bg-red-50 text-red-700 p-4 text-center gap-2">
         <AlertTriangle className="h-6 w-6" />
@@ -368,32 +387,35 @@ export default function PluginFormPage() {
         <span className="text-[11px] opacity-80">{pluginError?.message}</span>
       </div>
     )
-  }
+  } */
 
   return (
     <div className="h-screen w-full bg-slate-50 flex flex-col antialiased overflow-hidden">
       
-      {/* 1. En-tête en haut sur toute la largeur */}
       <PluginHeader 
-        pluginName={plugin.label || "Application"} 
-        menus={plugin.menus || []} 
-        activeMenu={activeMenu} 
-        setActiveMenu={(menuId, obj) => handleMenuChange(obj || menuId)} 
-        companyLogo={ogunLogoImage}
-        companyName={appTitle}
-      />
+            pluginName={plugin?.label || "Application"} 
+            menus={plugin?.menus || []} 
+            activeMenu={activeMenu} 
+            setActiveMenu={(menuId, obj) => handleMenuChange(obj || menuId)} 
+            companyLogo={ogunLogoImage}
+            companyName={appTitle}
+            erpTemplate={erpTemplate}
+            setPlugin={setPlugin}
+          />
 
       {/* 2. Conteneur horizontal pour Sidebar + Main */}
       <div className="flex flex-1 overflow-hidden">
         
-        {/* Barre latérale à gauche */}
-        <PluginSidebar 
-          menus={plugin.menus || []}
-          activeMenu={activeMenu}
-          setActiveMenu={(menu) => handleMenuChange(menu)}
-          isCollapsed={isSidebarCollapsed}
-          setIsCollapsed={setIsSidebarCollapsed}
-        />
+        {showPluginSlideBar() ? (
+             <PluginSidebar 
+                menus={plugin?.menus || []}
+                activeMenu={activeMenu}
+                setActiveMenu={(menu) => handleMenuChange(menu)}
+                isCollapsed={isSidebarCollapsed}
+                setIsCollapsed={setIsSidebarCollapsed}
+              />
+        ):null}
+        
         
         {/* Zone principale à droite de la sidebar */}
         <main className="flex-1 flex flex-col overflow-hidden min-w-0 bg-slate-50 dark:bg-slate-950">

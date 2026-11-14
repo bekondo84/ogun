@@ -49,6 +49,7 @@ api.interceptors.response.use(
          toast.error("Accès refusé", {
            description: "Vous n'avez pas les permissions pour effectuer cette action",
          });    
+         window.location.href = "/"
          break;
        case 404:
           toast.error("Ressource introuvable", {

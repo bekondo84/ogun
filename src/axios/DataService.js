@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import axios from "axios";
+import { data } from "react-router-dom";
 
 export async function executedPostMethod(action, method, data) {
     const token = localStorage.getItem("erp_auth_token");
@@ -114,6 +115,18 @@ export async function deleteItem(item, metadata) {
        })
 }
 
+export async function  getSettingValue(key) {
+    const response = await executedPostMethod("defaultAction", "fetchitem", {
+         data: {key: key},
+         typeCode: 'Settings',
+         plugin: null,
+    });
+    if (response.data) {
+        return response.data.value;
+    }
+    return null;
+}
+
 export async function combovalues (typeCode, field) {
     const token = localStorage.getItem("erp_auth_token");
     const response = await api.get(`/api/i18n/values?typecode=${typeCode}&field=${field.fieldName}`, {
@@ -122,4 +135,26 @@ export async function combovalues (typeCode, field) {
                 }
     });
     return response.data
+}
+
+export async function getSessionPlugins () {
+     const token = localStorage.getItem("erp_auth_token");
+     const response = await api.post("/api/actions/execute/pluginAction/session_plugins", {
+        headers: {
+                     'Authorization':'Bearer '+token,
+                }
+     });
+     const context = response.data;
+     return context ? context.data : [];
+}
+
+export async function loadPlugin(id) {
+    const token = localStorage.getItem("erp_auth_token");
+     const response = await api.post("/api/actions/execute/pluginAction/load", {plugin: id}, {
+        headers: {
+                     'Authorization':'Bearer '+token,
+                }
+     });
+     const context = response.data;
+     return context ? context.data : null;
 }
