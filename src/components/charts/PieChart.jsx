@@ -25,7 +25,7 @@ export function PieChart({
       if (pieData) {
           fetchData();
       }
-  }, pieData?.refresh || 3600000);
+  }, pieData?.refresh || 3600);
   
 
   const fetchData = async() => {

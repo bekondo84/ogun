@@ -10,20 +10,22 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Search, LayoutGrid, Filter, Check } from "lucide-react"
 import LoginWidget from "@/components/pages/security/LoginWidget"
+import { useTranslation } from "react-i18next"
 
 export default function AppHeader({ 
   searchQuery, 
-  searchQuerySet, 
+  setSearchQuery, 
   selectedCategory, 
   setSelectedCategory, 
   companyLogo,
   companyName = "Ogun",
+  companySigle = "ERP",
   categories = [] 
 }) {
   const currentCategoryName = categories.find(c => c.id === selectedCategory)?.name || "Filtrer"
   const navigate = useNavigate() 
   const [logoError, setLogoError] = useState(false)
-
+  const {t, i18n} = useTranslation();
   // Vérifie si on a un logo valide (URL, image importée ou composant React)
   const hasLogo = Boolean(companyLogo) && !logoError
 
@@ -44,7 +46,7 @@ export default function AppHeader({
                 />
             </div>
             <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white hidden sm:inline">
-              Ogun<span className="text-purple-700 dark:text-purple-400">ERP</span>
+              {companyName}<span className="text-purple-700 dark:text-purple-400">{companySigle}</span>
             </span>
       </div>
 
@@ -54,7 +56,7 @@ export default function AppHeader({
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input 
             type="text" 
-            placeholder="Rechercher..." 
+            placeholder={t('search_lb')} 
             value={searchQuery} 
             onChange={(e) => setSearchQuery(e.target.value)} 
             className="h-10 pl-9 rounded-lg" 
@@ -66,7 +68,7 @@ export default function AppHeader({
             <span className="hidden md:inline">{currentCategoryName}</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 p-1">
-            <div className="px-2 py-1.5 text-xs font-semibold text-slate-500">Filtrer par catégorie</div>
+            <div className="px-2 py-1.5 text-xs font-semibold text-slate-500">{t('filter_categories')}</div>
             <DropdownMenuSeparator />
             {categories.map((c) => (
               <DropdownMenuItem key={c.id} onClick={() => setSelectedCategory(c.id)} className="cursor-pointer">

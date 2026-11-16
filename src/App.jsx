@@ -10,7 +10,7 @@ import AppsPage from './components/pages/plugins/AppsPage'
 import PluginFormPage from './components/pages/plugins/PluginFormPage'
 import { useOdooModal } from './components/widgets/notification/useOdooModal'
 import { setGlobalModal } from './utils/modalService'
-import { getSettingValue } from './axios/DataService'
+import { useErpStore } from './lib/useErpStore'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -20,16 +20,16 @@ function App() {
    * NAV_PLUGIN_002 : Plugin Langing Page then Horizontal Menu
    * NAV_PLUGIN_003 : Global plugin horizontal menu and Vertical menu for plugin details
    */
-  const [erptemplate, setErptemplate] = useState(() => {
-       return localStorage.getItem('erp_template')
-  });
+  const erpTemplate = useErpStore((state) => state.erpTemplate);
 
+  
   useEffect(() => {
       setGlobalModal(modal)
   }, [modal]);
 
   const showAppsPage = () => {
-       return ['NAV_PLUGIN_001', 'NAV_PLUGIN_002'].includes(erptemplate)
+       //console.log('?????????????????????? : '+erpTemplate)
+       return ['NAV_PLUGIN_001', 'NAV_PLUGIN_002'].includes(erpTemplate)
   }
   
   return (
@@ -41,10 +41,10 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           
           {/* Route après connexion : Tableau de bord des applications */}
-          { showAppsPage() ? (<Route path="/apps" element={<AppsPage erpTemplate={erptemplate} />} />) 
-            :(<Route path="/apps" element={<PluginFormPage erpTemplate={erptemplate}/>} />)}          
+          { showAppsPage() ? (<Route path="/apps" element={<AppsPage erpTemplate={erpTemplate} />} />) 
+            :(<Route path="/apps" element={<PluginFormPage erpTemplate={erpTemplate}/>} />)}          
 
-          <Route path="/apps/:id" element={<PluginFormPage erpTemplate={erptemplate}/>} />
+          <Route path="/apps/:id" element={<PluginFormPage erpTemplate={erpTemplate}/>} />
 
         </Routes>
       </BrowserRouter>

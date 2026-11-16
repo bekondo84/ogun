@@ -52,7 +52,16 @@ const resources = {
       column_coustomizer_modal:`Personaliser les colonnes`,
       column_coustomizer_modal_message: "Cochez les colonnes à afficher et utilisez les flèches pour modifier leur ordre d'apparition.",
       greeting: "Bonjour, {{name}} !",
-      items_count: "Vous avez {{count}} élément | Vous avez {{count}} éléments"
+      items_count: "Vous avez {{count}} élément | Vous avez {{count}} éléments",
+      system_status: "Status Système",
+      help_menu: "Aide & Docs",
+      available_plugins: "Applications disponibles",
+      plugin_0001: "Cliquez sur un module pour charger l'environnement de travail.",
+      no_result:"Aucun résultat",
+      try_change_search_criteria: "Essayez de modifier vos critères de recherche.",
+      search_lb:"Rechercher...",
+      filter_categories:"Filtrer par catégorie",
+      all_plugins: "Tous les modules"
     }
   },
   en: {

@@ -115,16 +115,14 @@ export async function deleteItem(item, metadata) {
        })
 }
 
-export async function  getSettingValue(key) {
-    const response = await executedPostMethod("defaultAction", "fetchitem", {
-         data: {key: key},
-         typeCode: 'Settings',
-         plugin: null,
-    });
-    if (response.data) {
-        return response.data.value;
-    }
-    return null;
+export async function  getGeneralSettings() {
+    const token = localStorage.getItem("erp_auth_token");
+    const response = await api.get('/api/system/general/settings', {
+         headers: {
+                     'Authorization':'Bearer '+token,
+                }
+    })
+    return response.data;
 }
 
 export async function combovalues (typeCode, field) {
@@ -157,4 +155,14 @@ export async function loadPlugin(id) {
      });
      const context = response.data;
      return context ? context.data : null;
+}
+
+export async function getSystemStatus () {
+    const token = localStorage.getItem("erp_auth_token");
+    const response = await api.get("/api/system/status", {
+        headers: {
+                     'Authorization':'Bearer '+token,
+                }
+    });
+    return response.data;
 }

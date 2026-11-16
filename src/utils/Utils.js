@@ -234,3 +234,4 @@ export const refresh = (fecthFn, interval) => {
         return () => clearInterval(intervalId)
     }
 }
+

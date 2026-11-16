@@ -40,7 +40,7 @@ export default function DataControls({
   const {t, i18n} = useTranslation();
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4 shadow-sm flex-wrap">
+    <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 bg-[var(--brand-soft)] dark:bg-[var(--brand-soft-dark)] text-[var(--brand-primary)] p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4 shadow-sm flex-wrap">
       
       {/* SECTION 1 : Breadcrumb + Titre & CRUD */}
       <div className="flex flex-col gap-1.5 shrink-0">
@@ -55,7 +55,7 @@ export default function DataControls({
           {metadata?.canCreate && (
             <button 
               onClick={onCreate} 
-              className="inline-flex items-center justify-center bg-purple-700 hover:bg-purple-800 text-white h-8 px-3 text-xs font-semibold gap-1.5 rounded-md transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white h-8 px-3 text-xs font-semibold gap-1.5 rounded-md transition-colors cursor-pointer"
             >
               <Plus className="h-3.5 w-3.5" /> {t('create_btn')}
             </button>

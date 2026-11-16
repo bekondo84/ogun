@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { Eye, EyeOff, Lock, User, Globe, Loader2, AlertCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { getSettingValue } from "@/axios/DataService"
+import { getGeneralSettings } from "@/axios/DataService"
+import { useErpStore } from "@/lib/useErpStore"
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -17,22 +18,31 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const loginMutation = useLogin()
   const {t, i18n} = useTranslation()
-
+  const setErpTemplate = useErpStore((state) => state.setErpTemplate);
+  const setThemeMode = useErpStore((state) => state.setThemeMode);
+  const setAccentColor = useErpStore((state) => state.setAccentColor)
   /**
    * Tenant settings i has priority on userSetting.
    * Apply first tenant setting and when no teant settings is found apply user setting or none
    */
   const sessionSettings = async() => {
         //Global variable name is NAV_PLUGIN
-        var erpTemplate = localStorage.getItem('erp_template');
-        const navLogic = await getSettingValue('erp_template');
-        if (navLogic && ['NAV_PLUGIN_001', 'NAV_PLUGIN_002', 'NAV_PLUGIN_003'].includes(navLogic)) {
-           erpTemplate = navLogic;
+        const settings = await getGeneralSettings();
+        if (settings && Object.keys(settings).length > 0) {
+            Object.keys(settings).forEach(key => {
+                  localStorage.setItem(key.toLowerCase(), settings[key])
+                  if (key.toLowerCase() == 'erp_template') {
+                       setErpTemplate(settings[key]);
+                  }
+                  if (key.toLowerCase() == 'erp_theme') {
+                       setThemeMode(settings[key])
+                  }
+                  if (key.toLowerCase() == 'erp_accent_color') {
+                      setAccentColor(settings[key])
+                  }
+            });
         }
-        if (erpTemplate == null || erpTemplate == undefined) {
-          erpTemplate = 'NAV_PLUGIN_002';
-        }
-         localStorage.setItem('erp_template', erpTemplate)
+    console.log('LoginPage.sessionSettings --------------------- '+JSON.stringify(settings))
   }
 
   const handleSubmit = (e) => {

@@ -3,9 +3,14 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  /* Thème par défaut :  Purple */
+  --brand-primary: #7c3aed;      /* purple-600 */
+  --brand-hover: #6d28d9;        /* purple-700 */
+  --brand-soft: #f5f3ff;         /* purple-50 */
+  --brand-soft-dark: rgba(59, 7, 100, 0.45);
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -97,6 +102,22 @@
   --sidebar-ring: oklch(0.708 0 0)
 }
 
+[data-accent="blue"] {
+  /* Thème Corporate Blue (style SAP / Hybris) */
+  --brand-primary: #2563eb;      /* blue-600 */
+  --brand-hover: #1d4ed8;        /* blue-700 */
+  --brand-soft: #eff6ff;         /* blue-50 */
+  --brand-soft-dark: rgba(23, 37, 84, 0.5);
+}
+
+[data-accent="emerald"] {
+  /* Thème Emerald */
+  --brand-primary: #059669;      /* emerald-600 */
+  --brand-hover: #047857;        /* emerald-700 */
+  --brand-soft: #ecfdf5;         /* emerald-50 */
+  --brand-soft-dark: rgba(2, 44, 34, 0.5);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
@@ -158,6 +179,9 @@ h2 {
   @media (max-width: 1024px) {
     font-size: 20px;
   }
+}
+.dark h2 {
+  color: white;
 }
 p {
   margin: 0;

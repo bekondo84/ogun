@@ -7,7 +7,7 @@ import ListFormPage from "@/components/pages/forms/ListFormPage"
 import FormPage from "@/components/pages/forms/FormPage"
 import { Loader2, AlertTriangle } from "lucide-react"
 import { getMeta, getMetaFromTypeCode } from "@/axios/MetaService"
-import { deleteItem, executedPostMethod, getSessionPlugins, loadPlugin, uploadFile } from "@/axios/DataService"
+import { deleteItem, executedPostMethod, loadPlugin, uploadFile } from "@/axios/DataService"
 import DashboardPage from "../dashbord/DashboardPage"
 import { refreshBreadcrumbs, refreshSnapshaps, removeLastsystemSnapshaps, updateSystemSnapshaps } from "@/utils/Utils"
 import { useOdooModal } from "@/components/widgets/notification/useOdooModal"
@@ -55,13 +55,14 @@ export default function PluginFormPage({erpTemplate}) {
   const [modal, ModalElement] = useOdooModal();
   const [actionModal, ActionModalElement] = useActionModal()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [appTitle, setAppTitle] = useState("Ogun ERP")
+  const [appTitle, setAppTitle] = useState(localStorage.getItem('erp_name') || 'Ogun')
+  const [appsigle, setAppSigle] = useState('')
   const [plugin, setPlugin] = useState(null)
   
   const {t, i18n} = useTranslation()
   
   useEffect(() => {
-     console.log('PluginFormPage ----------------------- '+erpTemplate)
+    // console.log('PluginFormPage ----------------------- '+erpTemplate)
      if (erpTemplate != 'NAV_PLUGIN_003') {
           setSelectedPlugin();
      }
@@ -79,7 +80,7 @@ export default function PluginFormPage({erpTemplate}) {
   }, [snapshotstore])
   //SYNCHRONISATION : Dés que l'API renvoie les menus du serveur, on charge le premier par défaut
   useEffect(() => {
-    console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- ')
+    //console.log('-------Change of resource are detected size :::::: '+resources.length+' ----------- ')
     if (plugin && plugin.menus && plugin.menus.length > 0) {
       const firstMenu = getFirstMenuItem(plugin.menus[0])
       if (firstMenu) {
@@ -338,7 +339,6 @@ export default function PluginFormPage({erpTemplate}) {
       
       setIsLoading(true)
       
-      console.log ('PluginFormPage.handleMenuChange ......................... '+JSON.stringify(menuObject))
       const targetView = menuObject.viewMode.split(',')[0]
       if (targetView === 'dashboard') {
           await loadDashboardMenu (menuObject, setDashboard, setActiveMenu, setViewMode, setAllowedViews)

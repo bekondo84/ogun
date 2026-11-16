@@ -14,10 +14,6 @@ export default function FormSection({
   disabled, 
   editMode }) {
 
-  useEffect (() => {
-           console.log('----------------------- /+===========================x   : '+' ------- : '+values)
-        }, [metadata])
-
     const gridColumnsMap = {
         1: "md:grid-cols-1",
         2: "md:grid-cols-2",
