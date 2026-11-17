@@ -47,12 +47,12 @@ export default function FormHeaderAction ({
                 {/* Actions système de gauche */}
                 <div className="flex items-center gap-2">
                     {(editMode === 'U' && metadata.canUpdate || editMode === 'C' && metadata.canCreate) && (
-                       <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
+                       <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
                         {t('save_btn')}
                        </Button>
                     )} 
                     {editMode === 'V' && metadata.canUpdate && (
-                       <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-purple-700 hover:bg-purple-800 h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
+                       <Button onClick={() => handleSubmit(editMode, item)} size="sm" className="bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] h-8 text-white font-semibold rounded-md text-xs cursor-pointer shadow-sm">
                         {t('update_btn')}
                        </Button>
                     )}                

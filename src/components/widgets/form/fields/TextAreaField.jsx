@@ -72,7 +72,7 @@ export default function TextAreaField({
         className={`w-full p-3 text-xs rounded-xl border bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none transition-shadow overflow-hidden resize-none min-h-[80px] disabled:opacity-50 disabled:cursor-not-allowed ${
           hasError 
             ? "border-red-500 focus:ring-1 focus:ring-red-500 focus:bg-white dark:focus:bg-slate-900" 
-            : "border-slate-200 dark:border-slate-800 focus:ring-1 focus:ring-purple-600 focus:bg-white dark:focus:bg-slate-900"
+            : "border-slate-200 dark:border-slate-800 focus:ring-1 focus:ring-[var(--brand-primary)] focus:bg-white dark:focus:bg-slate-900"
         }`}
       />
 

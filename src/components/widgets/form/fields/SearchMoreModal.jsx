@@ -199,7 +199,7 @@ export default function SearchMoreModal({
               type="button" 
               onClick={handleSubmit}
               disabled={selectedIds.length === 0}
-              className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-50"
+              className="h-8 text-xs bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white disabled:opacity-50"
             >
               Enregistrer ({selectedIds.length})
             </Button>

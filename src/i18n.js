@@ -25,6 +25,7 @@ const resources = {
       update_btn:"Modifier",
       save_btn:'Enregistrer',
       apply_btn:"Appliquer",
+      reinit_btn:"Réinitialiser",
       filesize_warning:"Fichier trop lourd",
       filesize_warning_message:"La taille de l'image ne doit pas dépasser",
       login_error: "Identifiants ou Mot de passe incorrects.",
@@ -61,7 +62,7 @@ const resources = {
       try_change_search_criteria: "Essayez de modifier vos critères de recherche.",
       search_lb:"Rechercher...",
       filter_categories:"Filtrer par catégorie",
-      all_plugins: "Tous les modules"
+      all_plugins: "Tous les modules",
     }
   },
   en: {

@@ -71,7 +71,7 @@ export default function FormPagesModal({
             size="sm" 
             type="submit" 
             onClick={handleSubmit}
-            className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white"
+            className="h-8 text-xs bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white"
           >
             Enregistrer
           </Button>

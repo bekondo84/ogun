@@ -2,17 +2,16 @@ import React, { useState, useEffect, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import FieldLabel from "./FieldLabel"
 import SearchMoreModal from "./SearchMoreModal"
-import { Search, ChevronDown, Loader2, X } from "lucide-react"
+import { Search, ChevronDown, Loader2, X, Check } from "lucide-react"
 import { executedPostMethod } from "@/axios/DataService"
 import { toast } from "sonner"
 
-export default function ManyToOneInput({ field, value, error, onChange, disabled /*, onSearch, onFindById */}) {
+export default function ManyToOneInput({ field, value, error, onChange, disabled }) {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [suggestions, setSuggestions] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
-  //const [meta, setMeta] = useState(null)
-  
+
   // inputValue gère le texte tapé par l'utilisateur
   const [inputValue, setInputValue] = useState("")
   // selectedItem stocke l'objet complet actuellement choisi
@@ -21,29 +20,33 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
   const containerRef = useRef(null)
   const searchTimeout = useRef(null)
 
-  // 1. Charger le libellé initial depuis le serveur
+  // 1. Synchroniser l'état local avec la valeur initiale / externe
   useEffect(() => {
-    //console.log('-----ManyToOneInput ----------------------------------- :'+JSON.stringify(value))
     if (value && field?.meta) {
-      setInputValue(value?.stringValue)
+      setInputValue(value?.stringValue || "")
       setSelectedItem(value)
-      setSuggestions(value)
+      setSuggestions(Array.isArray(value) ? value : [value])
     } else {
       setSelectedItem(null)
       setInputValue("")
-      setSuggestions(null)
+      setSuggestions([])
     }
-  }, [value, field /*, onFindById*/])
+  }, [value, field])
 
-  
-  // 2. Fermer le menu au clic extérieur
+  // Nettoyage du timer debounce au démontage
+  useEffect(() => {
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current)
+    }
+  }, [])
+
+  // 2. Fermer le menu au clic extérieur et restaurer le libellé valide
   useEffect(() => {
     function handleClickOutside(event) {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
         setIsOpen(false)
-        // Si l'utilisateur clique dehors sans choisir, on remet le libellé sélectionné
         if (selectedItem) {
-          setInputValue(selectedItem.displayName)
+          setInputValue(selectedItem.stringValue || "")
         } else {
           setInputValue("")
         }
@@ -53,54 +56,58 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [selectedItem])
 
-  // 3. Fonction centrale de recherche (Saisie + Liste)
+  // 3. Fonction centrale de recherche
   const fetchSuggestions = async (searchText) => {
     setLoading(true)
     setIsOpen(true)
     try {
       const data = await onSearch(field, searchText, 5)
-      //console.log('--------- fetchSuggestions ----------- : '+JSON.stringify(data))
-      setSuggestions(data || [])
+      setSuggestions(Array.isArray(data) ? data : [])
     } catch (err) {
-      const serverMessage = error?.message
-           toast.error("Echec du chargement", {
-          description: `${serverMessage} (code: ${error?.status || 'Serveur'})`
-        })
+      const serverMessage = err?.response?.data?.message || err?.message || "Erreur réseau"
+      toast.error("Échec du chargement", {
+        description: `${serverMessage} (code: ${err?.response?.status || "Serveur"})`
+      })
     } finally {
       setLoading(false)
     }
   }
 
-  const onSearch = async (field, searchText, size) => {
-       //console.log('----------- onSearch = async (field, searchText, size) ------- '+JSON.stringify(field)+' ---- '+field.meta+' ---- '+searchText+' ------ '+size)
-       if (field && field.meta) {
-           let meta = field.meta
-           let predicates = []
-           if (searchText && searchText.length > 0) {
-              predicates = [{fieldName:'stringValue', label:'stringValue', type:'java.lang.String', value: searchText, cond: 'LIKE'}] 
-           }
-           const response = await executedPostMethod(meta.action, "fetchitems", {
-              startIndex: 0,
-              pageSize: size,
-              typeCode: meta.typeCode,
-              predicates: predicates
-           })
-           
-          //console.log('--------onSearch = async (field, searchText, size) ---------- : '+' searchText :  '+searchText+' ----------- '+JSON.stringify(suggestions)+'-------- '+suggestions.length)
-          return response.data 
-       }
+  const onSearch = async (targetField, searchText, size) => {
+    if (targetField && targetField.meta) {
+      const meta = targetField.meta
+      let predicates = []
+      if (searchText && searchText.length > 0) {
+        predicates = [
+          {
+            fieldName: "stringValue",
+            label: "stringValue",
+            type: "java.lang.String",
+            value: searchText,
+            cond: "LIKE"
+          }
+        ]
+      }
+      const response = await executedPostMethod(meta.action, "fetchitems", {
+        startIndex: 0,
+        pageSize: size,
+        typeCode: meta.typeCode,
+        predicates: predicates
+      })
+      return response.data
+    }
+    return []
   }
 
-  // 4. Gestion de la saisie au clavier (avec Debounce de 300ms)
+  // 4. Gestion de la saisie au clavier (Debounce 300ms)
   const handleInputChange = (e) => {
     const text = e.target.value
     setInputValue(text)
-     console.log('------------ Manytoone ---------------- : '+text)
+
     if (searchTimeout.current) clearTimeout(searchTimeout.current)
 
-    // Si l'utilisateur efface tout, on réinitialise la valeur
     if (!text.trim()) {
-      onChange(field, null)
+      onChange?.(field, null)
       setSelectedItem(null)
       setSuggestions([])
       setIsOpen(false)
@@ -113,10 +120,9 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
   }
 
   const handleSelect = (item) => {
-    //console.log('***************************** : '+JSON.stringify(item))
     setSelectedItem(item)
-    setInputValue(item.stringValue)
-    onChange(field, item)
+    setInputValue(item.stringValue || "")
+    onChange?.(field, item)
     setIsOpen(false)
     setIsModalOpen(false)
   }
@@ -124,78 +130,131 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
   const handleClear = () => {
     setInputValue("")
     setSelectedItem(null)
-    onChange(field, null)
+    onChange?.(field, null)
     setSuggestions([])
     setIsOpen(false)
   }
 
+  const hasError = !!error?.[field?.fieldName]
+  const safeSuggestions = Array.isArray(suggestions) ? suggestions : []
+
   return (
-    <div ref={containerRef} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 w-full min-h-[44px] relative">
+    <div
+      ref={containerRef}
+      className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-4 w-full min-h-[44px] relative"
+    >
       <FieldLabel id={field.fieldName} label={field.label} required={field.mandatory} />
-      
+
       <div className="sm:w-2/3 w-full relative group">
-        <div className="flex items-center border-b border-slate-200/80 dark:border-slate-800 transition-all focus-within:border-purple-600">
+        {/* Barre de saisie style Odoo avec focus dynamique */}
+        <div
+          className={`flex items-center border-b transition-colors ${
+            hasError
+              ? "border-red-500 dark:border-red-400"
+              : isOpen
+                ? "border-[var(--brand-primary)] dark:border-[var(--brand-primary-dark)]"
+                : "border-slate-200/80 dark:border-slate-800 focus-within:border-[var(--brand-primary)] dark:focus-within:border-[var(--brand-primary-dark)]"
+          }`}
+        >
           <Input
             id={field.fieldName}
             type="text"
-            placeholder={field.fieldName || "Saisissez ou cherchez..."}
+            placeholder={field.label || field.fieldName || "Saisissez ou cherchez..."}
             value={inputValue}
             onChange={handleInputChange}
-            onFocus={() => { if(!isOpen) fetchSuggestions(inputValue) }}
+            onFocus={() => {
+              if (!isOpen && !disabled) fetchSuggestions(inputValue)
+            }}
             disabled={disabled}
-            className="h-8 text-xs bg-transparent border-none rounded-none shadow-none px-0 w-full focus-visible:ring-0 focus-visible:border-none pr-6"
+            className="h-8 text-xs bg-transparent border-none rounded-none shadow-none px-0 w-full focus-visible:ring-0 focus-visible:border-none pr-6 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
-          
-          {/* Bouton d'effacement rapide (Style Odoo / Chrome) */}
+
+          {/* Bouton d'effacement rapide */}
           {inputValue && !disabled && (
-            <button 
-              type="button" 
-              onClick={handleClear} 
-              className="text-slate-300 hover:text-slate-500 p-0.5 mr-1"
+            <button
+              type="button"
+              onClick={handleClear}
+              title="Effacer la sélection"
+              className="text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400 p-0.5 mr-1 transition-colors cursor-pointer"
             >
               <X className="h-3 w-3" />
             </button>
           )}
 
-          <button 
+          {/* Bouton ouverture liste */}
+          <button
             type="button"
             disabled={disabled}
-            onClick={() => { if(!disabled) fetchSuggestions(inputValue) }} 
-            className="text-slate-400 hover:text-slate-600 p-1"
+            onClick={() => {
+              if (!disabled) {
+                isOpen ? setIsOpen(false) : fetchSuggestions(inputValue)
+              }
+            }}
+            className={`p-1 transition-colors cursor-pointer ${
+              isOpen
+                ? "text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]"
+                : "text-slate-400 hover:text-[var(--brand-primary)] dark:text-slate-500 dark:hover:text-[var(--brand-primary-dark)]"
+            }`}
           >
-            <ChevronDown className="h-3 w-3" />
+            <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
           </button>
         </div>
 
+        {/* Message d'erreur éventuel */}
+        {hasError && (
+          <span className="text-[11px] text-red-500 dark:text-red-400 font-medium mt-1 block">
+            {error[field.fieldName]}
+          </span>
+        )}
+
         {/* Liste déroulante dynamique */}
         {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-50 w-full mt-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-150">
             {loading ? (
-              <div className="flex items-center justify-center p-3 text-xs text-slate-500">
-                <Loader2 className="h-3 w-3 animate-spin mr-2" /> Recherche...
+              <div className="flex items-center justify-center p-3 text-xs text-slate-500 dark:text-slate-400">
+                <Loader2 className="h-3.5 w-3.5 animate-spin mr-2 text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]" />
+                Recherche...
               </div>
             ) : (
               <ul className="py-1 text-xs text-slate-700 dark:text-slate-300">
-                {suggestions.map((item) => (
-                  <li
-                    key={item.seqnumber}
-                    onClick={() => handleSelect(item)}
-                    className="px-3 py-2 hover:bg-purple-50 dark:hover:bg-purple-950/30 hover:text-purple-700 cursor-pointer transition-colors"
-                  >
-                    {item.stringValue}
+                {safeSuggestions.map((item, idx) => {
+                  const isSelected = selectedItem?.seqnumber != null && selectedItem.seqnumber === item.seqnumber
+                  return (
+                    <li
+                      key={item.seqnumber ?? idx}
+                      onClick={() => handleSelect(item)}
+                      className={`px-3 py-2 flex items-center justify-between cursor-pointer transition-colors ${
+                        isSelected
+                          ? "bg-[var(--brand-soft)] dark:bg-[var(--brand-soft-dark)] text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)] font-semibold"
+                          : "hover:bg-[var(--brand-soft)]/60 dark:hover:bg-[var(--brand-soft-dark)]/70 hover:text-[var(--brand-primary)] dark:hover:text-[var(--brand-primary-dark)]"
+                      }`}
+                    >
+                      <span className="truncate">{item.stringValue}</span>
+                      {isSelected && (
+                        <Check className="h-3.5 w-3.5 text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)] shrink-0 ml-2" />
+                      )}
+                    </li>
+                  )
+                })}
+
+                {safeSuggestions.length === 0 && (
+                  <li className="px-3 py-2.5 text-slate-400 dark:text-slate-500 italic text-center">
+                    Aucun résultat trouvé
                   </li>
-                ))}
-                
-                {suggestions.length === 0 && (
-                  <li className="px-3 py-2 text-slate-400 italic">Aucun résultat trouvé</li>
                 )}
 
-                <li 
-                  onClick={() => { setIsOpen(false); setIsModalOpen(true); }}
-                  className="px-3 py-2 border-t border-slate-100 dark:border-slate-800 text-purple-600 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer flex items-center gap-1.5"
+                {/* Pied de liste : Rechercher plus */}
+                <li
+                  onClick={() => {
+                    setIsOpen(false)
+                    setIsModalOpen(true)
+                  }}
+                  className="px-3 py-2 mt-0.5 border-t border-slate-100 dark:border-slate-800 text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)] font-semibold hover:bg-[var(--brand-soft)] dark:hover:bg-[var(--brand-soft-dark)] cursor-pointer flex items-center gap-1.5 transition-colors"
                 >
-                  <Search className="h-3 w-3" />
-                  Rechercher plus... "{inputValue}"
+                  <Search className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">
+                    Rechercher plus... {inputValue ? `"${inputValue}"` : ""}
+                  </span>
                 </li>
               </ul>
             )}
@@ -203,12 +262,12 @@ export default function ManyToOneInput({ field, value, error, onChange, disabled
         )}
       </div>
 
-      <SearchMoreModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        initialData={suggestions}
+      <SearchMoreModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialData={safeSuggestions}
         meta={field?.meta}
-        initialCriteria={inputValue} // On passe la saisie en cours à la modal
+        initialCriteria={inputValue}
         onSearch={onSearch}
         onSelect={handleSelect}
       />

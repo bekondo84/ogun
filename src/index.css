@@ -7,10 +7,12 @@
 
 :root {
   /* Thème par défaut :  Purple */
-  --brand-primary: #7c3aed;      /* purple-600 */
-  --brand-hover: #6d28d9;        /* purple-700 */
-  --brand-soft: #f5f3ff;         /* purple-50 */
+  --brand-primary: #7c3aed;
+  --brand-primary-dark: #a78bfa;
+  --brand-hover: #6d28d9;
+  --brand-soft: #f5f3ff;
   --brand-soft-dark: rgba(59, 7, 100, 0.45);
+  --brand-border: rgba(124, 58, 237, 0.35);
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -103,19 +105,63 @@
 }
 
 [data-accent="blue"] {
-  /* Thème Corporate Blue (style SAP / Hybris) */
-  --brand-primary: #2563eb;      /* blue-600 */
-  --brand-hover: #1d4ed8;        /* blue-700 */
-  --brand-soft: #eff6ff;         /* blue-50 */
+  /* 2. Corporate Blue */
+  --brand-primary: #2563eb;
+  --brand-primary-dark: #60a5fa;
+  --brand-hover: #1d4ed8;
+  --brand-soft: #eff6ff;
   --brand-soft-dark: rgba(23, 37, 84, 0.5);
+  --brand-border: rgba(37, 99, 235, 0.35);
 }
 
 [data-accent="emerald"] {
-  /* Thème Emerald */
-  --brand-primary: #059669;      /* emerald-600 */
-  --brand-hover: #047857;        /* emerald-700 */
-  --brand-soft: #ecfdf5;         /* emerald-50 */
+  /* 3. Emerald */
+  --brand-primary: #059669;
+  --brand-primary-dark: #34d399;
+  --brand-hover: #047857;
+  --brand-soft: #ecfdf5;
   --brand-soft-dark: rgba(2, 44, 34, 0.5);
+  --brand-border: rgba(5, 150, 105, 0.35);
+}
+
+[data-accent="indigo"] {
+  /* 4. Indigo Tech */
+  --brand-primary: #4f46e5;
+  --brand-primary-dark: #818cf8;
+  --brand-hover: #4338ca;
+  --brand-soft: #eef2ff;
+  --brand-soft-dark: rgba(30, 27, 75, 0.5);
+  --brand-border: rgba(79, 70, 229, 0.35);
+}
+
+[data-accent="amber"] {
+  /* 5. Amber / Ocre */
+  --brand-primary: #d97706;
+  --brand-primary-dark: #fbbf24;
+  --brand-hover: #b45309;
+  --brand-soft: #fffbeb;
+  --brand-soft-dark: rgba(69, 26, 3, 0.5);
+  --brand-border: rgba(217, 119, 6, 0.35);
+}
+
+[data-accent="rose"] {
+  /* 6. Crimson / Rose */
+  --brand-primary: #e11d48;
+  --brand-primary-dark: #fb7185;
+  --brand-hover: #be123c;
+  --brand-soft: #fff1f2;
+  --brand-soft-dark: rgba(76, 5, 25, 0.5);
+  --brand-border: rgba(225, 29, 72, 0.35);
+}
+
+[data-accent="slate"] {
+  /* 7. Monochrome Slate */
+  --brand-primary: #334155;
+  --brand-primary-dark: #cbd5e1;
+  --brand-hover: #1e293b;
+  --brand-soft: #f1f5f9;
+  --brand-soft-dark: rgba(30, 41, 59, 0.7);
+  --brand-border: rgba(71, 85, 105, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {

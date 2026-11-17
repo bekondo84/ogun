@@ -24,7 +24,7 @@ export default function BaseInput({ field, type, value, error, onChange, disable
           value={value || ""}
           onChange={(e) => onChange(field, e.target.value)}
           disabled={disabled}
-          className="h-8 text-xs border-t-0 border-l-0 border-r-0 border-b border-slate-200/80 bg-transparent focus-visible:ring-0 focus-visible:border-purple-600 rounded-none shadow-none px-0 transition-all dark:border-slate-800 w-full"
+          className="h-8 text-xs border-t-0 border-l-0 border-r-0 border-b border-slate-200/80 bg-transparent focus-visible:ring-0 focus-visible:border-[var(--brand-primary)] rounded-none shadow-none px-0 transition-all dark:border-slate-800 w-full"
           required={field.mandatory}
         />
         {hasError && (

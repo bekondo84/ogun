@@ -101,7 +101,7 @@ export default function SmartSearch({
               setShowSuggestions(e.target.value.length > 0)
             }}
             onFocus={() => inputValue.length > 0 && setShowSuggestions(true)}
-            className="h-8 pl-9 pr-4 bg-slate-50 dark:bg-slate-950 text-xs border border-slate-200 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-600 focus:border-purple-600 focus:bg-white w-full text-slate-900 dark:text-white transition-colors"
+            className="h-8 pl-9 pr-4 bg-slate-50 dark:bg-slate-950 text-xs border border-slate-200 dark:border-slate-800 rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--brand-primary)] focus:bg-[var(--brand-primary)] focus:bg-white w-full text-slate-900 dark:text-white transition-colors"
           />
 
           {/* Menu suggestions positionné en absolu par-dessus */}

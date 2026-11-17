@@ -130,11 +130,11 @@ export default function ColumnCustomizerModal({
               >
                 <button 
                   type="button"
-                  className="text-slate-400 hover:text-purple-600 transition-colors"
+                  className="text-slate-400 hover:text-[var(--brand-primary)] transition-colors"
                 >
-                  {col.show ? <Eye className="h-4 w-4 text-purple-600" /> : <EyeOff className="h-4 w-4" />}
+                  {col.show ? <Eye className="h-4 w-4 text-[var(--brand-primary)]" /> : <EyeOff className="h-4 w-4" />}
                 </button>
-                <span className={`font-medium ${col.show ? "text-slate-800 dark:text-slate-200" : "text-slate-400 line-through"}`}>
+                <span className={`font-medium ${col.show ? "text-[var(--brand-primary)] dark:text-slate-200" : "text-slate-400 line-through"}`}>
                   {col.label}
                 </span>
               </div>
@@ -173,20 +173,20 @@ export default function ColumnCustomizerModal({
             onClick={handleReset} 
             className="h-8 text-xs text-slate-500 hover:text-slate-800"
           >
-            <RotateCcw className="h-3 w-3 mr-1.5" /> Réinitialiser
+            <RotateCcw className="h-3 w-3 mr-1.5" /> {t('reinit_btn')}
           </Button>
 
           <div className="flex gap-2">
             <Button variant="outline" size="sm" type="button" onClick={onClose} className="h-8 text-xs">
-              Annuler
+              {t('cancel_btn')}
             </Button>
             <Button 
               size="sm" 
               type="button" 
               onClick={handleSave} 
-              className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white"
+              className="h-8 text-xs bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white"
             >
-              Enregistrer
+              {t('save_btn')}
             </Button>
           </div>
         </DialogFooter>

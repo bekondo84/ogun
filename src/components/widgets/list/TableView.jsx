@@ -153,14 +153,14 @@ useEffect(() => {
                             type="checkbox" 
                             checked={!!cellValue} // Convertit en booléen strict
                             disabled // Lecture seule dans le tableau
-                            className="rounded border-slate-300 text-purple-600 focus:ring-purple-500 h-3.5 w-3.5 cursor-not-allowed accent-purple-600"
+                            className="rounded border-slate-300 text-[var(--brand-primary)] focus:ring-purple-500 h-3.5 w-3.5 cursor-not-allowed accent-[var(--brand-primary)]"
                           />
                         ) : col.widget === 'switch' ? (
-                          <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-purple-600' : 'bg-slate-200'}`}>
+                          <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-[var(--brand-primary)]' : 'bg-slate-200'}`}>
                             <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition duration-200 ${cellValue ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
                           </div>
                         ) : col.widget === 'image' || col.widget === 'media' ? (
-                            <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-purple-600' : 'bg-slate-200'}`}>
+                            <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-[var(--brand-primary)]' : 'bg-slate-200'}`}>
                               <TableImageCell value={cellValue} />
                            </div>
                         ):col.widget === 'combobox' ? (
