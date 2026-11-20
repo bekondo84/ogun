@@ -38,6 +38,15 @@ export default function FormHeaderAction ({
         setCurrentStage(nextStage)
     }
 
+    const canCancel = () => {
+        
+        if (metadata && metadata.viewMode ) {
+            const allowViews = metadata?.viewMode.split(',');
+            return allowViews.length > 1
+        }
+        return false;
+    }
+
     return (
         <div className="flex flex-col w-full flex-shrink-0 z-10 shadow-sm">
             
@@ -56,9 +65,9 @@ export default function FormHeaderAction ({
                         {t('update_btn')}
                        </Button>
                     )}                
-                    <Button onClick={() => onCancel()} variant="outline" size="sm" className="h-8 text-slate-600 text-xs rounded-md cursor-pointer">
+                    {canCancel() && (<Button onClick={() => onCancel()} variant="outline" size="sm" className="h-8 text-slate-600 text-xs rounded-md cursor-pointer">
                         {t('cancel_btn')}
-                    </Button>
+                    </Button>)}
 
                     {/* Menu Déroulant Actions Contextuelles */}
                     {customactions && customactions.length > 0 && <ActionsDropdown metadata={metadata} data={item} actions={customactions} onAction={onAction}/>}                    

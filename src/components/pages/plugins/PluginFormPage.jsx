@@ -126,7 +126,7 @@ export default function PluginFormPage({erpTemplate}) {
     //console.log('-----------------------------! '+currentPage)
     try {
       if (metadata !== null) {
-         await fetchData (pageNumer, metadata, predicat, sortrules)    
+         await fetchData (pageNumer, metadata, predicat, sortrules, viewMode)    
       }
     } finally {
       setIsLoading(false);
@@ -136,8 +136,8 @@ export default function PluginFormPage({erpTemplate}) {
      setIsLoading(true)
 
      try {
-         await fetchData(currentPage, metadata)
-         setViewMode("list")
+         setViewMode("list");         
+         await fetchData(currentPage, metadata, [], [], 'list')
          setSnapshotstore(removeLastsystemSnapshaps(snapshotstore))
      } finally {
        setIsLoading(false)
@@ -233,7 +233,7 @@ export default function PluginFormPage({erpTemplate}) {
           })
           setData(response.data)
         } else {
-          await fetchData(1, meta, [], [])
+          await fetchData(1, meta, [], [], viewMode)
         }
        //console.log('Click detected on breadcrumb  ::: '+JSON.stringify(breadcrumb.key)+'----------'+snapshotstore.length+' -----'+snapshotstore.slice(0,breadcrumb.key+1).length)
        setSnapshotstore(updateSystemSnapshaps(refreshSnapshaps(breadcrumb.key, snapshotstore), context.label, meta, data, [], viewMode))
@@ -295,7 +295,7 @@ export default function PluginFormPage({erpTemplate}) {
                  setSelectedIds([])
                  const meta = await getMetaFromTypeCode(shutcut.type)
                  setMetadata(meta)
-                 await fetchData(1, meta, [], [])
+                 await fetchData(1, meta, [], [], viewMode)
                  const targetView = meta.viewMode.split(',')[0]
                 //console.log("Changement de vue ERP : " +menuObject.viewMode)
                 setViewMode(targetView)
@@ -312,7 +312,7 @@ export default function PluginFormPage({erpTemplate}) {
            }
   }
 
-  const fetchData = async(page, meta, predicates, sortConf) => {
+  const fetchData = async(page, meta, predicates, sortConf, viewMode) => {
        setCurrentPage(page)
       const response = await executedPostMethod(meta.action, "fetchitems", {
         startIndex:(page - 1) * meta.pageSize,
@@ -321,7 +321,17 @@ export default function PluginFormPage({erpTemplate}) {
         sort:sortConf,
         typeCode:meta.typeCode
       })
-      setData(response)
+      
+      if (viewMode && viewMode == 'view') {
+            const data = response.data;
+           if (data  && data.length > 0) {                 
+                setData(data[0])
+           }
+           
+      } else {
+          setData(response)
+      }
+      
       setTotalPages(Math.ceil(response.nbreofitems / meta.pageSize))
   }
   // Déclencheur lors d'un clic sur le menu ou sous-menu récursif

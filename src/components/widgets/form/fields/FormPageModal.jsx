@@ -65,7 +65,7 @@ export default function FormPagesModal({
         {/* Boutons d'actions */}
         <DialogFooter className="border-t border-slate-100 pt-3 dark:border-slate-800">
           <Button variant="outline" size="sm" type="button" onClick={onClose} className="h-8 text-xs">
-            Annuler
+            {t('cancel_btn')}
           </Button>
           <Button 
             size="sm" 
@@ -73,7 +73,7 @@ export default function FormPagesModal({
             onClick={handleSubmit}
             className="h-8 text-xs bg-[var(--brand-primary)] hover:bg-[var(--brand-hover)] text-white"
           >
-            Enregistrer
+            {t('save_btn')}
           </Button>
         </DialogFooter>
       </DialogContent>

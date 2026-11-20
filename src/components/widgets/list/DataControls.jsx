@@ -38,6 +38,7 @@ export default function DataControls({
   }, [metadata, currentPage, totalPages,columns]);
 
   const {t, i18n} = useTranslation();
+  
 
   return (
     <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 bg-[var(--brand-soft)] dark:bg-[var(--brand-soft-dark)] text-[var(--brand-primary)] p-4 space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between gap-4 shadow-sm flex-wrap">

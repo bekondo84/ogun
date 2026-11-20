@@ -3,6 +3,14 @@ import Breadcrumb from "../Breadcrumb";
 
 export default function FormHeaderTitle ({metadata, item, breadcrumbs, onCancel, onBreadcrumbAction}) {
 
+   const canCancel = () => {
+        
+        if (metadata && metadata.viewMode ) {
+            const allowViews = metadata?.viewMode.split(',');
+            return allowViews.length > 1
+        }
+        return false;
+    }
 
 
     return (
@@ -14,13 +22,13 @@ export default function FormHeaderTitle ({metadata, item, breadcrumbs, onCancel,
 
               {/* 2. Bouton retour & Titre */}
               <div className="flex items-center gap-3">
-                <button 
+               { canCancel() ? (<button 
                   onClick={() => onCancel()} 
                   className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-500 dark:text-slate-400 transition-colors cursor-pointer"
                   title="Retour"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                </button>
+                </button>) : null}
                 <div className="space-y-0.5">
                   <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-wider font-mono">
                     {metadata?.formViewTitle} / {item?.stringValue}

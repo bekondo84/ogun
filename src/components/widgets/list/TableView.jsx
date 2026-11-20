@@ -4,109 +4,116 @@ import { ArrowUp, ArrowDown, ArrowUpDown, Edit2 } from "lucide-react"
 import { fieldValue } from "@/utils/FieldUtils"
 import TableImageCell from "../form/fields/TableImageCell"
 import { combovalues } from "@/axios/DataService"
-import { loadColumnsSettings } from "@/utils/FormUtils"
-
 
 export default function TableView({ 
   metadata,
-  columns, 
+  columns = [], 
   setColumns,
-  data, 
-  selectedIds, 
+  data = [], 
+  selectedIds = [], 
   onToggleSelectAll, 
   onToggleSelectRow, 
   onRowClick,
   sortConfig,
   onSort,    
-  isSelectable=true,
+  isSelectable = true,
   onlineEditable = false
 }) {
-
-
-
-useEffect(() => {
-      buildSelectValues();    
-      setActivecolumns(columns?.filter(col => col.show))  
-}, [columns])  
-
   const [selectValues, setSelectValues] = useState([]) 
   const [activecolumns, setActivecolumns] = useState([])
 
-  /**
-   * Build all the combobox fild value
-   * @returns 
-   */
-  const buildSelectValues = async() => {
-     const rows =  activecolumns.filter(col => col.widget == 'combobox');
-     const result = []
+  useEffect(() => {
+    const visibleCols = columns?.filter(col => col.show) || []
+    setActivecolumns(visibleCols)
+    if (metadata?.typeCode && visibleCols.length > 0) {
+      buildSelectValues(visibleCols)
+    }
+  }, [columns, metadata])
 
-     for (var index in rows) {
-          var row  = rows[index]
-          var values = await combovalues(metadata.typeCode, row)
-          result.push({
-              field: row.fieldName,
-              values: values
-          })
-     }
-    // console.log('TableView.useEffect ---------------------- '+JSON.stringify(result))
-    setSelectValues(result);
+  const buildSelectValues = async (cols) => {
+    const rows = cols.filter(col => col.widget === "combobox")
+    const result = []
+
+    for (const row of rows) {
+      try {
+        const values = await combovalues(metadata.typeCode, row)
+        result.push({
+          field: row.fieldName,
+          values: values || {}
+        })
+      } catch (e) {
+        // Fallback silencieux si la liste de valeurs échoue
+      }
+    }
+    setSelectValues(result)
   }
 
-  /**
-   * Value of t
-   * @param {*} fieldName 
-   * @param {*} id 
-   */
   const getComboxValue = (fieldName, id) => {
-        const items = selectValues?.filter(it => it.field == fieldName)
-        
-        if (items && Array.isArray(items)  && items.length > 0) {
-           return items[0].values[id]
-        }
-
-        return id;
+    const item = selectValues?.find(it => it.field === fieldName)
+    if (item && item.values && item.values[id] !== undefined) {
+      return item.values[id]
+    }
+    return id
   }
 
-  const isAllSelected = data?.length > 0 && selectedIds?.length == data?.length
+  const safeData = Array.isArray(data) ? data : []
+  const safeSelectedIds = Array.isArray(selectedIds) ? selectedIds : []
+  const isAllSelected = safeData.length > 0 && safeSelectedIds.length === safeData.length
+
+  const totalColSpan =
+    activecolumns.length + (isSelectable ? 1 : 0) + (onlineEditable ? 1 : 0)
+
+  const checkboxAccentClasses =
+    "h-4 w-4 rounded-[4px] cursor-pointer transition-all border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-[var(--brand-primary)] dark:hover:border-[var(--brand-primary-dark)] data-[state=checked]:bg-[var(--brand-primary)] dark:data-[state=checked]:bg-[var(--brand-primary-dark)] data-[state=checked]:border-[var(--brand-primary)] dark:data-[state=checked]:border-[var(--brand-primary-dark)] data-[state=checked]:text-white dark:data-[state=checked]:text-slate-950 focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/30"
 
   return (
-    // CONTENEUR GLOBAL : Gère le défilement horizontal fluide sur petit écran
-    <div className="w-full overflow-x-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-      
-      {/* CORRECTION 'table-auto' : Laisse le navigateur calculer l'espace nécessaire et évite la superposition */}
+    <div className="w-full overflow-x-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs">
       <table className="w-full min-w-[800px] text-left border-collapse text-xs select-none table-auto">
         
         {/* En-tête */}
-        <thead className="bg-slate-50/70 dark:bg-slate-950/40 backdrop-blur-sm text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 font-semibold tracking-wide">
+        <thead className="bg-slate-50/80 dark:bg-slate-950/50 backdrop-blur-sm text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 font-semibold tracking-wide">
           <tr>
-            {/* Colonne Checkbox avec taille fixe stricte en px */}
             {isSelectable && (
-                 <th className="p-3.5 w-[48px] min-w-[48px] max-w-[48px] text-center align-middle">
-                  <Checkbox checked={isAllSelected} onCheckedChange={onToggleSelectAll} />
-                </th>            
+              <th className="p-3.5 w-[48px] min-w-[48px] max-w-[48px] text-center align-middle">
+                <Checkbox
+                  checked={isAllSelected}
+                  onCheckedChange={onToggleSelectAll}
+                  className={checkboxAccentClasses}
+                />
+              </th>            
             )}
-            {activecolumns?.map((col) => {
+
+            {activecolumns.map((col, colIdx) => {
               const isSorted = sortConfig?.key === col.fieldName
               const isAsc = sortConfig?.direction === "asc"
               
               return (
                 <th 
-                  key={col.fieldName} 
-                  onClick={() => col.sortable && onSort(col.fieldName)}
+                  key={col.fieldName ?? colIdx} 
+                  onClick={() => col.sortable && onSort?.(col.fieldName)}
                   className={`p-3.5 align-middle font-semibold transition-colors ${
-                    col.sortable ? "cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white" : ""
+                    col.sortable
+                      ? "cursor-pointer hover:bg-[var(--brand-soft)]/50 dark:hover:bg-[var(--brand-soft-dark)]/40 hover:text-[var(--brand-primary)] dark:hover:text-[var(--brand-primary-dark)]"
+                      : ""
+                  } ${
+                    isSorted
+                      ? "text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)] bg-[var(--brand-soft)]/30 dark:bg-[var(--brand-soft-dark)]/20"
+                      : ""
                   } ${col.align === "right" ? "text-right" : "text-left"}`}
-                  // Utilise col.width si fourni, sinon laisse libre
                   style={{ width: col.width || "auto" }}
                 >
                   <div className={`flex items-center gap-1.5 ${col.align === "right" ? "justify-end" : "justify-start"}`}>
                     <span className="whitespace-nowrap">{col.label}</span>
                     {col.sortable && (
-                      <span className="text-slate-400 dark:text-slate-500 shrink-0">
+                      <span className="shrink-0">
                         {isSorted ? (
-                          isAsc ? <ArrowUp className="h-3.5 w-3.5 text-purple-700 dark:text-purple-400" /> : <ArrowDown className="h-3.5 w-3.5 text-purple-700 dark:text-purple-400" />
+                          isAsc ? (
+                            <ArrowUp className="h-3.5 w-3.5 text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]" />
+                          ) : (
+                            <ArrowDown className="h-3.5 w-3.5 text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]" />
+                          )
                         ) : (
-                          <ArrowUpDown className="h-3 w-3 opacity-40" />
+                          <ArrowUpDown className="h-3 w-3 text-slate-400 dark:text-slate-500 opacity-40" />
                         )}
                       </span>
                     )}
@@ -114,74 +121,97 @@ useEffect(() => {
                 </th>
               )
             })}
+
+            {onlineEditable && (
+              <th className="p-3.5 w-[48px] text-center align-middle" />
+            )}
           </tr>
         </thead>
         
         {/* Corps du tableau */}
         <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 font-medium">
-          {data?.map((row) => {
-            const isSelected = selectedIds.includes(row.seqnumber)
+          {safeData.map((row, rowIdx) => {
+            const rowId = row.seqnumber ?? row.id ?? rowIdx
+            const isSelected = safeSelectedIds.includes(rowId)
             
             return (
               <tr 
-                key={row.seqnumber} 
-                onDoubleClick={() => onRowClick(row)}
+                key={rowId} 
+                onDoubleClick={() => onRowClick?.(row)}
                 className={`transition-colors cursor-pointer group/row ${
                   isSelected 
-                    ? "bg-purple-50/40 dark:bg-purple-950/10 hover:bg-purple-50/60 dark:hover:bg-purple-950/20" 
-                    : "hover:bg-slate-50/60 dark:hover:bg-slate-800/30"
+                    ? "bg-[var(--brand-soft)]/60 dark:bg-[var(--brand-soft-dark)]/60 hover:bg-[var(--brand-soft)] dark:hover:bg-[var(--brand-soft-dark)]" 
+                    : "hover:bg-slate-50/80 dark:hover:bg-slate-800/40"
                 }`}
               >
                 {isSelectable && (
-                   <td className="p-3.5 text-center align-middle" onClick={(e) => e.stopPropagation()}>
-                    <Checkbox checked={isSelected} onCheckedChange={() => onToggleSelectRow(row.seqnumber)} />
+                  <td
+                    className={`p-3.5 text-center align-middle relative ${
+                      isSelected ? "shadow-[inset_3px_0_0_0_var(--brand-primary)] dark:shadow-[inset_3px_0_0_0_var(--brand-primary-dark)]" : ""
+                    }`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() => onToggleSelectRow?.(rowId)}
+                      className={checkboxAccentClasses}
+                    />
                   </td>                
                 )}
-                {activecolumns.map((col) => {
-                  const cellValue =  fieldValue(col, row)//row[col.fieldName]===null ? row[col.fieldName] : (typeof row[col.fieldName] === 'object' ? row[col.fieldName]['stringValue'] : row[col.fieldName])
+
+                {activecolumns.map((col, colIdx) => {
+                  const cellValue = fieldValue(col, row)
                   return (
                     <td 
-                      key={col.seqnumber} 
-                      className={`p-3.5 align-middle ${col.widget === 'number' ? "text-right" : "text-left"} ${col.className || ""}`}
+                      key={col.seqnumber ?? col.fieldName ?? colIdx} 
+                      className={`p-3.5 align-middle ${col.widget === "number" ? "text-right" : "text-left"} ${col.className || ""}`}
                       style={{ maxWidth: col.width || "300px" }}
                     >
                       <div className="truncate block">
                         {col.render ? (
                           col.render(cellValue, row)
-                        ) : col.widget === 'checkbox' ? (
+                        ) : col.widget === "checkbox" ? (
                           <input 
                             type="checkbox" 
-                            checked={!!cellValue} // Convertit en booléen strict
-                            disabled // Lecture seule dans le tableau
-                            className="rounded border-slate-300 text-[var(--brand-primary)] focus:ring-purple-500 h-3.5 w-3.5 cursor-not-allowed accent-[var(--brand-primary)]"
+                            checked={!!cellValue}
+                            disabled
+                            className="rounded border-slate-300 dark:border-slate-700 text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)] h-3.5 w-3.5 cursor-not-allowed accent-[var(--brand-primary)] dark:accent-[var(--brand-primary-dark)]"
                           />
-                        ) : col.widget === 'switch' ? (
-                          <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-[var(--brand-primary)]' : 'bg-slate-200'}`}>
-                            <span className={`inline-block h-3 w-3 transform rounded-full bg-white shadow-sm transition duration-200 ${cellValue ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                        ) : col.widget === "switch" ? (
+                          <div
+                            className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${
+                              cellValue
+                                ? "bg-[var(--brand-primary)] dark:bg-[var(--brand-primary-dark)]"
+                                : "bg-slate-200 dark:bg-slate-700"
+                            }`}
+                          >
+                            <span
+                              className={`inline-block h-3 w-3 transform rounded-full bg-white dark:bg-slate-950 shadow-2xs transition duration-200 ${
+                                cellValue ? "translate-x-3.5" : "translate-x-0.5"
+                              }`}
+                            />
                           </div>
-                        ) : col.widget === 'image' || col.widget === 'media' ? (
-                            <div className={`relative inline-flex h-4 w-7 shrink-0 cursor-not-allowed items-center rounded-full transition-colors duration-200 ${cellValue ? 'bg-[var(--brand-primary)]' : 'bg-slate-200'}`}>
-                              <TableImageCell value={cellValue} />
-                           </div>
-                        ):col.widget === 'combobox' ? (
-                            String(getComboxValue(col.fieldName, cellValue), '')
-                        ):col.widget === 'password' ? (
-                             String('...')
-                        ): (
-                          // Valeur textuelle par défaut (chaîne, date, nombre, etc.)
-                          String(cellValue ?? '')
+                        ) : col.widget === "image" || col.widget === "media" ? (
+                          <TableImageCell value={cellValue} />
+                        ) : col.widget === "combobox" ? (
+                          String(getComboxValue(col.fieldName, cellValue) ?? "")
+                        ) : col.widget === "password" ? (
+                          "••••••••"
+                        ) : (
+                          String(cellValue ?? "")
                         )}
                       </div>
-                  </td>
-
+                    </td>
                   )
                 })}
+
                 {onlineEditable && (
-                  <td className="p-2.5 text-center">
+                  <td className="p-2.5 text-center align-middle" onClick={(e) => e.stopPropagation()}>
                     <button
                       type="button"
-                      onClick={() => onRowClick(row)}
-                      className="text-slate-400 hover:text-purple-600 transition-colors"
+                      onClick={() => onRowClick?.(row)}
+                      title="Modifier la ligne"
+                      className="p-1.5 rounded-md text-slate-400 dark:text-slate-500 hover:text-[var(--brand-primary)] dark:hover:text-[var(--brand-primary-dark)] hover:bg-[var(--brand-soft)] dark:hover:bg-[var(--brand-soft-dark)] transition-colors cursor-pointer"
                     >
                       <Edit2 className="h-3.5 w-3.5" />
                     </button>
@@ -190,15 +220,18 @@ useEffect(() => {
               </tr>
             )
           })}
-          {data?.length === 0 && (
-              <tr>
-                <td colSpan={activecolumns.length } className="p-6 text-center text-slate-400 italic">
-                  Aucun élément dans la table. Cliquez sur "Ajouter une ligne".
-                </td>
-              </tr>
-            )}
-        </tbody>
 
+          {safeData.length === 0 && (
+            <tr>
+              <td
+                colSpan={Math.max(totalColSpan, 1)}
+                className="p-8 text-center text-slate-400 dark:text-slate-500 italic"
+              >
+                Aucun élément dans la table. Cliquez sur "Ajouter".
+              </td>
+            </tr>
+          )}
+        </tbody>
       </table>
     </div>
   )

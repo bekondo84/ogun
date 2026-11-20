@@ -20,7 +20,9 @@ export default function LoginPage() {
   const {t, i18n} = useTranslation()
   const setErpTemplate = useErpStore((state) => state.setErpTemplate);
   const setThemeMode = useErpStore((state) => state.setThemeMode);
-  const setAccentColor = useErpStore((state) => state.setAccentColor)
+  const setAccentColor = useErpStore((state) => state.setAccentColor);
+  const setSidebarStyle = useErpStore((state) => state.setSidebarStyle);
+  const setTopbarStyle = useErpStore ((state) => state.setTopbarStyle);
   /**
    * Tenant settings i has priority on userSetting.
    * Apply first tenant setting and when no teant settings is found apply user setting or none
@@ -39,6 +41,12 @@ export default function LoginPage() {
                   }
                   if (key.toLowerCase() == 'erp_accent_color') {
                       setAccentColor(settings[key])
+                  }
+                  if (key.toLowerCase() == 'erp_sidebar_style') {
+                     setSidebarStyle(settings[key]);
+                  }
+                  if (key.toLowerCase() == 'erp_topbar_style') {
+                    setTopbarStyle (settings[key]);
                   }
             });
         }

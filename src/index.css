@@ -164,6 +164,160 @@
   --brand-border: rgba(71, 85, 105, 0.4);
 }
 
+/* =========================================================
+   1. PALETTE ÉTENDUE DE LA SIDEBAR VERTICALE ([data-sidebar])
+   ========================================================= */
+:root,
+[data-sidebar="default"] {
+  --sidebar-bg: #f8fafc;
+  --sidebar-text: #475569;
+  --sidebar-text-muted: #94a3b8;
+  --sidebar-border: #e2e8f0;
+  --sidebar-hover: rgba(226, 232, 240, 0.6);
+  --sidebar-indicator: var(--brand-primary);
+  --sidebar-active-bg: var(--brand-soft);
+  --sidebar-active-text: var(--brand-primary);
+}
+
+.dark [data-sidebar="default"],
+.dark:root {
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #cbd5e1;
+  --sidebar-text-muted: #64748b;
+  --sidebar-border: #1e293b;
+  --sidebar-hover: rgba(30, 41, 59, 0.6);
+  --sidebar-indicator: var(--brand-primary-dark);
+  --sidebar-active-bg: var(--brand-soft-dark);
+  --sidebar-active-text: var(--brand-primary-dark);
+}
+
+[data-sidebar="light"] {
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #475569;
+  --sidebar-text-muted: #94a3b8;
+  --sidebar-border: #e2e8f0;
+  --sidebar-hover: #f1f5f9;
+  --sidebar-indicator: var(--brand-primary);
+  --sidebar-active-bg: var(--brand-soft);
+  --sidebar-active-text: var(--brand-primary);
+}
+
+[data-sidebar="dark"] {
+  --sidebar-bg: #0f172a;
+  --sidebar-text: #cbd5e1;
+  --sidebar-text-muted: #64748b;
+  --sidebar-border: #1e293b;
+  --sidebar-hover: rgba(30, 41, 59, 0.75);
+  --sidebar-indicator: var(--brand-primary-dark);
+  --sidebar-active-bg: var(--brand-soft-dark);
+  --sidebar-active-text: var(--brand-primary-dark);
+}
+
+/* Base commune pour toutes les sidebars colorées */
+[data-sidebar="brand"],
+[data-sidebar="purple"],
+[data-sidebar="blue"],
+[data-sidebar="emerald"],
+[data-sidebar="indigo"],
+[data-sidebar="amber"],
+[data-sidebar="rose"],
+[data-sidebar="slate"] {
+  --sidebar-text: rgba(255, 255, 255, 0.9);
+  --sidebar-text-muted: rgba(255, 255, 255, 0.65);
+  --sidebar-border: rgba(255, 255, 255, 0.16);
+  --sidebar-hover: rgba(255, 255, 255, 0.13);
+  --sidebar-indicator: #ffffff;
+  --sidebar-active-bg: rgba(255, 255, 255, 0.22);
+  --sidebar-active-text: #ffffff;
+}
+
+/* Fonds dédiés par couleur */
+[data-sidebar="brand"]   { --sidebar-bg: var(--brand-primary); }
+[data-sidebar="purple"]  { --sidebar-bg: #6b21a8; } /* purple-800 */
+[data-sidebar="blue"]    { --sidebar-bg: #1e40af; } /* blue-800 */
+[data-sidebar="emerald"] { --sidebar-bg: #065f46; } /* emerald-800 */
+[data-sidebar="indigo"]  { --sidebar-bg: #3730a3; } /* indigo-800 */
+[data-sidebar="amber"]   { --sidebar-bg: #92400e; } /* amber-800 */
+[data-sidebar="rose"]    { --sidebar-bg: #9f1239; } /* rose-800 */
+[data-sidebar="slate"]   { --sidebar-bg: #1e293b; } /* slate-800 */
+
+/* =========================================================
+   2. PALETTE ÉTENDUE DE LA TOPBAR HORIZONTALE ([data-topbar])
+   ========================================================= */
+:root,
+[data-topbar="default"] {
+  --topbar-bg: #ffffff;
+  --topbar-text: #334155;
+  --topbar-text-muted: #64748b;
+  --topbar-border: #e2e8f0;
+  --topbar-hover: #f1f5f9;
+  --topbar-active-bg: var(--brand-soft);
+  --topbar-active-text: var(--brand-primary);
+  --topbar-indicator: var(--brand-primary);
+}
+
+.dark [data-topbar="default"],
+.dark:root {
+  --topbar-bg: #020617;
+  --topbar-text: #e2e8f0;
+  --topbar-text-muted: #94a3b8;
+  --topbar-border: #1e293b;
+  --topbar-hover: #0f172a;
+  --topbar-active-bg: var(--brand-soft-dark);
+  --topbar-active-text: var(--brand-primary-dark);
+  --topbar-indicator: var(--brand-primary-dark);
+}
+
+[data-topbar="light"] {
+  --topbar-bg: #ffffff;
+  --topbar-text: #334155;
+  --topbar-text-muted: #64748b;
+  --topbar-border: #e2e8f0;
+  --topbar-hover: #f1f5f9;
+  --topbar-active-bg: var(--brand-soft);
+  --topbar-active-text: var(--brand-primary);
+  --topbar-indicator: var(--brand-primary);
+}
+
+[data-topbar="dark"] {
+  --topbar-bg: #0f172a;
+  --topbar-text: #f1f5f9;
+  --topbar-text-muted: #94a3b8;
+  --topbar-border: #1e293b;
+  --topbar-hover: rgba(255, 255, 255, 0.08);
+  --topbar-active-bg: var(--brand-soft-dark);
+  --topbar-active-text: var(--brand-primary-dark);
+  --topbar-indicator: var(--brand-primary-dark);
+}
+
+/* Base commune pour toutes les topbars colorées */
+[data-topbar="brand"],
+[data-topbar="purple"],
+[data-topbar="blue"],
+[data-topbar="emerald"],
+[data-topbar="indigo"],
+[data-topbar="amber"],
+[data-topbar="rose"],
+[data-topbar="slate"] {
+  --topbar-text: rgba(255, 255, 255, 0.92);
+  --topbar-text-muted: rgba(255, 255, 255, 0.72);
+  --topbar-border: rgba(255, 255, 255, 0.16);
+  --topbar-hover: rgba(255, 255, 255, 0.14);
+  --topbar-indicator: #ffffff;
+  --topbar-active-bg: rgba(255, 255, 255, 0.22);
+  --topbar-active-text: #ffffff;
+}
+
+/* Fonds dédiés par couleur */
+[data-topbar="brand"]   { --topbar-bg: var(--brand-primary); }
+[data-topbar="purple"]  { --topbar-bg: #6b21a8; }
+[data-topbar="blue"]    { --topbar-bg: #1e40af; }
+[data-topbar="emerald"] { --topbar-bg: #065f46; }
+[data-topbar="indigo"]  { --topbar-bg: #3730a3; }
+[data-topbar="amber"]   { --topbar-bg: #92400e; }
+[data-topbar="rose"]    { --topbar-bg: #9f1239; }
+[data-topbar="slate"]   { --topbar-bg: #1e293b; }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;

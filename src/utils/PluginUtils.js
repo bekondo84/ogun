@@ -13,20 +13,20 @@ import { getDashboard, getMeta } from "@/axios/MetaService"
  */
 export const loadMetaMenu = async(menuObject, setMetadata, setActiveMenu, setViewMode, setAllowedViews, setSnapshotstore, updateSystemSnapshaps, fetchData) => {
        const meta = await getMeta(menuObject.code)
-      
+       
       if (meta !== null) {
-        setMetadata (meta)
-        await fetchData(1, meta, [], [])
-      }
-      //console.log (data)
+          const targetView = meta.viewMode.split(',')[0]
+        
+          setMetadata (meta)
+          await fetchData(1, meta, [], [], targetView)
+          setActiveMenu(menuObject)
       
-      setActiveMenu(menuObject)
-      const targetView = meta.viewMode.split(',')[0]
-      //console.log("Changement de vue ERP : " +menuObject.viewMode)
-      setViewMode(targetView)
-      setAllowedViews(meta.viewMode)
-      //Initialize the 
-      setSnapshotstore(updateSystemSnapshaps([], menuObject.label, meta, null, [], targetView))
+        //console.log("Changement de vue ERP : " +menuObject.viewMode)
+        setViewMode(targetView)
+        setAllowedViews(meta.viewMode)
+        //Initialize the 
+        setSnapshotstore(updateSystemSnapshaps([], menuObject.label, meta, null, [], targetView))
+     }   
 }
 
 /**

@@ -69,8 +69,8 @@ export default function MenuNode({
           depth === 1 ? "text-sm font-medium py-2.5" : "text-xs font-medium"
         } ${
           isExactActive
-            ? "bg-[var(--brand-soft)] text-[var(--brand-primary)] dark:bg-[var(--brand-soft-dark)] dark:text-[var(--brand-primary-dark)] font-semibold shadow-2xs"
-            : "text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800/60 dark:hover:text-white"
+            ? "bg-[var(--sidebar-active-bg)] text-[var(--sidebar-active-text)] font-semibold shadow-2xs"
+            : "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)]"
         }`}
         title={isCollapsed ? (item.label || "") : undefined}
       >
@@ -78,8 +78,8 @@ export default function MenuNode({
           <div
             className={`shrink-0 transition-colors ${
               isExactActive
-                ? "text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]"
-                : "text-slate-400 group-hover:text-[var(--brand-primary)] dark:text-slate-500 dark:group-hover:text-[var(--brand-primary-dark)]"
+                ? "text-[var(--sidebar-indicator)]"
+                : "text-[var(--sidebar-text-muted)] group-hover:text-[var(--sidebar-active-text)]"
             }`}
           >
             <FileText className="h-4 w-4" />
@@ -88,8 +88,8 @@ export default function MenuNode({
           <span
             className={`w-1.5 h-1.5 rounded-full shrink-0 transition-all ${
               isExactActive
-                ? "bg-[var(--brand-primary)] dark:bg-[var(--brand-primary-dark)] scale-125"
-                : "bg-slate-300 dark:bg-slate-700 group-hover:bg-[var(--brand-primary)] dark:group-hover:bg-[var(--brand-primary-dark)]"
+                ? "bg-[var(--sidebar-indicator)] scale-125"
+                : "bg-[var(--sidebar-text-muted)] opacity-60 group-hover:opacity-100 group-hover:bg-[var(--sidebar-indicator)]"
             }`}
           />
         )}
@@ -111,8 +111,8 @@ export default function MenuNode({
           depth === 1 ? "text-sm font-medium py-2.5" : "text-xs font-medium"
         } ${
           isBranchActive
-            ? "bg-[var(--brand-soft)]/50 text-[var(--brand-primary)] dark:bg-[var(--brand-soft-dark)]/60 dark:text-[var(--brand-primary-dark)] font-semibold"
-            : "text-slate-700 hover:bg-slate-200/50 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800/60 dark:hover:text-white"
+            ? "bg-[var(--sidebar-active-bg)]/60 text-[var(--sidebar-active-text)] font-semibold"
+            : "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)]"
         }`}
         title={isCollapsed ? (item.label || "") : undefined}
       >
@@ -121,8 +121,8 @@ export default function MenuNode({
             <div
               className={`shrink-0 transition-colors ${
                 isBranchActive
-                  ? "text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]"
-                  : "text-slate-400 group-hover:text-[var(--brand-primary)] dark:text-slate-500 dark:group-hover:text-[var(--brand-primary-dark)]"
+                  ? "text-[var(--sidebar-indicator)]"
+                  : "text-[var(--sidebar-text-muted)] group-hover:text-[var(--sidebar-active-text)]"
               }`}
             >
               <FolderTree className="h-4 w-4" />
@@ -131,8 +131,8 @@ export default function MenuNode({
             <span
               className={`w-1.5 h-1.5 rounded-sm shrink-0 transition-colors ${
                 isBranchActive
-                  ? "bg-[var(--brand-primary)] dark:bg-[var(--brand-primary-dark)]"
-                  : "bg-slate-400 dark:bg-slate-600 group-hover:bg-[var(--brand-primary)] dark:group-hover:bg-[var(--brand-primary-dark)]"
+                  ? "bg-[var(--sidebar-indicator)]"
+                  : "bg-[var(--sidebar-text-muted)] opacity-60 group-hover:opacity-100 group-hover:bg-[var(--sidebar-indicator)]"
               }`}
             />
           )}
@@ -146,8 +146,8 @@ export default function MenuNode({
           <div
             className={`shrink-0 ml-1 transition-colors ${
               isBranchActive
-                ? "text-[var(--brand-primary)] dark:text-[var(--brand-primary-dark)]"
-                : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+                ? "text-[var(--sidebar-indicator)]"
+                : "text-[var(--sidebar-text-muted)] group-hover:text-[var(--sidebar-text)]"
             }`}
           >
             {isOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
@@ -160,8 +160,8 @@ export default function MenuNode({
         <div
           className={`pl-3 ml-2.5 space-y-1 border-l my-1 transition-colors ${
             isBranchActive
-              ? "border-[var(--brand-border)]"
-              : "border-slate-200 dark:border-slate-800"
+              ? "border-[var(--sidebar-indicator)]/40"
+              : "border-[var(--sidebar-border)]"
           }`}
         >
           {validChildren.map((child, childIndex) => {

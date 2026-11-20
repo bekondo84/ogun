@@ -22,7 +22,7 @@ export default function PluginSidebar({
 
   return (
     <aside
-      className={`relative flex flex-col border-r border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-md transition-all duration-300 select-none shrink-0 ${
+      className={`relative flex flex-col border-r transition-all duration-300 select-none shrink-0 bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] border-[var(--sidebar-border)] ${
         isCollapsed ? "w-16" : "w-64"
       }`}
     >
@@ -30,11 +30,11 @@ export default function PluginSidebar({
       <div className="h-[2px] w-full bg-[var(--brand-primary)] dark:bg-[var(--brand-primary-dark)] opacity-80" />
 
       {/* En-tête de la Sidebar */}
-      <div className="h-14 px-3 flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800">
+      <div className="h-14 px-3 flex items-center justify-between border-b border-[var(--sidebar-border)] transition-colors">
         {!isCollapsed && (
           <div className="flex items-center gap-2 truncate px-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--brand-primary)] dark:bg-[var(--brand-primary-dark)] shrink-0" />
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--sidebar-indicator,var(--brand-primary))] dark:bg-[var(--sidebar-indicator,var(--brand-primary-dark))] shrink-0" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--sidebar-text-muted)] truncate">
               {moduleTitle}
             </span>
           </div>
@@ -42,7 +42,7 @@ export default function PluginSidebar({
         <button
           type="button"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-[var(--brand-primary)] dark:hover:text-[var(--brand-primary-dark)] hover:bg-[var(--brand-soft)] dark:hover:bg-[var(--brand-soft-dark)] transition-colors cursor-pointer ${
+          className={`p-1.5 rounded-lg text-[var(--sidebar-text-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] transition-colors cursor-pointer ${
             isCollapsed ? "mx-auto" : "ml-auto"
           }`}
           title={isCollapsed ? "Agrandir la barre latérale" : "Réduire la barre latérale"}

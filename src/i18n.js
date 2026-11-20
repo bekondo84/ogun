@@ -61,6 +61,7 @@ const resources = {
       no_result:"Aucun résultat",
       try_change_search_criteria: "Essayez de modifier vos critères de recherche.",
       search_lb:"Rechercher...",
+      preferences_btn:"Préférences",
       filter_categories:"Filtrer par catégorie",
       all_plugins: "Tous les modules",
     }
