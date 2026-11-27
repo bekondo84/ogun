@@ -35,7 +35,7 @@ export default function StatusBar({
             setStates(stateCompo.states);
         }
        setCurrentStage(fieldValueStr(stateCompo?.field, data));
-       // console.log('StatusBar.useEffect ------------------ '+JSON.stringify(stateCompo)+'--------'+JSON.stringify(fieldValueStr(stateCompo.field, data)))
+       //console.log('StatusBar.useEffect ------------------ '+JSON.stringify(stateCompo)+'--------'+JSON.stringify(fieldValueStr(stateCompo.field, data)))
     } 
 
     if (typeof metadata?.showStatusBar === "boolean") {
@@ -82,7 +82,7 @@ export default function StatusBar({
               {label}
             </button>) : null}
 
-            {!isLast && (
+            {!isLast && visible(fields, state.visibleWhen, data) && (
               <div className="flex items-center self-stretch text-slate-300 dark:text-slate-700 bg-white dark:bg-slate-900 px-0.5">
                 <ChevronRight className="h-3 w-3" />
               </div>

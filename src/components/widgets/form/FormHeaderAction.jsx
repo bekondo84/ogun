@@ -29,11 +29,23 @@ export default function FormHeaderAction ({
     const [customactions, setCustomactions] = useState([])
     const {t, i18n} = useTranslation()
     const [fields, setFields] = useState([])
+    const [showStatusBar, setShowStatusBar] = useState(false)
    
     useEffect (() => {       
        const fieldss = getFormFields(metadata.editorarea);
+       const editorarea = metadata.editorarea;
+       const stateCompo = editorarea?.states;
+       if (stateCompo && Array.isArray(stateCompo.states)) {
+           const states = [...stateCompo.states]
+           setShowStatusBar(states.filter(state => visible(fieldss, state.visibleWhen, item)).length > 0);
+          // console.log ('----------------------------- '+(states.filter(state => visible(fieldss, state.visibleWhen, item)).length > 0))
+       }
+       
+       if (editorarea && editorarea.sta)
        setFields(fieldss);
     }, [metadata]);
+
+
 
     useEffect(() => {
         if (editMode != 'C') {                      
@@ -97,7 +109,7 @@ export default function FormHeaderAction ({
                 </div>
 
                 {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}           
-                <StatusBar data={item} metadata={metadata} />     
+                {showStatusBar ? (<StatusBar data={item} metadata={metadata} />) :null }    
             </div>
 
             {/* LIGNE 2 : Barre exclusive pour les actions / boutons de transition du Workflow */}
