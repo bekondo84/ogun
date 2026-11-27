@@ -10,6 +10,7 @@ import ActionsDropdown from "../list/ActionsDropdown"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { getFormFields, visible } from "@/utils/FormUtils"
+import StatusBar from "./StatusBar"
 
 export default function FormHeaderAction ({
        metadata, 
@@ -95,29 +96,8 @@ export default function FormHeaderAction ({
                     {customactions && customactions.length > 0 && showActionsMenus() ? (<ActionsDropdown metadata={metadata} data={item} actions={customactions}  onAction={onAction}/>) : null}                    
                 </div>
 
-                {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}
-                <div className="flex items-center border border-slate-100 dark:border-slate-800 rounded-md overflow-hidden bg-slate-50/50 dark:bg-slate-950 font-medium text-[11px]">
-                  <button 
-                      onClick={() => setCurrentStage("new")}
-                      className={`px-3 py-1.5 transition-colors cursor-pointer ${currentStage === "new" ? "bg-purple-700 text-white font-bold" : "text-slate-500 hover:bg-slate-100"}`}
-                  >
-                      Nouveau
-                  </button>
-                  <div className="flex items-center text-slate-300 bg-white dark:bg-slate-900 px-0.5"><ChevronRight className="h-3 w-3" /></div>
-                  <button 
-                      onClick={() => setCurrentStage("in_progress")}
-                      className={`px-3 py-1.5 transition-colors cursor-pointer ${currentStage === "in_progress" ? "bg-purple-700 text-white font-bold" : "text-slate-500 hover:bg-slate-100"}`}
-                  >
-                      En Cours
-                  </button>
-                  <div className="flex items-center text-slate-300 bg-white dark:bg-slate-900 px-0.5"><ChevronRight className="h-3 w-3" /></div>
-                  <button 
-                      onClick={() => setCurrentStage("won")}
-                      className={`px-3 py-1.5 transition-colors cursor-pointer ${currentStage === "won" ? "bg-emerald-600 text-white font-bold" : "text-slate-500 hover:bg-slate-100"}`}
-                  >
-                      Gagné
-                  </button>
-                </div>
+                {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}           
+                <StatusBar data={item} metadata={metadata} />     
             </div>
 
             {/* LIGNE 2 : Barre exclusive pour les actions / boutons de transition du Workflow */}

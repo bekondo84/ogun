@@ -35,7 +35,7 @@ export default function FormDataModule({
          shutcutAction,
          onBreadcrumbAction
 }) {
-  const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
+  const [currentStage, setCurrentStage] = useState("won") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
   const [actions, setActions] = useState([])
   const [fields, setFields] = useState([])

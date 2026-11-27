@@ -432,6 +432,7 @@ export default function PluginFormPage({erpTemplate}) {
                 setActiveMenu={(menu) => handleMenuChange(menu)}
                 isCollapsed={isSidebarCollapsed}
                 setIsCollapsed={setIsSidebarCollapsed}
+                moduleTitle= {appTitle}
               />
         ):null}
         
