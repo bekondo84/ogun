@@ -42,11 +42,16 @@ export default function ListDataModule({
   const [columns, setColumns] = useState([])
   // MÉTA-DONNÉES DU TABLEAU (Mise à jour : Ajout du paramètre sortable)
   //const columns = 
-  const actions = [...metadata.listView.actions]
+  const [actions, setActions] = useState([]); //actions = [...metadata.listView.actions]
 
   useEffect(() => {
-      setColumns(metadata.listView.columns)
-      loadColumnsSettings(metadata, setColumns, setIsLoading)
+      setColumns(metadata.listView.columns);
+      loadColumnsSettings(metadata, setColumns, setIsLoading);
+
+      if (metadata.listView.actions) {
+        const actionObj = metadata.listView.actions;
+        setActions(actionObj.actions)
+      }
   },  [metadata])
 
   /* const loadColumnsSettings = async() => {

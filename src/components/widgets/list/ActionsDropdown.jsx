@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Settings2, MoreHorizontal, Download, FileText, icons } from "lucide-react"
+import { getFormFields, visible } from "@/utils/FormUtils"
 
 export default function ActionsDropdown({
      metadata,
+     fields,
      data,
      actions=[],
      onAction}) {
   const [isOpen, setIsOpen] = useState(false)
   const actionsRef = useRef(null)
+  
   
   useEffect(() => {
     //console.log('---------------------------------'+JSON.stringify(actions))
@@ -18,6 +21,7 @@ export default function ActionsDropdown({
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
+    
   }, [metadata])
 
   return (

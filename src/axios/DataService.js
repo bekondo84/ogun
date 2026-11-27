@@ -166,3 +166,8 @@ export async function getSystemStatus () {
     });
     return response.data;
 }
+
+export async function getNewInstance(meta) {
+    const response = await executedPostMethod (meta.action, 'create', {typeCode: meta.typeCode});
+    return response.data;
+}

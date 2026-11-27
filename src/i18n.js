@@ -64,6 +64,19 @@ const resources = {
       preferences_btn:"Préférences",
       filter_categories:"Filtrer par catégorie",
       all_plugins: "Tous les modules",
+      today_lb: "Aujourd'hui",
+      new_event_lb: "Nouvel événement",
+      monday_lb:"LUN",
+      tuesday_lb:"MAR",
+      wenesday_lb:"MER",
+      thursday_lb:"JEU",
+      friday_lb:"VEN",
+      saturday_lb:"SAM",
+      sunday_lb:"DIM",
+      day_lb:"Jour",
+      week_lb:"Semaine",
+      month_lb: "Mois",
+      year_lb: "Année"
     }
   },
   en: {

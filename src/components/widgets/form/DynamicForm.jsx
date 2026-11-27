@@ -8,7 +8,7 @@ import { getFormFields, visible } from "@/utils/FormUtils"
 export default function DynamicForm({ 
   meta, 
   schema, 
-  fields = [],
+  fields ,
   values, 
   errors, 
   resources,
@@ -19,9 +19,17 @@ export default function DynamicForm({
   shutcutAction }) {
   const [shutcuts, setShutcuts] = useState([])
   
+  const champs = getFormFields(schema);
+  
   useEffect (() => {
-     setShutcuts(schema?.shutcuts)
-     //  console.log('-------.??????---------------- /////////// : '+fieldList?.length)
+     const shutcutsObj = schema?.shutcuts;
+    // const champs = getFormFields(schema);
+
+     if (shutcutsObj) {
+           setShutcuts(shutcutsObj?.shutcuts);
+     }
+     
+      //console.log('-------.??????---------------- /////////// : '+champs.length)
     }, [schema])
 
   return (
@@ -30,7 +38,7 @@ export default function DynamicForm({
       
       {/* Raccourcis hauts (Stat-Buttons) */}
       {editMode != 'C' && <div className="flex flex-wrap items-center justify-end gap-1 border-b border-slate-100 dark:border-slate-800 pb-4 mb-2">
-        {shutcuts?.map((btn) => {
+        {shutcuts?.filter(cut => visible(champs, cut.visibleWhen, values)).map((btn) => {
           const Icon = icons[btn.icon] ?? Circle
           return (
             <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction} meta={meta} item={values}/>

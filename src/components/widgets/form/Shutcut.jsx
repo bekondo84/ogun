@@ -5,13 +5,15 @@ import { convertFiltersToPredicats } from "@/utils/Utils";
 
 export default function Shutcut({meta, item, shutcut, Icon, onAction}) {
    const [counter, setCounter] = useState(0)
+   const [predicates, setPredicates] = useState([])
 
    useEffect( () => {
        getCounter ()
    }, [shutcut, item])
 
   const getCounter = async() => {
-      var predicates = convertFiltersToPredicats(shutcut?.filters, item)
+      var predicates = convertFiltersToPredicats(shutcut?.filters, item);
+      setPredicates(predicates)
       const response =  await executedPostMethod(meta.action, "count", {
            typeCode: shutcut.type,
            predicates: predicates
@@ -24,7 +26,7 @@ export default function Shutcut({meta, item, shutcut, Icon, onAction}) {
           <button
                   key={shutcut.code}
                   type="button"
-                  onClick={() => onAction(shutcut)}
+                  onClick={() => onAction(shutcut, predicates)}
                   className="flex items-center gap-2 px-3 py-1 border border-slate-200 dark:border-slate-800 rounded-md bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:text-purple-700 text-xs font-medium cursor-pointer shadow-sm min-w-[90px]"
                 >
                   <Icon className="h-3.5 w-3.5 text-slate-400" />

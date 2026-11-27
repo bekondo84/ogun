@@ -1,5 +1,6 @@
 import React from "react"
-import { Plus, Trash2, ChevronLeft, ChevronRight, Table, LayoutGrid } from "lucide-react"
+import { Plus, Trash2, ChevronLeft, ChevronRight, Table, LayoutGrid, Calendar } from "lucide-react"
+import AllowedViews from "@/components/pages/AllowViews"
 
 
 export default function Pagination ({
@@ -24,20 +25,7 @@ export default function Pagination ({
             </button>
           </div>
         </div>
-
-        <div className="flex items-center border border-slate-200 dark:border-slate-700 p-0.5 rounded-lg bg-slate-100 dark:bg-slate-900">
-          {/*1. Affichage condition du bouton List */}
-          {allowedViews?.includes("list") && (
-              <button onClick={() => setViewMode("list")} className={`p-1 rounded-md cursor-pointer bg-transparent border-0 ${viewMode === "list" ? "bg-white text-[var(--brand-primary)] shadow-sm" : "text-slate-500"}`}>
-                <Table className="h-4 w-4" />
-              </button>          
-          )}
-          {allowedViews?.includes("kaban") && (
-                <button onClick={() => setViewMode("kanban")} className={`p-1 rounded-md cursor-pointer bg-transparent border-0 ${viewMode === "kanban" ? "bg-white text-[var(--brand-primary)] shadow-sm" : "text-slate-500"}`}>
-                  <LayoutGrid className="h-4 w-4" />
-                </button>
-          )}
-        </div>
+        <AllowedViews viewMode={viewMode} setViewMode={setViewMode} allowedViews={allowedViews}/>
       </div>
 
     )

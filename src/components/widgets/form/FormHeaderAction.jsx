@@ -9,6 +9,7 @@ import { ChevronRight, Settings2, Copy, Trash2, Archive, ArrowLeft, icons } from
 import ActionsDropdown from "../list/ActionsDropdown"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
+import { getFormFields, visible } from "@/utils/FormUtils"
 
 export default function FormHeaderAction ({
        metadata, 
@@ -22,17 +23,38 @@ export default function FormHeaderAction ({
         onAction
       }) {
 
-    useEffect(() => {
-        if (editMode != 'C') {
-           setWorkflowactions(actions.filter(act => act.position=='workflow'))
-           setCustomactions(actions.filter(act => act.position=='actions'))
-        }
-    }, [actions])
-
+    
     const [workflowactions, setWorkflowactions] = useState([])
     const [customactions, setCustomactions] = useState([])
     const {t, i18n} = useTranslation()
+    const [fields, setFields] = useState([])
    
+    useEffect (() => {       
+       const fieldss = getFormFields(metadata.editorarea);
+       setFields(fieldss);
+    }, [metadata]);
+
+    useEffect(() => {
+        if (editMode != 'C') {                      
+           setWorkflowactions(actions.filter(act => act.position=='workflow' && visible(fields, act.visibleWhen, item)));
+           setCustomactions(actions.filter(act => act.position=='actions' && visible(fields, act.visibleWhen, item)));
+        }
+    }, [actions]);
+
+    useEffect(() => {
+       //console.log('+++++++++++++++++++++++++++ '+JSON.stringify(customactions))
+     }, [customactions])
+
+    const showActionsMenus = () => {
+       const formComponent = metadata?.editorarea;
+       const actionsComponent = formComponent?.actions;
+       //console.log ('FormHeaderAction.showActionsMenus ---------------- '+JSON.stringify(actionsComponent.visibleWhen))
+       if (actionsComponent && actionsComponent.visibleWhen) {
+        
+           return visible (fields, actionsComponent.visibleWhen, item)
+       }
+       return true;
+    }
     // Fonction pour centraliser le changement d'étape et notifier l'utilisateur si besoin
     const handleWorkflowAction = (nextStage) => {
         setCurrentStage(nextStage)
@@ -70,7 +92,7 @@ export default function FormHeaderAction ({
                     </Button>)}
 
                     {/* Menu Déroulant Actions Contextuelles */}
-                    {customactions && customactions.length > 0 && <ActionsDropdown metadata={metadata} data={item} actions={customactions} onAction={onAction}/>}                    
+                    {customactions && customactions.length > 0 && showActionsMenus() ? (<ActionsDropdown metadata={metadata} data={item} actions={customactions}  onAction={onAction}/>) : null}                    
                 </div>
 
                 {/* Fil d'Ariane graphique d'étapes (Stages workflow) à droite */}
@@ -99,7 +121,7 @@ export default function FormHeaderAction ({
             </div>
 
             {/* LIGNE 2 : Barre exclusive pour les actions / boutons de transition du Workflow */}
-            {(workflowactions.length > 0)&&(
+            {workflowactions.length > 0 ? (
                 <div className="bg-slate-50 dark:bg-slate-900/40 px-6 py-1.5 border-b border-slate-200 dark:border-slate-800 flex items-center h-10 select-none text-xs">
                   <div className="flex items-center gap-1.5">
                       {workflowactions?.map((action, index)=> {
@@ -119,7 +141,7 @@ export default function FormHeaderAction ({
                       })}                      
                   </div>
               </div>    
-            )}               
+            ):null}               
             
         </div>
     )

@@ -69,55 +69,92 @@ export const getFormFields = (schema) => {
       return fields
 }
 
-const fieldValueStr = (path, formdata) => {
+export const fieldValueStr = (path, formdata) => {
   if (path == null || formdata == null) {
     return null;
   }
 
-  const keys = Array.isArray(path) ? path : String(path).split('.');
+  // Si formdata est un wrapper API { data: { ... } } et que la racine demandée n'est pas "data"
+  const root =
+    formdata.data &&
+    typeof formdata.data === "object" &&
+    !Array.isArray(formdata.data) &&
+    !String(path).startsWith("data.") &&
+    !(String(path).split(".")[0] in formdata)
+      ? formdata.data
+      : formdata;
 
-  let current = formdata;
-  
+  // Normalise les crochets de tableau (ex: "lines[0].price" -> "lines.0.price")
+  const keys = String(path)
+    .replace(/\[(\d+)\]/g, ".$1")
+    .split(".")
+    .filter(Boolean);
+
+  let current = root;
   for (const key of keys) {
-    if (current == null || typeof current !== 'object') {
+    if (current == null || typeof current !== "object") {
       return null;
     }
+   
     current = current[key];
   }
+  
+  if (current === undefined || current === null) {
+    return null;
+  }
+  //console.log('-*-*-*- '+JSON.stringify(current)+' ---- '+JSON.stringify(keys)+' ----- ')
+ 
 
-  return current !== undefined ? current : null;
+  return current;
 };
+
 /**
  * 
  * @param {*} fields 
  * @param {*} rulestr 
  * @param {*} formdata 
+ * @returns 
  */
 export const visible = (fields, rulestr, formdata) => {
-     if (rulestr == null || rulestr == undefined || rulestr == '') {
-        return true
-      }
+  if (rulestr === null || rulestr === undefined || rulestr === "") {
+    return true;
+  }
 
+  try {
+    // 1. Accepte soit un tableau déjà parsé, soit du JSON, soit une expression JS
+    let criterias = rulestr;
+    if (typeof rulestr === "string") {
+      const trimmed = rulestr.trim();
+      if (!trimmed) return true;
       try {
-         const criterias = new Function(`return ${rulestr}`) ();
-          //console.log('visible ::::::::: '+criterias+' ----- '+Array.isArray(criterias)) 
-      
-         if (!Array.isArray(criterias)) {
-            return  true
-         }
-         var active = true
-         criterias.forEach(crit => {
-            var value = fieldValueStr(crit.field, formdata)
-           // console.log('visible  ================== value if field : '+value)
-            active &= compare (value, crit.value, crit.criteria)
-         })
-         return active
-      } catch(error) {
-         console.error(error)
-         return true
-      }   
-      
-}
+        criterias = JSON.parse(trimmed);
+      } catch {
+        criterias = new Function(`return (${trimmed})`)();
+      }
+    }
+
+    // Si une seule règle objet est passée au lieu d'un tableau, on l'enveloppe
+    if (criterias && !Array.isArray(criterias) && typeof criterias === "object") {
+      criterias = [criterias];
+    }
+
+    if (!Array.isArray(criterias) || criterias.length === 0) {
+      return true;
+    }
+
+    // 2. .every() retourne un strict booléen (true/false) et s'arrête dès qu'une règle échoue
+    return criterias.every((crit) => {
+      if (!crit || !crit.field) return true;
+      const value = fieldValueStr(crit.field, formdata);
+      const operator = crit.criteria || "eq";
+      //console.log('FormUtils.visible ------------------------ '+crit.field+'------'+JSON.stringify(crit.criteria)+'-----'+JSON.stringify(value)+'------'+operator+'---'+crit.value+' ----- '+compare(value, crit.value, operator))
+      return Boolean(compare(value, crit.value, operator));
+    });
+  } catch (error) {
+    console.error("Erreur d'évaluation de visibilité :", rulestr, error);
+    return true;
+  }
+};
 
 /**
  * 

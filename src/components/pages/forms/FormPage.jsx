@@ -38,7 +38,7 @@ export default function FormDataModule({
   const [currentStage, setCurrentStage] = useState("in_progress") // États : new, in_progress, won
   const [errors, setErrors] = useState({})
   const [actions, setActions] = useState([])
-  const [fields, setFields] = useState()
+  const [fields, setFields] = useState([])
   const [modal, ModalElement] = useOdooModal();
   const {t, i18n} = useTranslation()
 
@@ -49,11 +49,17 @@ useEffect(() => {
   }, [resources])
  
   useEffect(() => {
-     // Réinitialisation des erreurs lors du changement de fiche
+     //alert(JSON.stringify(item))
      setErrors({})
-     setActions(metadata.editorarea.actions)
+     const actionsObj = metadata.editorarea.actions;
+
+     if (actionsObj) {
+           setActions(actionsObj.actions)
+     }
+
      var fieldList = getFormFields(metadata?.editorarea)
-     setFields(fieldList)
+     //console.log ('------------////////////------------ '+fieldList.length)
+     setFields(fieldList);
     
   }, [metadata])
 
@@ -141,6 +147,7 @@ useEffect(() => {
             <DynamicForm 
               meta={metadata}
               schema={metadata?.editorarea} 
+              fields={fields}
               values={item} 
               errors={errors} 
               resources={resources}

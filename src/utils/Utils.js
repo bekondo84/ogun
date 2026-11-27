@@ -168,10 +168,11 @@ export const  getInitials = (fullName) => {
 }
 
 export const compare = (value_1, value_2, criteria) => {
+       // console.log('Utils.compare -------------- '+value_1+' -------- '+criteria+' ------ '+value_2)
         if (criteria === 'eq') 
-            return value_1 == value_2
+            return value_1 === value_2
         else if (criteria == 'neq')
-            return value_1 != value_2
+            return value_1 !== value_2
         else if (criteria == 'gt')
             return value_1 > value_2
         else if (criteria == 'ge')

@@ -17,6 +17,7 @@ import { useActionModal } from "@/components/widgets/notification/useActionModal
 import { loadDashboardMenu, loadMetaMenu } from "@/utils/PluginUtils"
 import ogunLogoImage from "@/assets/ogun.png"
 import PluginSidebar from "@/components/widgets/plugins/PluginSidebar"
+import CalendarPage from "../calendar/CalendarPage"
 
 export default function PluginFormPage({erpTemplate}) {
   const { id } = useParams()
@@ -58,8 +59,15 @@ export default function PluginFormPage({erpTemplate}) {
   const [appTitle, setAppTitle] = useState(localStorage.getItem('erp_name') || 'Ogun')
   const [appsigle, setAppSigle] = useState('')
   const [plugin, setPlugin] = useState(null)
+  const [events, setEvents] = useState([])
   
   const {t, i18n} = useTranslation()
+
+  const addEvent = (event) => {
+       const store = [...events];
+       store.push(event)
+       setEvents(store)
+  }
   
   useEffect(() => {
     // console.log('PluginFormPage ----------------------- '+erpTemplate)
@@ -149,8 +157,6 @@ export default function PluginFormPage({erpTemplate}) {
       setIsLoading(true)
       try {
          if (metadata !== null && activeMenu.viewMode.includes('view')) {
-          setViewMode('view')
-          setEditMode('V')
           //var item = data.data.filter(d => d.seqnumber == record.seqnumber)[0]
           const response = await executedPostMethod(metadata.action, "fetchitem", {
               data: record,
@@ -159,8 +165,11 @@ export default function PluginFormPage({erpTemplate}) {
               typeCode: metadata.typeCode
           })
           setData(response.data)
-        //console.log('----------Vous avez selectionner : '+JSON.stringify(response.data))
-        setSnapshotstore(updateSystemSnapshaps(snapshotstore, record.stringValue, metadata, response.data,[],'view'))
+         //console.log('----------Vous avez selectionner : '+JSON.stringify(response.data))
+         setSnapshotstore(updateSystemSnapshaps(snapshotstore, record.stringValue, metadata, response.data,[],'view'))
+         setViewMode('view')
+         setEditMode('V')
+          
        }
       } finally {
          setIsLoading(false)
@@ -221,8 +230,6 @@ export default function PluginFormPage({erpTemplate}) {
         const data = context.data
         const viewMode = context.viewmode
         setMetadata(meta)
-        setViewMode(viewMode)
-        setAllowedViews(meta.viewMode)
         //console.log('------------------------------------------ '+JSON.stringify(context.meta))
         if (context.data != null) {
            const response = await executedPostMethod(meta.action, "fetchitem", {
@@ -237,6 +244,8 @@ export default function PluginFormPage({erpTemplate}) {
         }
        //console.log('Click detected on breadcrumb  ::: '+JSON.stringify(breadcrumb.key)+'----------'+snapshotstore.length+' -----'+snapshotstore.slice(0,breadcrumb.key+1).length)
        setSnapshotstore(updateSystemSnapshaps(refreshSnapshaps(breadcrumb.key, snapshotstore), context.label, meta, data, [], viewMode))
+       setViewMode(viewMode)
+       setAllowedViews(meta.viewMode)         
      } finally {
         setIsLoading(false)
      }
@@ -288,16 +297,16 @@ export default function PluginFormPage({erpTemplate}) {
      }
   }
 
-  const handleShutcutAction = async(shutcut)  => {
-           
+  const handleShutcutAction = async(shutcut, predicates)  => {
+           //console.log ('PluginFormPage.handleShutcutAction -------------------- '+JSON.stringify(predicates))
     setIsLoading(true)
            try {
                  setSelectedIds([])
                  const meta = await getMetaFromTypeCode(shutcut.type)
                  setMetadata(meta)
-                 await fetchData(1, meta, [], [], viewMode)
                  const targetView = meta.viewMode.split(',')[0]
-                //console.log("Changement de vue ERP : " +menuObject.viewMode)
+                await fetchData(1, meta, predicates, [], targetView)
+                 //console.log("Changement de vue ERP : " +menuObject.viewMode)
                 setViewMode(targetView)
                 setAllowedViews(meta.viewMode)
                 if (targetView === "list") {
@@ -329,7 +338,7 @@ export default function PluginFormPage({erpTemplate}) {
            }
            
       } else {
-          setData(response)
+         setData(response)
       }
       
       setTotalPages(Math.ceil(response.nbreofitems / meta.pageSize))
@@ -437,6 +446,15 @@ export default function PluginFormPage({erpTemplate}) {
                     <DashboardPage dashboard={dashboard}/>
                 ) : metadata ? (
                     // Sinon, on gère les listes et les formulaires qui nécessitent des métadonnées
+                    viewMode == "calendar" ? (
+                       <CalendarPage 
+                           meta={metadata} 
+                           viewMode={viewMode}
+                           setViewMode={setViewMode}
+                           allowedViews={allowedViews}
+                           events={events}
+                           onAddEvent={addEvent}/>
+                    ):
                     viewMode !== "view" ? (
                         <ListFormPage
                           predicates={predicates}
