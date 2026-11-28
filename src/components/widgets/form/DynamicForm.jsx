@@ -40,8 +40,10 @@ export default function DynamicForm({
       {editMode != 'C' && <div className="flex flex-wrap items-center justify-end gap-1 border-b border-slate-100 dark:border-slate-800 pb-4 mb-2">
         {shutcuts?.filter(cut => visible(champs, cut.visibleWhen, values)).map((btn) => {
           const Icon = icons[btn.icon] ?? Circle
+          const key = String(btn.color || "").toLowerCase().trim();
+
           return (
-            <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction} meta={meta} item={values}/>
+            <Shutcut shutcut={btn} Icon={Icon} onAction={shutcutAction} meta={meta} item={values} key={key}/>
           )
         })}
       </div>}
